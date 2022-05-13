@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "preview-screenshots",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/freyaariel/preview-screenshots.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "d8c927e96474721853c49386d39e72e1df251d3e"
+      }
+    }
+  ],
+  "version" : 2
+}

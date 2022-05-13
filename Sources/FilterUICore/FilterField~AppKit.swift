@@ -96,7 +96,7 @@ public class FilterField: NSSearchField, CALayerDelegate {
   public func layerWillDraw(_ layer: CALayer) {
 //      print((#function, layer))
     // layer.cornerCurve = .continuous
-    layer.cornerRadius = 7
+    layer.cornerRadius = 6
     layer.borderWidth = 1
     
     if hasFilteringAppearing {
