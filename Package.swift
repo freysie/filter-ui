@@ -11,11 +11,13 @@ let package = Package(
     .library(name: "FilterUICore", targets: ["FilterUICore"]),
   ],
   dependencies: [
+    .package(url: "https://github.com/krisk/fuse-swift.git", from: "1.4.0"),
     .package(url: "https://github.com/freyaariel/preview-screenshots.git", branch: "main"),
   ],
   targets: [
     .target(name: "FilterUI", dependencies: [
       "FilterUICore",
+      .product(name: "Fuse", package: "fuse-swift"),
       .product(name: "PreviewScreenshots", package: "preview-screenshots"),
     ]),
     .target(name: "FilterUICore", dependencies: [])

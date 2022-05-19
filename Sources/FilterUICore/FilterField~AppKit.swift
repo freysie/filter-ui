@@ -2,6 +2,8 @@ import AppKit
 
 /// An AppKit filter field.
 public class FilterField: NSSearchField, CALayerDelegate {
+  public override class var cellClass: AnyClass? { get { FilterFieldCell.self } set {} }
+
   /// Whether accessory views are filtering.
   public var isFiltering = false {
     didSet {
@@ -31,11 +33,14 @@ public class FilterField: NSSearchField, CALayerDelegate {
       }
     }
   }
-
-  public var iconColor = NSColor.secondaryLabelColor
   
   var hasFilteringAppearing: Bool {
     isFiltering || !stringValue.isEmpty || window?.firstResponder == currentEditor()
+  }
+  
+  public override func viewWillDraw() {
+    guard let cell = cell as? FilterFieldCell else { return }
+    cell.hasFilteringAppearing = hasFilteringAppearing
   }
   
   public override var allowsVibrancy: Bool { !hasFilteringAppearing }
@@ -43,6 +48,7 @@ public class FilterField: NSSearchField, CALayerDelegate {
   public override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
     
+    // TODO: move most of this to the cell so it can be used individually
     font = .systemFont(ofSize: NSFont.smallSystemFontSize)
     textColor = .textColor
     isBezeled = false
@@ -62,11 +68,11 @@ public class FilterField: NSSearchField, CALayerDelegate {
     //  print(layer!.debugDescription)
     //  print(heightAnchor.constraintsAffectingLayout as NSArray)
     
-    translatesAutoresizingMaskIntoConstraints = false
+//    translatesAutoresizingMaskIntoConstraints = false
     
-    NSLayoutConstraint.activate([
-      heightAnchor.constraint(equalToConstant: 22)
-    ])
+//    NSLayoutConstraint.activate([
+//      heightAnchor.constraint(equalToConstant: 22)
+//    ])
     
     if let cancelButtonCell = (cell as! NSSearchFieldCell).cancelButtonCell {
       cancelButtonCell.image = NSImage(systemSymbolName: .clearIcon, accessibilityDescription: nil)!
@@ -93,43 +99,64 @@ public class FilterField: NSSearchField, CALayerDelegate {
 //      print((#function, layer))
   }
   
-  public func layerWillDraw(_ layer: CALayer) {
-//      print((#function, layer))
-    // layer.cornerCurve = .continuous
-    layer.cornerRadius = 6
-    layer.borderWidth = 1
-    
-    if hasFilteringAppearing {
-//        layer.borderColor = NSColor(r: 111, g: 111, b: 114).cgColor
-      layer.borderColor = NSColor.tertiaryLabelColor.cgColor
-      layer.backgroundColor = NSColor.textBackgroundColor.cgColor
-//        layer.backgroundColor = NSColor(r: 30, g: 30, b: 30).cgColor
-//        layer.backgroundColor = .black
-    } else {
-      layer.borderColor = NSColor.gridColor.cgColor
-      layer.backgroundColor = NSColor.alternatingContentBackgroundColors[1].cgColor
-    }
-    
-    if let searchButtonCell = (cell as! NSSearchFieldCell).searchButtonCell {
-      if !stringValue.isEmpty {
-        searchButtonCell.image = NSImage(systemSymbolName: .activeFilterIcon, accessibilityDescription: nil)!
-          .withSymbolConfiguration(
-            NSImage.SymbolConfiguration(paletteColors: [.controlAccentColor])
-              .applying(.init(pointSize: 12, weight: .regular)) // TODO: get non-retina–friendly 13px version?
-          )
-      } else {
-        searchButtonCell.image = NSImage(systemSymbolName: .filterIcon, accessibilityDescription: nil)!
-          .withSymbolConfiguration(
-            NSImage.SymbolConfiguration(paletteColors: [iconColor])
-              .applying(.init(pointSize: 12, weight: .regular)) // TODO: get non-retina–friendly 13px version?
-          )
-      }
-      
-      searchButtonCell.alternateImage = searchButtonCell.image
-    }
-  }
+//  public override func draw(_ dirtyRect: NSRect) {
+//    guard let cell = cell as? FilterFieldCell else { return }
+//    cell.search
+////    super.draw(dirtyRect)
+//    // draw?(layer!, in: NSGraphicsContext.current!.cgContext)
+//
+////    if hasFilteringAppearing {
+////      NSColor.tertiaryLabelColor.setStroke()
+////    } else {
+////      NSColor.gridColor.setStroke()
+////    }
+//
+////    NSBezierPath(roundedRect: bounds, xRadius: 7, yRadius: 7).stroke()
+//  }
   
-  public override class var cellClass: AnyClass? { get { FilterFieldCell.self } set {} }
+//  let activeImage = NSImage(systemSymbolName: .activeFilterIcon, accessibilityDescription: nil)!
+//    .withSymbolConfiguration(
+//      NSImage.SymbolConfiguration(paletteColors: [.controlAccentColor])
+//        .applying(.init(pointSize: 12, weight: .regular)) // TODO: get non-retina–friendly 13px version?
+//    )
+//
+//  let image = NSImage(systemSymbolName: .filterIcon, accessibilityDescription: nil)!
+//    .withSymbolConfiguration(
+//      NSImage.SymbolConfiguration(paletteColors: [.secondaryLabelColor])
+//        .applying(.init(pointSize: 12, weight: .regular)) // TODO: get non-retina–friendly 13px version?
+//    )
+  
+//  public func layerWillDraw(_ layer: CALayer) {
+////      print((#function, layer))
+//    // layer.cornerCurve = .continuous
+////    layer.cornerRadius = 7
+//    layer.borderWidth = 0
+//    layer.borderColor = NSColor.clear.cgColor
+//    // layer.allowsEdgeAntialiasing = true
+//
+//    if hasFilteringAppearing {
+////        layer.borderColor = NSColor(r: 111, g: 111, b: 114).cgColor
+////      layer.borderColor = NSColor.tertiaryLabelColor.cgColor
+//      layer.backgroundColor = NSColor.textBackgroundColor.cgColor
+////        layer.backgroundColor = NSColor(r: 30, g: 30, b: 30).cgColor
+////        layer.backgroundColor = .black
+//    } else {
+////      layer.borderColor = NSColor.gridColor.cgColor
+//      layer.backgroundColor = NSColor.alternatingContentBackgroundColors[1].cgColor
+//    }
+//
+//    // layer.borderColor = NSColor.red.cgColor
+//
+//    if let searchButtonCell = (cell as! NSSearchFieldCell).searchButtonCell {
+//      if !stringValue.isEmpty {
+//        searchButtonCell.image = activeImage
+//      } else {
+//        searchButtonCell.image = image
+//      }
+//
+//      searchButtonCell.alternateImage = searchButtonCell.image
+//    }
+//  }
 }
 
 /// The cell interface for AppKit filter fields.
@@ -138,6 +165,56 @@ public class FilterFieldCell: NSSearchFieldCell {
   // TODO: make this configurable!!!!
   // var accessoryWidth: CGFloat = 0 // 17
   var accessoryWidth: CGFloat { (controlView as? FilterField)?.accessoryView?.bounds.width ?? 0 }
+  var hasFilteringAppearing = false
+  
+  let filterImage = NSImage(systemSymbolName: .filterIcon, accessibilityDescription: nil)!
+    .withSymbolConfiguration(
+      NSImage.SymbolConfiguration(paletteColors: [.secondaryLabelColor])
+        .applying(.init(pointSize: 12, weight: .regular)) // TODO: get non-retina–friendly 13px version?
+    )
+  
+  let activeFilterImage = NSImage(systemSymbolName: .activeFilterIcon, accessibilityDescription: nil)!
+    .withSymbolConfiguration(
+      NSImage.SymbolConfiguration(paletteColors: [.controlAccentColor])
+        .applying(.init(pointSize: 12, weight: .regular)) // TODO: get non-retina–friendly 13px version?
+    )
+  
+  public override func draw(withFrame cellFrame: NSRect, in controlView: NSView) {
+    if hasFilteringAppearing {
+      NSColor.textBackgroundColor.setFill()
+      NSColor.secondaryLabelColor.setStroke()
+    } else {
+      NSColor.alternatingContentBackgroundColors[1].setFill()
+      NSColor.gridColor.setStroke()
+    }
+    
+    let path = NSBezierPath(roundedRect: cellFrame.insetBy(dx: 0.5, dy: 0.5), xRadius: 7, yRadius: 7)
+    path.fill()
+    path.stroke()
+
+    drawInterior(withFrame: cellFrame, in: controlView)
+  }
+  
+  public override func calcDrawInfo(_ rect: NSRect) {
+    super.calcDrawInfo(rect)
+  }
+  
+  public override func drawInterior(withFrame cellFrame: NSRect, in controlView: NSView) {
+    // guard let filterButtonCell = searchButtonCell, let cancelButtonCell = cancelButtonCell else { return }
+    guard let filterButtonCell = searchButtonCell else { return }
+
+    filterButtonCell.image = stringValue.isEmpty ? filterImage : activeFilterImage
+    // filterButtonCell.image = filterImage
+    filterButtonCell.alternateImage = searchButtonCell!.image
+//    filterButtonCell.draw(withFrame: searchButtonRect(forBounds: cellFrame), in: controlView)
+
+    let insetRect = cellFrame.insetBy(dx: Self.padding.width, dy: Self.padding.height)
+    super.drawInterior(withFrame: insetRect, in: controlView)
+
+//    if !stringValue.isEmpty {
+//      cancelButtonCell.draw(withFrame: cancelButtonRect(forBounds: cellFrame), in: controlView)
+//    }
+  }
   
   public override func cellSize(forBounds rect: NSRect) -> NSSize {
     var size = super.cellSize(forBounds: rect)
@@ -179,11 +256,6 @@ public class FilterFieldCell: NSSearchFieldCell {
   public override func select(withFrame rect: NSRect, in controlView: NSView, editor textObj: NSText, delegate: Any?, start selStart: Int, length selLength: Int) {
     let insetRect = rect.insetBy(dx: Self.padding.width, dy: Self.padding.height)
     super.select(withFrame: insetRect, in: controlView, editor: textObj, delegate: delegate, start: selStart, length: selLength)
-  }
-  
-  public override func drawInterior(withFrame cellFrame: NSRect, in controlView: NSView) {
-    let insetRect = cellFrame.insetBy(dx: Self.padding.width, dy: Self.padding.height)
-    super.drawInterior(withFrame: insetRect, in: controlView)
   }
 }
 

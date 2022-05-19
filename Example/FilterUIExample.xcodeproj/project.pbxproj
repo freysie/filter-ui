@@ -68,6 +68,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				3BB9AF512836FCD800470721 /* PBXTargetDependency */,
 			);
 			name = FilterUIExample;
 			packageProductDependencies = (
@@ -130,6 +131,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		3BB9AF512836FCD800470721 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 3BB9AF502836FCD800470721 /* FilterUI */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		3BDD453028213E3A003D77E3 /* Debug */ = {
@@ -311,6 +319,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		3BB9AF502836FCD800470721 /* FilterUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FilterUI;
+		};
 		3BDD453928213EC9003D77E3 /* FilterUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = FilterUI;

@@ -6,10 +6,11 @@ import FilterUICore
 struct FilterUIExampleApp: App {
   var body: some Scene {
     WindowGroup {
-      FilterField_Previews.previews
-        .onAppear {
-          print(FilterUICore.FilterField())
-        }
+      FilterMenuItem_Previews.previews
+//      FilterField_Previews.previews
+//        .onAppear {
+//          print(FilterUICore.FilterField())
+//        }
     }
   }
 }

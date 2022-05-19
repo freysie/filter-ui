@@ -8,7 +8,7 @@ Filter field for AppKit and SwiftUI.
 ## Installation
 
 ```swift
-.package(url: "https://github.com/freyaariel/filter-ui.git", branch: "main")
+.package(url: "https://github.com/freyaariel/filter-ui.git", branch: "main"),
 ```
 
 ```swift
@@ -16,9 +16,9 @@ import FilterUI
 ```
 
 
-## Usage
+## Overview
 
-### SwiftUI Usage
+### Filter Field
 
 ```swift
 FilterField(text: $filterText)
@@ -28,14 +28,14 @@ FilterField(text: $filterText)
 ![](https://github.com/freyaariel/filter-ui/blob/main/Screenshots/BasicUsage~dark.png?raw=true#gh-dark-mode-only)
 
 
-<!--### Custom Prompt-->
+<!--### Filter Field with Custom Prompt-->
 <!---->
 <!--```swift-->
 <!--FilterField(text: $filterText, prompt: "Hello")-->
 <!--```-->
 <!---->
 
-#### Accessory Toggles
+### Filter Field with Accessory Toggles
 
 Toggles can be added to the end of the filter field by using `FilterFieldToggle`.
 
@@ -50,7 +50,7 @@ FilterField(text: $filterText, isFiltering: locationRequired) {
 ![](https://github.com/freyaariel/filter-ui/blob/main/Screenshots/AccessoryToggles~dark.png?raw=true#gh-dark-mode-only)
 
 
-### AppKit Usage
+### AppKit-Compatible Filter Field
 
 `FilterField`’s underlying `NSSearchField` subclass can be used directly by importing `FilterUICore`.
 
@@ -59,6 +59,15 @@ import FilterUICore
 
 FilterUICore.FilterField(frame: …)
 ```
+
+
+### Menu Filtering
+
+FilterUI provides an extension for `NSMenu` which lets you to set `allowsFiltering` to `true` in order to add a filter field to a menu, similar to how menus in Xcode are filterable.
+
+Menu filtering works by replacing the standard keystroke-based selection (type select). When a user presses a key, the filter field appears at the top of the menu and is focused.
+
+While typing, menu items are filtered based on fuzzy search matching of the items’ titles. Matching parts of the titles will be displayed in bold, while non-matching parts are grayed out.
 
 
 ## Roadmap
@@ -74,4 +83,9 @@ FilterUICore.FilterField(frame: …)
 * More sizes?
 * Menu w/ pill-shaped icon?
 * Pixel-perfect 13 px filter icon?
+
+
+## Acknowledgements
+
+Fuzzy search implementation is based on [FuzzySearch](https://github.com/viktorasl/FuzzySearch) by Viktoras Laukevičius.
 
