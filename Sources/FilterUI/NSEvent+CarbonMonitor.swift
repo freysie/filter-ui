@@ -8,11 +8,18 @@ extension NSEvent {
     init(_ handler: @escaping (NSEvent) -> Bool) { self.handler = handler }
   }
   
-  /// Installs an event monitor that receives copies of Carbon key events posted to this application before they are dispatched.
+  /// Installs an event monitor that receives copies of Carbon key events posted to this application before they are
+  /// dispatched.
+  ///
   /// - Parameters:
-  ///   - block: The event handler block object. It is passed the event to monitor. Return true if you wish to stop the dispatching of the event, otherwise return false.
+  ///   - block: The event handler block object. It is passed the event to monitor. Return true if you wish to stop the
+  ///    dispatching of the event, otherwise return false.
+  ///
   /// - Returns: A Carbon event handler object.
-  /// Unlike ``NSEvent.addLocalMonitorForEvents(matching:handler:)``, your handler will be called for events otherwise consumed by nested event-tracking loops such as control tracking, menu tracking, or window dragging.
+  ///
+  /// Unlike ``NSEvent.addLocalMonitorForEvents(matching:handler:)``, your handler will be called for events otherwise
+  /// consumed by nested event-tracking loops such as control tracking, menu tracking, or window dragging.
+  ///
   public static func addCarbonMonitorForKeyEvents(handler block: @escaping (NSEvent) -> Bool) -> Any? {
     var eventHandler: EventHandlerRef?
     let monitor = CarbonMonitor(block)
@@ -44,9 +51,12 @@ extension NSEvent {
   }
   
   /// Remove the specified Carbon event monitor.
+  ///
   /// - Parameters:
   ///   - monitor: The Carbon event monitor object to remove.
+  ///
   /// You must ensure that eventMonitor is removed only once.
+  ///
   public static func removeCarbonMonitor(_ monitor: Any) {
     guard let monitor = monitor as? CarbonMonitor else { return }
     RemoveEventHandler(monitor.carbonHandler)

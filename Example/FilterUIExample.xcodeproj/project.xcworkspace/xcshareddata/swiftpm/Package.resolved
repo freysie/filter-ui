@@ -1,6 +1,15 @@
 {
   "pins" : [
     {
+      "identity" : "dynamic",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mhdhejazi/Dynamic",
+      "state" : {
+        "revision" : "ab9a2570862d54aed2663691bb767f881226a12f",
+        "version" : "1.2.0"
+      }
+    },
+    {
       "identity" : "fuse-swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/krisk/fuse-swift.git",
@@ -15,7 +24,7 @@
       "location" : "https://github.com/freyaariel/preview-screenshots.git",
       "state" : {
         "branch" : "main",
-        "revision" : "d8c927e96474721853c49386d39e72e1df251d3e"
+        "revision" : "c844fae422c1d51cce0a86f7cec7d17bd7a6d7d1"
       }
     }
   ],

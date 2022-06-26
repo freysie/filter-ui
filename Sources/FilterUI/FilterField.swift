@@ -1,21 +1,27 @@
 import SwiftUI
 import FilterUICore
 
-extension Font.Weight: CaseIterable, Identifiable {
-  public var id: Self { self }
-  public static var allCases: [Font.Weight] {
-    [.ultraLight, .thin, .light, .regular, .medium, .semibold, .bold, .heavy, .black]
+extension ControlSize {
+  var nsControlSize: NSControl.ControlSize {
+    switch self {
+    case .regular: return .regular
+    case .small: return .small
+    case .mini: return .mini
+    case .large: return .large
+    @unknown default: return .regular
+    }
   }
 }
 
+/// A control that displays an editable text interface optimized for performing text-based searches.
 public struct FilterField<Accessory: View>: NSViewRepresentable {
   @Binding var text: String
   var prompt: String = "Filter"
   var isFiltering: Bool
   var introspect: ((_ searchField: FilterUICore.FilterField) -> Void)?
-  // TODO: add `var prompt: String? = "Filter`
   var onCommit: ((_ text: String) -> Void)?
   var accessory: Accessory
+  @Environment(\.controlSize) private var controlSize
   
   public init(
     text: Binding<String>,
@@ -52,8 +58,9 @@ public struct FilterField<Accessory: View>: NSViewRepresentable {
   
   public func makeNSView(context: Context) -> FilterUICore.FilterField {
     let view = FilterUICore.FilterField()
+    // view.placeholderString = prompt
     view.delegate = context.coordinator
-    view.isFiltering = isFiltering
+    // view.isFiltering = isFiltering
     if type(of: accessory) != EmptyView.self {
       view.accessoryView = NSHostingView(rootView: HStack(spacing: -5) { accessory }.padding(.horizontal, -3))
     }
@@ -62,8 +69,10 @@ public struct FilterField<Accessory: View>: NSViewRepresentable {
   }
   
   public func updateNSView(_ view: FilterUICore.FilterField, context: Context) {
-    view.objectValue = text
+    view.placeholderString = prompt
+    view.stringValue = text
     view.isFiltering = isFiltering
+    view.controlSize = controlSize.nsControlSize
 //    // TODO: profile performance of this
 //    if type(of: accessory) != EmptyView.self {
 //      view.accessoryView = NSHostingView(rootView: accessory)
@@ -112,7 +121,7 @@ struct FilterField_Previews: PreviewProvider {
       
       FilterField(text: $text1, prompt: "Hello")
 
-      FilterField(text: $text1, isFiltering: accessoryIsOn1 ) {
+      FilterField(text: $text1, isFiltering: accessoryIsOn1) {
         FilterFieldToggle(systemImage: "location.square", isOn: $accessoryIsOn1)
           .help("Show only items with location data")
       }
@@ -259,5 +268,12 @@ struct FilterField_Previews: PreviewProvider {
 //      }
 //    }
 //    .imageScale(.large)
+  }
+}
+
+extension Font.Weight: CaseIterable, Identifiable {
+  public var id: Self { self }
+  public static var allCases: [Font.Weight] {
+    [.ultraLight, .thin, .light, .regular, .medium, .semibold, .bold, .heavy, .black]
   }
 }

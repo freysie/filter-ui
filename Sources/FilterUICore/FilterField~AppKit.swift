@@ -1,5 +1,7 @@
 import AppKit
 
+// TODO: change background and border colors based on window key state
+
 /// An AppKit filter field.
 public class FilterField: NSSearchField, CALayerDelegate {
   public override class var cellClass: AnyClass? { get { FilterFieldCell.self } set {} }
@@ -11,6 +13,10 @@ public class FilterField: NSSearchField, CALayerDelegate {
       layer?.setNeedsDisplay()
     }
   }
+  
+  // public override var canBecomeKeyView: Bool { true }
+  
+  // public override var needsPanelToBecomeKey: Bool { true }
   
   /// The field’s accessory view.
   public var accessoryView: NSView? {
@@ -45,6 +51,15 @@ public class FilterField: NSSearchField, CALayerDelegate {
   
   public override var allowsVibrancy: Bool { !hasFilteringAppearing }
   
+  public override var intrinsicContentSize: NSSize {
+    switch controlSize {
+    case .mini: return NSMakeSize(-1, 18)
+    case .small: return NSMakeSize(-1, 20)
+    case .large: return NSMakeSize(-1, 24)
+    default: return NSMakeSize(-1, 22)
+    }
+  }
+  
   public override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
     
@@ -62,6 +77,32 @@ public class FilterField: NSSearchField, CALayerDelegate {
       string: placeholderString!,
       attributes: [.font: font!, .foregroundColor: NSColor.tertiaryLabelColor]
     )
+    
+    // TODO: searchMenuTemplate
+//    do {
+//      let menu = NSMenu(title: "Search Options")
+//
+//      let noRecentsItem = NSMenuItem(title: NSLocalizedString("No Recents", comment: ""), action: nil, keyEquivalent: "")
+//      noRecentsItem.tag = Self.noRecentsMenuItemTag
+//      menu.addItem(noRecentsItem)
+//
+//      let titleItem = NSMenuItem(title: NSLocalizedString("Recents", comment: ""), action: nil, keyEquivalent: "")
+//      titleItem.tag = Self.recentsTitleMenuItemTag
+//      menu.addItem(titleItem)
+//
+//      let recentsItem = NSMenuItem(title: NSLocalizedString("Recents", comment: ""), action: nil, keyEquivalent: "")
+//      recentsItem.tag = Self.recentsMenuItemTag
+//      recentsItem.indentationLevel = 1
+//      menu.addItem(recentsItem)
+//
+//      menu.addItem(.separator())
+//
+//      let clearItem = NSMenuItem(title: NSLocalizedString("Clear", comment: ""), action: nil, keyEquivalent: "")
+//      clearItem.tag = Self.clearRecentsMenuItemTag
+//      menu.addItem(clearItem)
+//
+//      searchMenuTemplate = menu
+//    }
     
     //  print(layer!)
     //  print(layer!.sublayers as Any)
@@ -120,7 +161,7 @@ public class FilterField: NSSearchField, CALayerDelegate {
 //        .applying(.init(pointSize: 12, weight: .regular)) // TODO: get non-retina–friendly 13px version?
 //    )
 //
-//  let image = NSImage(systemSymbolName: .filterIcon, accessibilityDescription: nil)!
+//  let image = NSImage(systemSymbolName: .circledFilterIcon, accessibilityDescription: nil)!
 //    .withSymbolConfiguration(
 //      NSImage.SymbolConfiguration(paletteColors: [.secondaryLabelColor])
 //        .applying(.init(pointSize: 12, weight: .regular)) // TODO: get non-retina–friendly 13px version?
@@ -167,7 +208,7 @@ public class FilterFieldCell: NSSearchFieldCell {
   var accessoryWidth: CGFloat { (controlView as? FilterField)?.accessoryView?.bounds.width ?? 0 }
   var hasFilteringAppearing = false
   
-  let filterImage = NSImage(systemSymbolName: .filterIcon, accessibilityDescription: nil)!
+  let filterImage = NSImage(systemSymbolName: .circledFilterIcon, accessibilityDescription: nil)!
     .withSymbolConfiguration(
       NSImage.SymbolConfiguration(paletteColors: [.secondaryLabelColor])
         .applying(.init(pointSize: 12, weight: .regular)) // TODO: get non-retina–friendly 13px version?
@@ -185,10 +226,10 @@ public class FilterFieldCell: NSSearchFieldCell {
       NSColor.secondaryLabelColor.setStroke()
     } else {
       NSColor.alternatingContentBackgroundColors[1].setFill()
-      NSColor.gridColor.setStroke()
+      NSColor.quaternaryLabelColor.setStroke()
     }
     
-    let path = NSBezierPath(roundedRect: cellFrame.insetBy(dx: 0.5, dy: 0.5), xRadius: 7, yRadius: 7)
+    let path = NSBezierPath(roundedRect: cellFrame.insetBy(dx: 0.5, dy: 0.5), xRadius: 6, yRadius: 6)
     path.fill()
     path.stroke()
 
@@ -260,7 +301,8 @@ public class FilterFieldCell: NSSearchFieldCell {
 }
 
 fileprivate extension String {
-  static let filterIcon = "line.3.horizontal.decrease.circle"
+  static let circledFilterIcon = "line.3.horizontal.decrease.circle"
+  static let filterIcon = "line.3.horizontal.decrease"
   static let activeFilterIcon = "line.3.horizontal.decrease.circle.fill"
   static let clearIcon = "xmark.circle.fill"
 }

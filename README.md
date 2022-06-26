@@ -1,6 +1,6 @@
 # Filter UI
 
-Filter field for AppKit and SwiftUI.
+Filter field and menu filtering for AppKit and SwiftUI.
 
 ![](https://github.com/freyaariel/filter-ui/blob/main/Screenshots/FilterUI.png?raw=true)
 
@@ -12,7 +12,7 @@ Filter field for AppKit and SwiftUI.
 ```
 
 ```swift
-import FilterUI
+.product(name: "FilterUI", package: "filter-ui"),
 ```
 
 
@@ -37,7 +37,7 @@ FilterField(text: $filterText)
 
 ### Filter Field with Accessory Toggles
 
-Toggles can be added to the end of the filter field by using `FilterFieldToggle`.
+Toggles can be added to the trailing edge of the filter field by using `FilterFieldToggle`.
 
 ```swift
 FilterField(text: $filterText, isFiltering: locationRequired) {
@@ -52,12 +52,13 @@ FilterField(text: $filterText, isFiltering: locationRequired) {
 
 ### AppKit-Compatible Filter Field
 
-`FilterField`’s underlying `NSSearchField` subclass can be used directly by importing `FilterUICore`.
+`FilterField`’s underlying `NSSearchField` and `NSSearchFieldCell` subclasses can be used directly by importing `FilterUICore`.
 
 ```swift
 import FilterUICore
 
 FilterUICore.FilterField(frame: …)
+FilterUICore.FilterFieldCell()
 ```
 
 

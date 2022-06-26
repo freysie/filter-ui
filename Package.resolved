@@ -1,6 +1,15 @@
 {
   "pins" : [
     {
+      "identity" : "fuse-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/krisk/fuse-swift.git",
+      "state" : {
+        "revision" : "26ba868691b2d8b7bf2b1322951eb591be70ccca",
+        "version" : "1.4.0"
+      }
+    },
+    {
       "identity" : "preview-screenshots",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/freyaariel/preview-screenshots.git",

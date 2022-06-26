@@ -36,9 +36,16 @@ public class FilterMenuItem: NSMenuItem {
     guard eventMonitor == nil else { return }
     print(("starting…", current))
     eventMonitor = NSEvent.addCarbonMonitorForKeyEvents { event in
-      print(event)
       guard let filterField = current?.field else { return false }
-      if filterField.window?.firstResponder is NSTextView { return false }
+      if event.keyCode == 125 {
+        print("AAAAAA")
+        print(filterField.resignFirstResponder())
+        return false
+      }
+      if filterField.window?.firstResponder is NSTextView {
+        DispatchQueue.main.async { current?.filter() }
+        return false
+      }
       if ignoredKeyCodes.contains(event.keyCode) { return false }
       if event.modifierFlags.contains(.command) { return false }
       if event.modifierFlags.contains(.control) { return false }
@@ -48,10 +55,12 @@ public class FilterMenuItem: NSMenuItem {
       current?.view?.frame.size.height = Self.height
       filterField.isHidden = false
       filterField.stringValue = characters
+      print("becomeFirstResponder!")
       filterField.becomeFirstResponder()
       let editor = current?.view?.window?.fieldEditor(false, for: filterField)
       editor?.selectedRange = NSMakeRange(editor?.string.count ?? 0, 0)
       print(editor as Any)
+      current?.filter()
       return true
     }
   }
@@ -108,6 +117,10 @@ public class FilterMenuItem: NSMenuItem {
       NSAttributedString.Key.foregroundColor: NSColor.textColor
     ]
     
+    for item in items {
+      item.attributedTitle = nil // TODO: somehow support attributed titles?
+    }
+    
     for (item, result) in items.fuzzyMatch(field.stringValue) {
       let string = NSMutableAttributedString(string: item.title, attributes: [
         .font: font,
@@ -148,30 +161,30 @@ extension NSMenuItem: FuzzySearchable {
 }
 
 class MenuFilterView: NSView {
-  override func viewDidHide() {
-    super.viewDidHide()
-    print(#function)
-  }
-  
-  override func viewDidUnhide() {
-    super.viewDidUnhide()
-    print(#function)
-  }
-  
-  override func viewDidMoveToSuperview() {
-    super.viewDidMoveToSuperview()
-    print(#function)
-  }
-  
-  override func viewDidChangeBackingProperties() {
-    super.viewDidChangeBackingProperties()
-    print(#function)
-  }
-  
-  override func viewDidChangeEffectiveAppearance() {
-    super.viewDidChangeEffectiveAppearance()
-    print(#function)
-  }
+//  override func viewDidHide() {
+//    super.viewDidHide()
+//    print(#function)
+//  }
+//  
+//  override func viewDidUnhide() {
+//    super.viewDidUnhide()
+//    print(#function)
+//  }
+//  
+//  override func viewDidMoveToSuperview() {
+//    super.viewDidMoveToSuperview()
+//    print(#function)
+//  }
+//  
+//  override func viewDidChangeBackingProperties() {
+//    super.viewDidChangeBackingProperties()
+//    print(#function)
+//  }
+//  
+//  override func viewDidChangeEffectiveAppearance() {
+//    super.viewDidChangeEffectiveAppearance()
+//    print(#function)
+//  }
   
   override func viewDidMoveToWindow() {
     super.viewDidMoveToWindow()
@@ -191,6 +204,7 @@ class MenuFilterView: NSView {
 }
 
 let ignoredKeyCodes: [UInt16] = [
+  51 , // Backspace
   115, // Home
   117, // Delete
   116, // PgUp
@@ -269,11 +283,12 @@ struct FilterMenuItem_Previews: PreviewProvider {
       return view
     }
     
-    func updateNSView(_ nsView: NSView, context: Context) {}
+    func updateNSView(_ view: NSView, context: Context) {}
   
     let titlesA = [
       "Here’s to the crazy ones",
       "The misfits",
+      "The rebels",
       "The troublemakers",
       "The round pegs in the square holes",
       "The ones who see things differently",

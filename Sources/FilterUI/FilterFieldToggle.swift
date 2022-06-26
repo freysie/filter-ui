@@ -13,6 +13,7 @@ public struct FilterFieldToggle: View {
     Button(action: { isOn.toggle() }) {
       Image(systemName: systemImage)
         .resizable()
+        .aspectRatio(contentMode: .fit)
         .frame(width: 14, height: 14)
         // .font(.body.weight(.thin))
         // .font(.system(size: 16))
@@ -30,5 +31,9 @@ struct FilterFieldToggle_Previews: PreviewProvider {
   static var previews: some View {
     FilterFieldToggle(systemImage: "folder", isOn: .constant(false)).padding()
     FilterFieldToggle(systemImage: "folder", isOn: .constant(true)).padding()
+    FilterFieldToggle(systemImage: "doc", isOn: .constant(false)).padding()
+    FilterFieldToggle(systemImage: "doc", isOn: .constant(true)).padding()
+    FilterFieldToggle(systemImage: "clock", isOn: .constant(false)).padding()
+    FilterFieldToggle(systemImage: "clock", isOn: .constant(true)).padding()
   }
 }
