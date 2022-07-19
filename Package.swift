@@ -1,4 +1,4 @@
-// swift-tools-version: 5.6
+// swift-tools-version: 5.5
 import PackageDescription
 
 let package = Package(
@@ -11,14 +11,12 @@ let package = Package(
     .library(name: "FilterUICore", targets: ["FilterUICore"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/krisk/fuse-swift.git", from: "1.4.0"),
-    .package(url: "https://github.com/freyaariel/preview-screenshots.git", branch: "main"),
+    .package(url: "https://github.com/freyaariel/previews-capture.git", branch: "main"),
   ],
   targets: [
     .target(name: "FilterUI", dependencies: [
       "FilterUICore",
-      .product(name: "Fuse", package: "fuse-swift"),
-      .product(name: "PreviewScreenshots", package: "preview-screenshots"),
+      .product(name: "PreviewsCapture", package: "previews-capture"),
     ]),
     .target(name: "FilterUICore", dependencies: [])
   ]
