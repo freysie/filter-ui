@@ -37,11 +37,11 @@ FilterField(text: $filterText)
 
 ### Filter Field with Accessory Toggles
 
-Toggles can be added to the trailing edge of the filter field by using `FilterFieldToggle`.
+Toggles can be added to the trailing edge of the filter field by using `FilterToggle`.
 
 ```swift
 FilterField(text: $filterText, isFiltering: locationRequired) {
-  FilterFieldToggle(systemImage: "location.square", isOn: $locationRequired)
+  FilterToggle(systemImage: "location.square", isOn: $locationRequired)
     .help("Show only items with location data")
 }
 ```
@@ -57,14 +57,14 @@ FilterField(text: $filterText, isFiltering: locationRequired) {
 ```swift
 import FilterUICore
 
-FilterUICore.FilterField(frame: …)
-FilterUICore.FilterFieldCell()
+FilterSearchField(frame: …)
+FilterSearchFieldCell()
 ```
 
 
 ### Menu Filtering
 
-FilterUI provides an extension for `NSMenu` which lets you to set `allowsFiltering` to `true` in order to add a filter field to a menu, similar to how menus in Xcode are filterable.
+FilterUI provides a subclass of `NSMenu` called `FilteringMenu` which add a filter field to the menu and its submenus, similar to how menus in Xcode are filterable.
 
 Menu filtering works by replacing the standard keystroke-based selection (type select). When a user presses a key, the filter field appears at the top of the menu and is focused.
 
@@ -75,7 +75,7 @@ While typing, menu items are filtered based on fuzzy search matching of the item
 
 ### 1.0
 
-* Find solution to border issue
+* ~~Find solution to border issue~~
 * Resolve text wrapping issue
 
 

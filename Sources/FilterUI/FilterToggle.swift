@@ -1,6 +1,6 @@
 import SwiftUI
 
-public struct FilterFieldToggle: View {
+public struct FilterToggle: View {
   let systemImage: String
   @Binding var isOn: Bool
   
@@ -27,13 +27,13 @@ public struct FilterFieldToggle: View {
   }
 }
 
-struct FilterFieldToggle_Previews: PreviewProvider {
+struct FilterToggle_Previews: PreviewProvider {
   static var previews: some View {
-    FilterFieldToggle(systemImage: "folder", isOn: .constant(false)).padding()
-    FilterFieldToggle(systemImage: "folder", isOn: .constant(true)).padding()
-    FilterFieldToggle(systemImage: "doc", isOn: .constant(false)).padding()
-    FilterFieldToggle(systemImage: "doc", isOn: .constant(true)).padding()
-    FilterFieldToggle(systemImage: "clock", isOn: .constant(false)).padding()
-    FilterFieldToggle(systemImage: "clock", isOn: .constant(true)).padding()
+    FilterToggle(systemImage: "folder", isOn: .constant(false)).padding()
+    FilterToggle(systemImage: "folder", isOn: .constant(true)).padding()
+    FilterToggle(systemImage: "doc", isOn: .constant(false)).padding()
+    FilterToggle(systemImage: "doc", isOn: .constant(true)).padding()
+    FilterToggle(systemImage: "clock", isOn: .constant(false)).padding()
+    FilterToggle(systemImage: "clock", isOn: .constant(true)).padding()
   }
 }

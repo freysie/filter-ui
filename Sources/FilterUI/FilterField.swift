@@ -1,24 +1,12 @@
 import SwiftUI
 import FilterUICore
 
-extension ControlSize {
-  var nsControlSize: NSControl.ControlSize {
-    switch self {
-    case .regular: return .regular
-    case .small: return .small
-    case .mini: return .mini
-    case .large: return .large
-    @unknown default: return .regular
-    }
-  }
-}
-
-/// A control that displays an editable text interface optimized for performing text-based searches.
+/// A control that displays an editable text interface optimized for performing text-based filtering.
 public struct FilterField<Accessory: View>: NSViewRepresentable {
   @Binding var text: String
   var prompt: String = "Filter"
-  var isFiltering: Bool
-  var introspect: ((_ searchField: FilterUICore.FilterField) -> Void)?
+  var isFiltering: Bool // TODO: do this with preference values instead
+  var onMake: ((_ searchField: FilterSearchField) -> Void)?
   var onCommit: ((_ text: String) -> Void)?
   var accessory: Accessory
   @Environment(\.controlSize) private var controlSize
@@ -27,7 +15,7 @@ public struct FilterField<Accessory: View>: NSViewRepresentable {
     text: Binding<String>,
     prompt: String? = nil,
     isFiltering: Bool? = nil,
-    introspect: ((_ searchField: FilterUICore.FilterField) -> Void)? = nil,
+    onMake: ((_ searchField: FilterSearchField) -> Void)? = nil,
     onCommit: ((_ text: String) -> Void)? = nil
   ) where Accessory == EmptyView {
     self.init(
@@ -35,7 +23,7 @@ public struct FilterField<Accessory: View>: NSViewRepresentable {
       prompt: prompt,
       isFiltering: isFiltering,
       accessory: { EmptyView() },
-      introspect: introspect,
+      onMake: onMake,
       onCommit: onCommit
     )
   }
@@ -45,30 +33,30 @@ public struct FilterField<Accessory: View>: NSViewRepresentable {
     prompt: String? = nil,
     isFiltering: Bool? = nil,
     @ViewBuilder accessory: () -> Accessory,
-    introspect: ((_ searchField: FilterUICore.FilterField) -> Void)? = nil,
+    onMake: ((_ searchField: FilterSearchField) -> Void)? = nil,
     onCommit: ((_ text: String) -> Void)? = nil
   ) {
     _text = text
     if let prompt = prompt { self.prompt = prompt }
     self.isFiltering = isFiltering ?? false
     self.accessory = accessory()
-    self.introspect = introspect
+    self.onMake = onMake
     self.onCommit = onCommit
   }
   
-  public func makeNSView(context: Context) -> FilterUICore.FilterField {
-    let view = FilterUICore.FilterField()
+  public func makeNSView(context: Context) -> FilterSearchField {
+    let view = FilterSearchField()
     // view.placeholderString = prompt
     view.delegate = context.coordinator
     // view.isFiltering = isFiltering
     if type(of: accessory) != EmptyView.self {
       view.accessoryView = NSHostingView(rootView: HStack(spacing: -5) { accessory }.padding(.horizontal, -3))
     }
-    introspect?(view)
+    onMake?(view)
     return view
   }
   
-  public func updateNSView(_ view: FilterUICore.FilterField, context: Context) {
+  public func updateNSView(_ view: FilterSearchField, context: Context) {
     view.placeholderString = prompt
     view.stringValue = text
     view.isFiltering = isFiltering
@@ -94,16 +82,17 @@ public struct FilterField<Accessory: View>: NSViewRepresentable {
     }
     
     public func controlTextDidBeginEditing(_ notification: Notification) {
-//      let view = notification.object as! FilterUICore.FilterField
+//      let view = notification.object as! FilterSearchField
     }
     
     public func controlTextDidChange(_ notification: Notification) {
-      let view = notification.object as! FilterUICore.FilterField
+      let view = notification.object as! FilterSearchField
       parent.text = view.objectValue as? String ?? ""
     }
     
     public func controlTextDidEndEditing(_ notification: Notification) {
-//      let view = notification.object as! FilterUICore.FilterField
+      let view = notification.object as! FilterSearchField
+      parent.onCommit?(view.stringValue)
     }
   }
 }
@@ -118,49 +107,50 @@ struct FilterField_Previews: PreviewProvider {
     
     var body: some View {
       FilterField(text: $text1)
+        // .filterFieldRecentsMenu(.visible)
       
       FilterField(text: $text1, prompt: "Hello")
 
       FilterField(text: $text1, isFiltering: accessoryIsOn1) {
-        FilterFieldToggle(systemImage: "location.square", isOn: $accessoryIsOn1)
+        FilterToggle(systemImage: "location.square", isOn: $accessoryIsOn1)
           .help("Show only items with location data")
       }
 
       FilterField(text: $text2)
 
       FilterField(text: $text2, isFiltering: accessoryIsOn1 || accessoryIsOn2 || accessoryIsOn3) {
-        FilterFieldToggle(systemImage: "location.square", isOn: $accessoryIsOn1)
+        FilterToggle(systemImage: "location.square", isOn: $accessoryIsOn1)
           .help("Show only items with location data")
-        FilterFieldToggle(systemImage: "tag.square", isOn: $accessoryIsOn2)
+        FilterToggle(systemImage: "tag.square", isOn: $accessoryIsOn2)
           .help("Show only tagged items")
-        FilterFieldToggle(systemImage: "wifi.square", isOn: $accessoryIsOn3)
+        FilterToggle(systemImage: "wifi.square", isOn: $accessoryIsOn3)
           .help("Show only items with Wi-Fi data")
       }
 
       FilterField(text: $text2, isFiltering: accessoryIsOn1 || accessoryIsOn2 || accessoryIsOn3) {
-        FilterFieldToggle(systemImage: "bookmark.square", isOn: $accessoryIsOn1)
-        FilterFieldToggle(systemImage: "heart.square", isOn: $accessoryIsOn1)
-        FilterFieldToggle(systemImage: "star.square", isOn: $accessoryIsOn3)
+        FilterToggle(systemImage: "bookmark.square", isOn: $accessoryIsOn1)
+        FilterToggle(systemImage: "heart.square", isOn: $accessoryIsOn1)
+        FilterToggle(systemImage: "star.square", isOn: $accessoryIsOn3)
       }
 
       FilterField(text: $text2, isFiltering: accessoryIsOn1 || accessoryIsOn2 || accessoryIsOn3) {
-        FilterFieldToggle(systemImage: "flag.square", isOn: $accessoryIsOn2)
-        FilterFieldToggle(systemImage: "bolt.square", isOn: $accessoryIsOn2)
-        FilterFieldToggle(systemImage: "eye.square", isOn: $accessoryIsOn2)
+        FilterToggle(systemImage: "flag.square", isOn: $accessoryIsOn2)
+        FilterToggle(systemImage: "bolt.square", isOn: $accessoryIsOn2)
+        FilterToggle(systemImage: "eye.square", isOn: $accessoryIsOn2)
       }
 
       FilterField(text: $text2, isFiltering: accessoryIsOn1 || accessoryIsOn2 || accessoryIsOn3) {
-        FilterFieldToggle(systemImage: "icloud.square", isOn: $accessoryIsOn2)
-        FilterFieldToggle(systemImage: "lock.square", isOn: $accessoryIsOn2)
-        FilterFieldToggle(systemImage: "square.text.square", isOn: $accessoryIsOn2)
-        FilterFieldToggle(systemImage: "person.crop.square", isOn: $accessoryIsOn2)
+        FilterToggle(systemImage: "icloud.square", isOn: $accessoryIsOn2)
+        FilterToggle(systemImage: "lock.square", isOn: $accessoryIsOn2)
+        FilterToggle(systemImage: "square.text.square", isOn: $accessoryIsOn2)
+        FilterToggle(systemImage: "person.crop.square", isOn: $accessoryIsOn2)
       }
 
       FilterField(text: $text2, isFiltering: accessoryIsOn1 || accessoryIsOn2 || accessoryIsOn3) {
-        FilterFieldToggle(systemImage: "bell.square", isOn: $accessoryIsOn2)
-        FilterFieldToggle(systemImage: "dot.square", isOn: $accessoryIsOn2)
-        FilterFieldToggle(systemImage: "pin.square", isOn: $accessoryIsOn2)
-        FilterFieldToggle(systemImage: "mic.square", isOn: $accessoryIsOn2)
+        FilterToggle(systemImage: "bell.square", isOn: $accessoryIsOn2)
+        FilterToggle(systemImage: "dot.square", isOn: $accessoryIsOn2)
+        FilterToggle(systemImage: "pin.square", isOn: $accessoryIsOn2)
+        FilterToggle(systemImage: "mic.square", isOn: $accessoryIsOn2)
       }
     }
   }
@@ -271,9 +261,9 @@ struct FilterField_Previews: PreviewProvider {
   }
 }
 
-extension Font.Weight: CaseIterable, Identifiable {
-  public var id: Self { self }
-  public static var allCases: [Font.Weight] {
-    [.ultraLight, .thin, .light, .regular, .medium, .semibold, .bold, .heavy, .black]
-  }
-}
+//extension Font.Weight: CaseIterable, Identifiable {
+//  public var id: Self { self }
+//  public static var allCases: [Font.Weight] {
+//    [.ultraLight, .thin, .light, .regular, .medium, .semibold, .bold, .heavy, .black]
+//  }
+//}

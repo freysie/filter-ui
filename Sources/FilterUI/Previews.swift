@@ -1,17 +1,18 @@
 import SwiftUI
-import PreviewScreenshots
+import PreviewsCapture
 
 struct FilterUI_Previews: PreviewProvider {
   static var previews: some View {
-    ScreenshotGroup("../../Screenshots", relativeTo: #filePath) {
 //       MenuPreview(makeExampleMenu())//.screenshotName("MenuTestttttt~dark")
-      Logo().preferredColorScheme(.dark).background().screenshotName("Logo~dark")
+    Logo()
+      .preferredColorScheme(.dark)
+      .background()
+      .previewScreenshot("Logo~dark")
 //      BasicUsage().preferredColorScheme(.light)//.screenshotName("BasicUsage~light")
 //      BasicUsage().preferredColorScheme(.dark)//.screenshotName("BasicUsage~dark")
 //      // CustomPrompt().screenshotName("CustomPrompt")
 //      AccessoryToggles().preferredColorScheme(.light)//.screenshotName("AccessoryToggles~light")
 //      AccessoryToggles().preferredColorScheme(.dark)//.screenshotName("AccessoryToggles~dark")
-    }
   }
   
   struct Logo: View {
@@ -44,7 +45,7 @@ struct FilterUI_Previews: PreviewProvider {
 //          Image(nsImage: NSImage(contentsOf: URL(fileURLWithPath: "../../Screenshots/FilteringMenu.png", relativeTo: URL(fileURLWithPath: #filePath))) ?? NSImage())
 //            .padding(-20)
           
-//          FilterField(text: .constant("!!!")).frame(width: 172)
+//          FilterSearchField(text: .constant("!!!")).frame(width: 172)
 //            .overlay {
 //              Image(nsImage: NSImage(contentsOf: URL(fileURLWithPath: "../../Screenshots/FilteringMenu.png", relativeTo: URL(fileURLWithPath: #filePath)))!)
 //            }
@@ -78,7 +79,7 @@ struct FilterUI_Previews: PreviewProvider {
     }
     
     func toggle(isOn: Bool = false) -> some View {
-      FilterFieldToggle(systemImage: logoToggleImages.randomElement(using: &r)!, isOn: .constant(isOn))
+      FilterToggle(systemImage: logoToggleImages.randomElement(using: &r)!, isOn: .constant(isOn))
     }
   }
   
@@ -118,21 +119,21 @@ struct FilterUI_Previews: PreviewProvider {
         VStack(alignment: .leading) {
           Text("Off")
           FilterField(text: .constant("")) {
-            FilterFieldToggle(systemImage: "location.square", isOn: .constant(false))
+            FilterToggle(systemImage: "location.square", isOn: .constant(false))
           }
         }
 
         VStack(alignment: .leading) {
           Text("On")
           FilterField(text: .constant(""), isFiltering: true) {
-            FilterFieldToggle(systemImage: "location.square", isOn: .constant(true))
+            FilterToggle(systemImage: "location.square", isOn: .constant(true))
           }
         }
 
         VStack(alignment: .leading) {
           Text("On, Non-Empty")
           FilterField(text: .constant("Lorem Ipsum"), isFiltering: true) {
-            FilterFieldToggle(systemImage: "location.square", isOn: .constant(true))
+            FilterToggle(systemImage: "location.square", isOn: .constant(true))
           }
         }
       }

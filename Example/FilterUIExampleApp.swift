@@ -16,7 +16,7 @@ struct FilterUIExampleApp: App {
       
 //      FilterField_Previews.previews
 //        .onAppear {
-//          print(FilterUICore.FilterField())
+//          print(FilterUICore.FilterSearchField())
 //        }
     }
   }

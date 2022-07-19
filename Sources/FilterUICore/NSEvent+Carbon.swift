@@ -20,7 +20,7 @@ extension NSEvent {
   /// Unlike ``NSEvent.addLocalMonitorForEvents(matching:handler:)``, your handler will be called for events otherwise
   /// consumed by nested event-tracking loops such as control tracking, menu tracking, or window dragging.
   ///
-  public static func addCarbonMonitorForKeyEvents(handler block: @escaping (NSEvent) -> Bool) -> Any? {
+  static func addCarbonMonitorForKeyEvents(handler block: @escaping (NSEvent) -> Bool) -> Any? {
     var eventHandler: EventHandlerRef?
     let monitor = CarbonMonitor(block)
     
@@ -57,7 +57,7 @@ extension NSEvent {
   ///
   /// You must ensure that eventMonitor is removed only once.
   ///
-  public static func removeCarbonMonitor(_ monitor: Any) {
+  static func removeCarbonMonitor(_ monitor: Any) {
     guard let monitor = monitor as? CarbonMonitor else { return }
     RemoveEventHandler(monitor.carbonHandler)
   }

@@ -1,5 +1,4 @@
 import AppKit
-import FilterUICore
 import ObjectiveC
 
 /// A filtering menu.
@@ -183,7 +182,7 @@ public class FilteringMenu: NSMenu, NSMenuDelegate, NSSearchFieldDelegate {
   
   public func controlTextDidChange(_ notification: Notification) {
     guard
-      let field = notification.object as? FilterUICore.FilterField,
+      let field = notification.object as? FilterSearchField,
       let menu = field.enclosingMenuItem?.menu
     else { return }
     
@@ -226,7 +225,7 @@ extension CGKeyCode {
 }
 
 class FilteringMenuItemView: NSView {
-  var filterField: FilterUICore.FilterField!
+  var filterField: FilterSearchField!
   var menuItem: NSMenuItem!
   
   convenience init() {
@@ -238,7 +237,7 @@ class FilteringMenuItemView: NSView {
 
     autoresizingMask = .width
 
-    filterField = FilterUICore.FilterField(frame: frameRect.insetBy(dx: 20, dy: 4))
+    filterField = FilterSearchField(frame: frameRect.insetBy(dx: 20, dy: 4))
     filterField.autoresizingMask = .width
     addSubview(filterField)
   }
@@ -254,4 +253,52 @@ class FilteringMenuItemView: NSView {
   override func viewDidMoveToWindow() {
     super.viewDidMoveToWindow()
   }
+}
+
+let ignoredKeyCodes: [UInt16] = [
+  51 , // Backspace
+  115, // Home
+  117, // Delete
+  116, // PgUp
+  119, // End
+  121, // PgDn
+  123, // Left
+  124, // Right
+  125, // Down
+  126, // Up
+  49 , // Space
+  36 , // Return
+  53 , // Esc
+  71 , // Clear
+  76 , // Insert
+  48 , // Tab
+  114, // Help
+  122, // F1
+  120, // F2
+  99 , // F3
+  118, // F4
+  96 , // F5
+  97 , // F6
+  98 , // F7
+  100, // F8
+  101, // F9
+  109, // F10
+  103, // F11
+  111, // F12
+  105, // F13
+  107, // F14
+  113, // F15
+  106, // F16
+  64 , // F17
+  79 , // F18
+  80 , // F19
+]
+
+extension NSMenu {
+  static let defaultFont = NSMenu().font
+  var recursiveFont: NSFont { font == Self.defaultFont ? supermenu?.recursiveFont ?? font : font }
+}
+
+extension NSMenuItem: FuzzySearchable {
+  public var fuzzyStringToMatch: String { title }
 }

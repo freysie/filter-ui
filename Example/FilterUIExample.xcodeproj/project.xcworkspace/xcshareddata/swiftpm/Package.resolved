@@ -1,32 +1,16 @@
 {
-  "pins" : [
-    {
-      "identity" : "dynamic",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/mhdhejazi/Dynamic",
-      "state" : {
-        "revision" : "ab9a2570862d54aed2663691bb767f881226a12f",
-        "version" : "1.2.0"
+  "object": {
+    "pins": [
+      {
+        "package": "previews-capture",
+        "repositoryURL": "https://github.com/freyaariel/previews-capture.git",
+        "state": {
+          "branch": "main",
+          "revision": "852f7c676a21065a761483b3e9918b5318863050",
+          "version": null
+        }
       }
-    },
-    {
-      "identity" : "fuse-swift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/krisk/fuse-swift.git",
-      "state" : {
-        "revision" : "26ba868691b2d8b7bf2b1322951eb591be70ccca",
-        "version" : "1.4.0"
-      }
-    },
-    {
-      "identity" : "preview-screenshots",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/freyaariel/preview-screenshots.git",
-      "state" : {
-        "branch" : "main",
-        "revision" : "c844fae422c1d51cce0a86f7cec7d17bd7a6d7d1"
-      }
-    }
-  ],
-  "version" : 2
+    ]
+  },
+  "version": 1
 }

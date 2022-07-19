@@ -2,7 +2,7 @@ import SwiftUI
 //import IDECore
 import AppKit
 import FilterUICore
-import Fuse
+//  import Fuse
 import ObjectiveC
 
 //extension NSMenuItem: Fuseable {
@@ -88,7 +88,7 @@ public class FilterMenuItem: NSMenuItem {
     field = FilterUICore.FilterField(frame: NSMakeRect(0, 4, 320, 20).insetBy(dx: 20, dy: 0))
     field.autoresizingMask = .width
     field.isFiltering = true
-    // field.iconColor = .textColor // FIXME: add this property back to `FilterField`
+    // field.iconColor = .textColor // FIXME: add this property back to `FilterSearchField`
     field.target = self
     field.action = #selector(filter)
     field.sendsWholeSearchString = false
@@ -151,15 +151,6 @@ public class FilterMenuItem: NSMenuItem {
   }
 }
 
-extension NSMenu {
-  static let defaultFont = NSMenu().font
-  var recursiveFont: NSFont { font == Self.defaultFont ? supermenu?.recursiveFont ?? font : font }
-}
-
-extension NSMenuItem: FuzzySearchable {
-  public var fuzzyStringToMatch: String { title }
-}
-
 class MenuFilterView: NSView {
 //  override func viewDidHide() {
 //    super.viewDidHide()
@@ -202,45 +193,6 @@ class MenuFilterView: NSView {
     
   }
 }
-
-let ignoredKeyCodes: [UInt16] = [
-  51 , // Backspace
-  115, // Home
-  117, // Delete
-  116, // PgUp
-  119, // End
-  121, // PgDn
-  123, // Left
-  124, // Right
-  125, // Down
-  126, // Up
-  49 , // Space
-  36 , // Return
-  53 , // Esc
-  71 , // Clear
-  76 , // Insert
-  48 , // Tab
-  114, // Help
-  122, // F1
-  120, // F2
-  99 , // F3
-  118, // F4
-  96 , // F5
-  97 , // F6
-  98 , // F7
-  100, // F8
-  101, // F9
-  109, // F10
-  103, // F11
-  111, // F12
-  105, // F13
-  107, // F14
-  113, // F15
-  106, // F16
-  64 , // F17
-  79 , // F18
-  80 , // F19
-]
 
 struct FilterMenuItem_Previews: PreviewProvider {
   static var previews: some View { Example() }
