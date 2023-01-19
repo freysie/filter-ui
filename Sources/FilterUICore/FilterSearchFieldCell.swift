@@ -46,7 +46,6 @@ public class FilterSearchFieldCell: NSSearchFieldCell {
     .tinted(with: .controlAccentColor)
   
   public override func draw(withFrame cellFrame: NSRect, in controlView: NSView) {
-    print((isInActiveWindow, controlView.window?.isKeyWindow ?? false))
     if hasFilteringAppearance {
       NSColor.textBackgroundColor.setFill()
       if isInActiveWindow {

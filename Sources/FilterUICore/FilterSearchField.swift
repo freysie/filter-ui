@@ -109,13 +109,7 @@ public class FilterSearchField: NSSearchField, CALayerDelegate {
     //  print(layer!.debugDescription)
     //  print(heightAnchor.constraintsAffectingLayout as NSArray)
     
-//    translatesAutoresizingMaskIntoConstraints = false
-    
-//    NSLayoutConstraint.activate([
-//      heightAnchor.constraint(equalToConstant: 22)
-//    ])
-    
-    if let cancelButtonCell = (cell as! NSSearchFieldCell).cancelButtonCell {
+    if let cancelButtonCell = (cell as? NSSearchFieldCell)?.cancelButtonCell {
       cancelButtonCell.image = NSImage(systemSymbolName: .clearIcon, accessibilityDescription: nil)!
         .withSymbolConfiguration(
           NSImage.SymbolConfiguration(paletteColors: [.secondaryLabelColor])
