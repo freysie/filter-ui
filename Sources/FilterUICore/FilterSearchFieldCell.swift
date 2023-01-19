@@ -1,5 +1,16 @@
 import AppKit
 
+extension NSImage {
+  func tinted(with color: NSColor) -> NSImage {
+    return NSImage(size: size, flipped: false) { rect in
+      color.set()
+      rect.fill()
+      self.draw(in: rect, from: NSRect(origin: .zero, size: self.size), operation: .destinationIn, fraction: 1)
+      return true
+    }
+  }
+}
+
 /// The cell interface for AppKit filter fields.
 public class FilterSearchFieldCell: NSSearchFieldCell {
   private static let padding = CGSize(width: -5, height: 3)
@@ -7,29 +18,54 @@ public class FilterSearchFieldCell: NSSearchFieldCell {
   // var accessoryWidth: CGFloat = 0 // 17
   var accessoryWidth: CGFloat { (controlView as? FilterSearchField)?.accessoryView?.bounds.width ?? 0 }
   var hasFilteringAppearance = false
+
+  //  var isInActiveWindow: Bool { controlView?.window?.isKeyWindow ?? false } // TODO: do something with this
+  var isInActiveWindow = false { didSet { controlView?.setNeedsDisplay(.infinite) } }
+
+  override init(textCell string: String) {
+    super.init(textCell: string)
+    NotificationCenter.default.addObserver(self, selector: #selector(windowDidBecomeKey(_:)), name: NSWindow.didBecomeKeyNotification, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(windowDidResignKey(_:)), name: NSWindow.didResignKeyNotification, object: nil)
+  }
+
+  required init(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+
+  deinit {
+    NotificationCenter.default.removeObserver(self)
+  }
+
+  @objc func windowDidBecomeKey(_ notification: Notification) { isInActiveWindow = true }
+  @objc func windowDidResignKey(_ notification: Notification) { isInActiveWindow = false }
   
-  let filterImage = NSImage(systemSymbolName: .circledFilterIcon, accessibilityDescription: nil)!
-    .withSymbolConfiguration(
-      NSImage.SymbolConfiguration(paletteColors: [.secondaryLabelColor])
-        .applying(.init(pointSize: 12, weight: .regular)) // TODO: get non-retina–friendly 13px version?
-    )
+  static let filterImage = Bundle.module.image(forResource: .filterIcon)!
+    .tinted(with: NSColor.secondaryLabelColor)
   
-  let activeFilterImage = NSImage(systemSymbolName: .activeFilterIcon, accessibilityDescription: nil)!
-    .withSymbolConfiguration(
-      NSImage.SymbolConfiguration(paletteColors: [.controlAccentColor])
-        .applying(.init(pointSize: 12, weight: .regular)) // TODO: get non-retina–friendly 13px version?
-    )
+  static let activeFilterImage = Bundle.module.image(forResource: .activeFilterIcon)! 
+    .tinted(with: .controlAccentColor)
   
   public override func draw(withFrame cellFrame: NSRect, in controlView: NSView) {
+    print((isInActiveWindow, controlView.window?.isKeyWindow ?? false))
     if hasFilteringAppearance {
       NSColor.textBackgroundColor.setFill()
-      NSColor.secondaryLabelColor.setStroke()
+      if isInActiveWindow {
+        NSColor.secondaryLabelColor.setStroke()
+      } else {
+        NSColor.tertiaryLabelColor.setStroke()
+      }
     } else {
-      NSColor.alternatingContentBackgroundColors[1].setFill()
+      if isInActiveWindow {
+        NSColor.alternatingContentBackgroundColors[0].setFill()
+      } else {
+        NSColor.alternatingContentBackgroundColors[1].setFill()
+      }
       NSColor.quaternaryLabelColor.setStroke()
     }
     
     let path = NSBezierPath(roundedRect: cellFrame.insetBy(dx: 0.5, dy: 0.5), xRadius: 6, yRadius: 6)
+//    let path = NSBezierPath(roundedRect: cellFrame, xRadius: 6, yRadius: 6)
+    path.lineWidth = 1
     path.fill()
     path.stroke()
 
@@ -37,11 +73,9 @@ public class FilterSearchFieldCell: NSSearchFieldCell {
   }
   
   public override func setUpFieldEditorAttributes(_ textObj: NSText) -> NSText {
-    if let textView = textObj as? NSTextView {
-      textView.smartInsertDeleteEnabled = false
-    }
-    
-    return textObj
+    guard let textView = textObj as? NSTextView else { return textObj }
+    textView.smartInsertDeleteEnabled = false
+    return textView
   }
   
   public override func calcDrawInfo(_ rect: NSRect) {
@@ -52,7 +86,7 @@ public class FilterSearchFieldCell: NSSearchFieldCell {
     // guard let filterButtonCell = searchButtonCell, let cancelButtonCell = cancelButtonCell else { return }
     guard let filterButtonCell = searchButtonCell else { return }
 
-    filterButtonCell.image = stringValue.isEmpty ? filterImage : activeFilterImage
+    filterButtonCell.image = stringValue.isEmpty ? Self.filterImage : Self.activeFilterImage
     // filterButtonCell.image = filterImage
     filterButtonCell.alternateImage = searchButtonCell!.image
 //    filterButtonCell.draw(withFrame: searchButtonRect(forBounds: cellFrame), in: controlView)
@@ -78,11 +112,11 @@ public class FilterSearchFieldCell: NSSearchFieldCell {
   }
   
   public override func searchButtonRect(forBounds rect: NSRect) -> NSRect {
-    super.searchButtonRect(forBounds: rect).offsetBy(dx: 2, dy: 0)
+    super.searchButtonRect(forBounds: rect).offsetBy(dx: 2, dy: -0.5)
   }
 
   public override func cancelButtonRect(forBounds rect: NSRect) -> NSRect {
-    var rect = super.cancelButtonRect(forBounds: rect).offsetBy(dx: -4, dy: 0)
+    var rect = super.cancelButtonRect(forBounds: rect).offsetBy(dx: -4, dy: -0.5)
     rect.origin.x -= accessoryWidth + (accessoryWidth > 0 ? 1 : 0)
     return rect
   }

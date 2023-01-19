@@ -40,7 +40,7 @@ public class FilteringMenu: NSMenu, NSMenuDelegate, NSSearchFieldDelegate {
   ///
   /// FilteringMenu needs `-[NSMenu highlightItem:]` in order to work correctly.
   /// The existence of this selector is checked on initialization, and if it doesn’t exist, the menu will fall back to
-  /// the standard type select behavior.
+  /// the standard type-select behavior.
   public override init(title: String) {
     super.init(title: title)
     super.delegate = self

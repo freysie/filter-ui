@@ -2,13 +2,13 @@
 
 Filter field and menu filtering for AppKit and SwiftUI.
 
-![](https://github.com/freyaariel/filter-ui/blob/main/Screenshots/FilterUI.png?raw=true)
+![](/Screenshots/FilterUI.png?raw=true)
 
 
 ## Installation
 
 ```swift
-.package(url: "https://github.com/freyaariel/filter-ui.git", branch: "main"),
+.package(url: "https://github.com/freyaariel/filter-ui", branch: "main"),
 ```
 
 ```swift
@@ -24,8 +24,8 @@ Filter field and menu filtering for AppKit and SwiftUI.
 FilterField(text: $filterText)
 ```
 
-![](https://github.com/freyaariel/filter-ui/blob/main/Screenshots/BasicUsage~light.png?raw=true#gh-light-mode-only)
-![](https://github.com/freyaariel/filter-ui/blob/main/Screenshots/BasicUsage~dark.png?raw=true#gh-dark-mode-only)
+![](/Screenshots/BasicUsage~light.png?raw=true#gh-light-mode-only)
+![](/Screenshots/BasicUsage~dark.png?raw=true#gh-dark-mode-only)
 
 
 <!--### Filter Field with Custom Prompt-->
@@ -46,8 +46,8 @@ FilterField(text: $filterText, isFiltering: locationRequired) {
 }
 ```
 
-![](https://github.com/freyaariel/filter-ui/blob/main/Screenshots/AccessoryToggles~light.png?raw=true#gh-light-mode-only)
-![](https://github.com/freyaariel/filter-ui/blob/main/Screenshots/AccessoryToggles~dark.png?raw=true#gh-dark-mode-only)
+![](/Screenshots/AccessoryToggles~light.png?raw=true#gh-light-mode-only)
+![](/Screenshots/AccessoryToggles~dark.png?raw=true#gh-dark-mode-only)
 
 
 ### AppKit-Compatible Filter Field
@@ -64,11 +64,11 @@ FilterSearchFieldCell()
 
 ### Menu Filtering
 
-FilterUI provides a subclass of `NSMenu` called `FilteringMenu` which add a filter field to the menu and its submenus, similar to how menus in Xcode are filterable.
+FilterUI provides a subclass of `NSMenu` called `FilteringMenu` which add a filter field to the menu and its submenus, similar to how some menus in Xcode are filterable.
 
 Menu filtering works by replacing the standard keystroke-based selection (type select). When a user presses a key, the filter field appears at the top of the menu and is focused.
 
-While typing, menu items are filtered based on fuzzy search matching of the items’ titles. Matching parts of the titles will be displayed in bold, while non-matching parts are grayed out.
+While typing, menu items are filtered based on fuzzy search matching of the items’ titles. Matching parts of the titles will be displayed in bold and non-matching parts are grayed out.
 
 
 ## Roadmap
