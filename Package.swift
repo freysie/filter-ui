@@ -3,6 +3,7 @@ import PackageDescription
 
 let package = Package(
   name: "filter-ui",
+  defaultLocalization: "en",
   platforms: [
     .macOS(.v12),
   ],

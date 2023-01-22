@@ -72,7 +72,7 @@ public class FilterSearchField: NSSearchField, CALayerDelegate {
     focusRingType = .none
     drawsBackground = false
     // layerContentsRedrawPolicy = .onSetNeedsDisplay
-    placeholderString = NSLocalizedString("Filter", comment: "")
+    placeholderString = NSLocalizedString("Filter", bundle: .module, comment: "")
     placeholderAttributedString = NSAttributedString(
       string: placeholderString!,
       attributes: [.font: font!, .foregroundColor: NSColor.tertiaryLabelColor]
