@@ -4,7 +4,7 @@ import FilterUICore
 /// A control that displays an editable text interface optimized for performing text-based filtering.
 public struct FilterField<Accessory: View>: NSViewRepresentable {
   @Binding var text: String
-  var prompt: String = "Filter"
+  var prompt: String?
   var isFiltering: Bool // TODO: do this with preference values instead
   var onMake: ((_ searchField: FilterSearchField) -> Void)?
   var onCommit: ((_ text: String) -> Void)?
@@ -37,7 +37,7 @@ public struct FilterField<Accessory: View>: NSViewRepresentable {
     onCommit: ((_ text: String) -> Void)? = nil
   ) {
     _text = text
-    if let prompt = prompt { self.prompt = prompt }
+    self.prompt = prompt
     self.isFiltering = isFiltering ?? false
     self.accessory = accessory()
     self.onMake = onMake
@@ -46,7 +46,7 @@ public struct FilterField<Accessory: View>: NSViewRepresentable {
   
   public func makeNSView(context: Context) -> FilterSearchField {
     let view = FilterSearchField()
-    // view.placeholderString = prompt
+    view.placeholderString = prompt
     view.delegate = context.coordinator
     // view.isFiltering = isFiltering
     if type(of: accessory) != EmptyView.self {

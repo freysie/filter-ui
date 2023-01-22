@@ -50,7 +50,19 @@ public class FilterSearchField: NSSearchField, CALayerDelegate {
   }
   
   public override var allowsVibrancy: Bool { !hasFilteringAppearance }
-  
+
+  // FIXME?
+  public override var placeholderString: String? {
+    get { super.placeholderString }
+    set {
+      super.placeholderString = newValue ?? NSLocalizedString("Filter", bundle: .module, comment: "")
+      placeholderAttributedString = NSAttributedString(
+        string: placeholderString!,
+        attributes: [.font: font!, .foregroundColor: NSColor.tertiaryLabelColor]
+      )
+    }
+  }
+
   public override var intrinsicContentSize: NSSize {
     switch controlSize {
     case .mini: return NSMakeSize(-1, 18)
@@ -72,12 +84,7 @@ public class FilterSearchField: NSSearchField, CALayerDelegate {
     focusRingType = .none
     drawsBackground = false
     // layerContentsRedrawPolicy = .onSetNeedsDisplay
-    placeholderString = NSLocalizedString("Filter", bundle: .module, comment: "")
-    placeholderAttributedString = NSAttributedString(
-      string: placeholderString!,
-      attributes: [.font: font!, .foregroundColor: NSColor.tertiaryLabelColor]
-    )
-    
+
     // TODO: searchMenuTemplate
 //    do {
 //      let menu = NSMenu(title: "Search Options")
