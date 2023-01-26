@@ -21,7 +21,7 @@ public struct FilterToggle: View {
     }
     .frame(width: 22, height: 14)
     .buttonStyle(.borderless)
-    .focusable()
+    // .focusable()
     .tint(isOn ? .accentColor : nil)
     .symbolVariant(isOn ? .fill : .none)
   }

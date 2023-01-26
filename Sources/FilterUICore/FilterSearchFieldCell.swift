@@ -17,6 +17,7 @@ public class FilterSearchFieldCell: NSSearchFieldCell {
   // TODO: make this configurable!!!!
   // var accessoryWidth: CGFloat = 0 // 17
   var accessoryWidth: CGFloat { (controlView as? FilterSearchField)?.accessoryView?.bounds.width ?? 0 }
+  var hasSourceListAppearance = false
   var hasFilteringAppearance = false
 
   //  var isInActiveWindow: Bool { controlView?.window?.isKeyWindow ?? false } // TODO: do something with this
@@ -46,20 +47,43 @@ public class FilterSearchFieldCell: NSSearchFieldCell {
     .tinted(with: .controlAccentColor)
   
   public override func draw(withFrame cellFrame: NSRect, in controlView: NSView) {
+    // this… i… help——
     if hasFilteringAppearance {
       NSColor.textBackgroundColor.setFill()
-      if isInActiveWindow {
-        NSColor.secondaryLabelColor.setStroke()
+      if hasSourceListAppearance {
+        if isInActiveWindow {
+          NSColor.secondaryLabelColor.setStroke()
+        } else {
+          NSColor.tertiaryLabelColor.setStroke()
+        }
       } else {
-        NSColor.tertiaryLabelColor.setStroke()
+        NSColor.secondaryLabelColor.withAlphaComponent(0.4).setStroke()
       }
     } else {
-      if isInActiveWindow {
-        NSColor.alternatingContentBackgroundColors[0].setFill()
+      if hasSourceListAppearance {
+        if isInActiveWindow {
+          // print(NSColor.unemphasizedSelectedContentBackgroundColor)
+          // print(NSColor.alternatingContentBackgroundColors[0])
+          NSColor.unemphasizedSelectedContentBackgroundColor.withAlphaComponent(0.4).setFill()
+          //NSColor.alternatingContentBackgroundColors[0].setFill()
+          //NSColor.controlTextColor.withAlphaComponent(0.5).setFill()
+          NSColor.secondaryLabelColor.withAlphaComponent(0.3).setStroke()
+        } else {
+          NSColor.alternatingContentBackgroundColors[1].setFill()
+          // NSColor.alternatingContentBackgroundColors[1].setFill()
+          // NSColor.quaternaryLabelColor.setStroke()
+          NSColor.secondaryLabelColor.withAlphaComponent(0.3).setStroke()
+        }
       } else {
-        NSColor.alternatingContentBackgroundColors[1].setFill()
+        if isInActiveWindow {
+          // NSColor.textBackgroundColor.withAlphaComponent(0.6).setFill()
+          // NSColor.quaternaryLabelColor.withAlphaComponent(0.1).setFill()
+          NSColor.controlBackgroundColor.withAlphaComponent(0.7).setFill()
+        } else {
+          NSColor.textBackgroundColor.setFill()
+        }
+        NSColor.quaternaryLabelColor.withAlphaComponent(0.2).setStroke()
       }
-      NSColor.quaternaryLabelColor.setStroke()
     }
     
     let path = NSBezierPath(roundedRect: cellFrame.insetBy(dx: 0.5, dy: 0.5), xRadius: 6, yRadius: 6)

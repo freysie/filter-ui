@@ -3,7 +3,6 @@ import PreviewsCapture
 
 struct FilterUI_Previews: PreviewProvider {
   static var previews: some View {
-//       MenuPreview(makeExampleMenu())//.screenshotName("MenuTestttttt~dark")
     Logo()
       .preferredColorScheme(.dark)
       .background()

@@ -6,10 +6,12 @@ import ObjectiveC
 /// If there is only one filter result when the enter key is pressed, that item will be selected and the menu will
 /// close.
 public class FilteringMenu: NSMenu, NSMenuDelegate, NSSearchFieldDelegate {
+  private static var activeMenu: FilteringMenu?
+  private static var eventMonitor: Any?
+
   public private(set) var wrappedDelegate: NSMenuDelegate? // TODO: make private and only expose through `delegate`
-  
+
   private var initiallyShowsFilterField = false
-  private var eventMonitor: Any?
   
   private var delegateRespondsToMenuHasKeyEquivalentForEventTargetAction = false
   private var delegateRespondsToMenuUpdateItemAtIndexShouldCancel = false
@@ -50,18 +52,19 @@ public class FilteringMenu: NSMenu, NSMenuDelegate, NSSearchFieldDelegate {
     setUpFilterField(in: self)
     
     // TODO: move somewhere else
-    eventMonitor = NSEvent.addCarbonMonitorForKeyEvents { event in
-      guard !ignoredKeyCodes.contains(event.keyCode) else { return false }
-      // self.setUpFilterField(in: self)
-      self.highlightFilteringItem()
-      // self.items.first?.view?.becomeFirstResponder()
-      return false
+    if Self.eventMonitor == nil {
+      Self.eventMonitor = NSEvent.addCarbonMonitorForKeyEvents { event in
+        guard !ignoredKeyCodes.contains(event.keyCode), let menu = Self.activeMenu else { return false }
+        self.setUpFilterField(in: menu)
+        self.highlightFilteringItem(in: menu, with: event)
+        return false
+      }
     }
   }
 
-  deinit {
-    eventMonitor.map(NSEvent.removeCarbonMonitor)
-  }
+//  deinit {
+//    eventMonitor.map(NSEvent.removeCarbonMonitor)
+//  }
   
   required init(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
@@ -71,15 +74,11 @@ public class FilteringMenu: NSMenu, NSMenuDelegate, NSSearchFieldDelegate {
   ///
   /// This method is public in case you need to use `object_setClass()`.
   public func setUpFilterField(in menu: NSMenu) {
-    guard !(items.first?.view is FilteringMenuItemView) else { return }
+    guard !(menu.items.first is FilteringMenuItem) else { return }
 
-    let view = FilteringMenuItemView()
-    view.filterField.delegate = self
-    // view.frame.size.height = 1
-
-    let item = NSMenuItem()
-    item.view = view
-    // item.isHidden = !initiallyShowsFilterField
+    let item = FilteringMenuItem()
+    item.filteringView.filterField.delegate = self
+    item.isHidden = !initiallyShowsFilterField
     menu.insertItem(item, at: 0)
     // menu.update()
   }
@@ -96,29 +95,39 @@ public class FilteringMenu: NSMenu, NSMenuDelegate, NSSearchFieldDelegate {
     for (item, _) in items.fuzzyMatch(string) {
       item.isHidden = false
     }
-    
+
     // update()
   }
   
-  private func highlightFilteringItem() {
-    guard let item = items.first, item.view is FilteringMenuItemView else { return }
-    guard !(item.view?.window?.firstResponder is NSText) else { return }
+  private func highlightFilteringItem(in menu: FilteringMenu, with event: NSEvent) {
+    print((#function, menu))
+    guard let filteringItem = menu.items.first as? FilteringMenuItem else { return }
+    guard !(filteringItem.view?.window?.firstResponder is NSText) else { return }
     
-    // item.isHidden = false
-    item.view?.frame.size.height = 28
-    
-    highlightItem(item)
-    print((#function, item.view?.canBecomeKeyView, item.view?.acceptsFirstResponder, item.view?.becomeFirstResponder()))
-    
-    // TODO: use `currentEditor()`
-    guard let editor = item.view?.window?.fieldEditor(false, for: item) else { return }
-    editor.selectedRange = NSMakeRange(editor.string.count, 0)
+    filteringItem.isHidden = false
+//    menu.highlightItem(filteringItem)
+//
+//    //DispatchQueue.main.async {
+//      filteringItem.filteringView.filterField.becomeFirstResponder()
+//    //}
+
+    guard let editor = filteringItem.filteringView.filterField.currentEditor() else { return }
+    editor.selectedRange = NSMakeRange(0, editor.string.count)
   }
-  
+
+  public override func itemChanged(_ item: NSMenuItem) {
+    guard let filteringItem = item as? FilteringMenuItem, !item.isHidden else { return }
+    print((#function, Self.activeMenu))
+//    DispatchQueue.main.async {
+      Self.activeMenu?.highlightItem(filteringItem)
+      filteringItem.filteringView.filterField.becomeFirstResponder()
+//    }
+  }
+
 //  - (id)_handleCarbonEvents:(const struct EventTypeSpec { unsigned int x1; unsigned int x2; }*)arg1 count:(unsigned long long)arg2 handler:(id)arg3;
 
   private func handleCarbonEvents() {
-//    perform(<#T##aSelector: Selector!##Selector!#>, with: <#T##Any!#>, with: <#T##Any!#>)
+//    perform(T##aSelector: Selector!##Selector!, with: <#T##Any!#>, with: <#T##Any!#>)
     // objc_msgSend(self, Selector(("_handleCarbonEvents:count:handler:")))
   }
   
@@ -130,51 +139,54 @@ public class FilteringMenu: NSMenu, NSMenuDelegate, NSSearchFieldDelegate {
   // MARK: - NSMenuDelegate
   
   public func menuNeedsUpdate(_ menu: NSMenu) {
-    print(className + "." + #function)
+//    print(className + "." + #function)
     wrappedDelegate?.menuNeedsUpdate?(menu)
   }
   
   public func numberOfItems(in menu: NSMenu) -> Int {
-    print(className + "." + #function)
+//    print(className + "." + #function)
     return wrappedDelegate?.numberOfItems?(in: menu) ?? 0
   }
   
   public func menu(_ menu: NSMenu, update item: NSMenuItem, at index: Int, shouldCancel: Bool) -> Bool {
-    print(className + "." + #function)
+//    print(className + "." + #function)
     return wrappedDelegate?.menu?(menu, update: item, at: index, shouldCancel: shouldCancel) ?? false
   }
   
   public func menuHasKeyEquivalent(_ menu: NSMenu, for event: NSEvent, target: AutoreleasingUnsafeMutablePointer<AnyObject?>, action: UnsafeMutablePointer<Selector?>) -> Bool {
-    print(className + "." + #function)
+//    print(className + "." + #function)
     return wrappedDelegate?.menuHasKeyEquivalent?(menu, for: event, target: target, action: action) ?? false
   }
   
   public func menuWillOpen(_ menu: NSMenu) {
-    print(className + "." + #function)
+//    print(className + "." + #function)
     wrappedDelegate?.menuWillOpen?(menu)
-      
+    Self.activeMenu = menu as? FilteringMenu
 //    guard let fiteringItemView = items.first?.view as? FilteringMenuItemView else { return }
 //    fiteringItemView.frame.size.height = 0
     // update()
-//    guard let item = items.first, item.view is FilteringMenuItemView else { return }
-//    item.isHidden = true
+    guard let filteringItem = menu.items.first as? FilteringMenuItem else { return }
+    filteringItem.isHidden = !initiallyShowsFilterField
   }
   
   public func menuDidClose(_ menu: NSMenu) {
-    print(className + "." + #function)
+//    print(className + "." + #function)
     wrappedDelegate?.menuDidClose?(menu)
-    
-    guard let fiteringItemView = items.first?.view as? FilteringMenuItemView else { return }
-    fiteringItemView.filterField.stringValue = ""
+
+    guard let filteringItem = menu.items.first as? FilteringMenuItem else { return }
+    filteringItem.isHidden = true
+    filteringItem.filteringView.filterField.stringValue = ""
+    performFiltering(with: "", in: menu)
   }
   
   public func menu(_ menu: NSMenu, willHighlight item: NSMenuItem?) {
-    print(className + "." + #function)
+//    print(className + "." + #function)
+    Self.activeMenu = menu as? FilteringMenu
     wrappedDelegate?.menu?(menu, willHighlight: item)
   }
   
   public func confinementRect(for menu: NSMenu, on screen: NSScreen?) -> NSRect {
-    print(className + "." + #function)
+//    print(className + "." + #function)
     return wrappedDelegate?.confinementRect?(for: menu, on: screen) ?? .zero
   }
   
@@ -224,7 +236,30 @@ extension CGKeyCode {
   static let upArrow: Self = 126
 }
 
+class FilteringMenuItem: NSMenuItem {
+  let filteringView = FilteringMenuItemView()
+
+  init() {
+    super.init(title: "", action: nil, keyEquivalent: "")
+    view = filteringView
+  }
+
+  required init(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+
+//  override var isHidden: Bool {
+//    didSet { if isHidden { view = nil } else { view = filteringView } }
+//  }
+
+  override var isHidden: Bool {
+    didSet { view?.frame.size.height = isHidden ? 0 : 28 }
+  }
+}
+
 class FilteringMenuItemView: NSView {
+  static let horizontalPadding: CGFloat = 20
+
   var filterField: FilterSearchField!
   var menuItem: NSMenuItem!
   
@@ -237,7 +272,7 @@ class FilteringMenuItemView: NSView {
 
     autoresizingMask = .width
 
-    filterField = FilterSearchField(frame: frameRect.insetBy(dx: 20, dy: 4))
+    filterField = FilterSearchField(frame: frameRect.insetBy(dx: Self.horizontalPadding, dy: 4))
     filterField.autoresizingMask = .width
     addSubview(filterField)
   }

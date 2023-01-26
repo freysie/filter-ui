@@ -1,6 +1,14 @@
 import SwiftUI
 import FilterUICore
 
+/// Contains the possible style values for a filter field.
+public enum FilterFieldStyle {
+  /// The filter field style resolves to a plain style.
+  case plain
+  /// The filter field style resolves to a source-list style.
+  case sourceList
+}
+
 /// A control that displays an editable text interface optimized for performing text-based filtering.
 public struct FilterField<Accessory: View>: NSViewRepresentable {
   @Binding var text: String
@@ -9,8 +17,9 @@ public struct FilterField<Accessory: View>: NSViewRepresentable {
   var onMake: ((_ searchField: FilterSearchField) -> Void)?
   var onCommit: ((_ text: String) -> Void)?
   var accessory: Accessory
+  @Environment(\.filterFieldStyle) private var style
   @Environment(\.controlSize) private var controlSize
-  
+
   public init(
     text: Binding<String>,
     prompt: String? = nil,
@@ -61,6 +70,7 @@ public struct FilterField<Accessory: View>: NSViewRepresentable {
     view.stringValue = text
     view.isFiltering = isFiltering
     view.controlSize = controlSize.nsControlSize
+    view.hasSourceListAppearance = style == .sourceList
 //    // TODO: profile performance of this
 //    if type(of: accessory) != EmptyView.self {
 //      view.accessoryView = NSHostingView(rootView: accessory)
@@ -156,7 +166,10 @@ struct FilterField_Previews: PreviewProvider {
   }
   
   static var previews: some View {
-    Form { Example() }.padding().frame(maxWidth: 200).background(.regularMaterial)
+    NavigationView {
+      Form { Example() }.padding().frame(maxWidth: 200).filterFieldStyle(.sourceList)
+      Form { Example() }.padding().frame(maxWidth: 200)// .background(.regularMaterial)
+    }
     
 //    ForEach(Font.Weight.allCases) { weight in
 //      HStack {

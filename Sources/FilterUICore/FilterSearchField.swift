@@ -39,13 +39,16 @@ public class FilterSearchField: NSSearchField, CALayerDelegate {
       }
     }
   }
-  
-  var hasFilteringAppearance: Bool {
+
+  public var hasSourceListAppearance = false
+
+  public var hasFilteringAppearance: Bool {
     isFiltering || !stringValue.isEmpty || window?.firstResponder == currentEditor()
   }
   
   public override func viewWillDraw() {
     guard let cell = cell as? FilterSearchFieldCell else { return }
+    cell.hasSourceListAppearance = hasSourceListAppearance
     cell.hasFilteringAppearance = hasFilteringAppearance
   }
   
@@ -118,15 +121,15 @@ public class FilterSearchField: NSSearchField, CALayerDelegate {
     
     if let cancelButtonCell = (cell as? NSSearchFieldCell)?.cancelButtonCell {
       cancelButtonCell.image = NSImage(systemSymbolName: .clearIcon, accessibilityDescription: nil)!
-        .withSymbolConfiguration(
-          NSImage.SymbolConfiguration(paletteColors: [.secondaryLabelColor])
-            .applying(.init(pointSize: 12, weight: .regular))
-        )
+//        .withSymbolConfiguration(
+//          NSImage.SymbolConfiguration(paletteColors: [.textBackgroundColor, .secondaryLabelColor])
+//            .applying(.init(pointSize: 12, weight: .regular))
+//        )
       
       cancelButtonCell.alternateImage = NSImage(systemSymbolName: .clearIcon, accessibilityDescription: nil)!
         .withSymbolConfiguration(
-          NSImage.SymbolConfiguration(paletteColors: [.textColor])
-            .applying(.init(pointSize: 12, weight: .regular))
+          NSImage.SymbolConfiguration(paletteColors: [.textBackgroundColor, .textColor])
+        //    .applying(.init(pointSize: 12, weight: .regular))
         )
     }
   }
