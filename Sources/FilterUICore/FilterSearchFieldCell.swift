@@ -1,16 +1,5 @@
 import AppKit
 
-extension NSImage {
-  func tinted(with color: NSColor) -> NSImage {
-    return NSImage(size: size, flipped: false) { rect in
-      color.set()
-      rect.fill()
-      self.draw(in: rect, from: NSRect(origin: .zero, size: self.size), operation: .destinationIn, fraction: 1)
-      return true
-    }
-  }
-}
-
 /// The cell interface for AppKit filter fields.
 public class FilterSearchFieldCell: NSSearchFieldCell {
   private static let padding = CGSize(width: -5, height: 3)
@@ -20,13 +9,32 @@ public class FilterSearchFieldCell: NSSearchFieldCell {
   var hasSourceListAppearance = false
   var hasFilteringAppearance = false
 
-  //  var isInActiveWindow: Bool { controlView?.window?.isKeyWindow ?? false } // TODO: do something with this
-  var isInActiveWindow = false { didSet { controlView?.setNeedsDisplay(.infinite) } }
+  var isInActiveWindow = false {
+    didSet {
+      cancelButtonCell?.isEnabled = isInActiveWindow
+      controlView?.setNeedsDisplay(.infinite)
+    }
+  }
 
   override init(textCell string: String) {
     super.init(textCell: string)
+
     NotificationCenter.default.addObserver(self, selector: #selector(windowDidBecomeKey(_:)), name: NSWindow.didBecomeKeyNotification, object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(windowDidResignKey(_:)), name: NSWindow.didResignKeyNotification, object: nil)
+
+    if let cancelButtonCell {
+      cancelButtonCell.image = NSImage(systemSymbolName: .clearIcon, accessibilityDescription: nil)!
+//        .withSymbolConfiguration(
+//          NSImage.SymbolConfiguration(paletteColors: [.textBackgroundColor, .secondaryLabelColor])
+//            .applying(.init(pointSize: 12, weight: .regular))
+//        )
+
+      cancelButtonCell.alternateImage = NSImage(systemSymbolName: .clearIcon, accessibilityDescription: nil)!
+        .withSymbolConfiguration(
+          NSImage.SymbolConfiguration(paletteColors: [.textBackgroundColor, .textColor])
+        //    .applying(.init(pointSize: 12, weight: .regular))
+        )
+    }
   }
 
   required init(coder: NSCoder) {
@@ -37,6 +45,7 @@ public class FilterSearchFieldCell: NSSearchFieldCell {
     NotificationCenter.default.removeObserver(self)
   }
 
+  // isEnabled = isInActiveWindow
   @objc func windowDidBecomeKey(_ notification: Notification) { isInActiveWindow = true }
   @objc func windowDidResignKey(_ notification: Notification) { isInActiveWindow = false }
   
@@ -52,33 +61,37 @@ public class FilterSearchFieldCell: NSSearchFieldCell {
       NSColor.textBackgroundColor.setFill()
       if hasSourceListAppearance {
         if isInActiveWindow {
-          NSColor.secondaryLabelColor.setStroke()
+          NSColor.secondaryLabelColor.withAlphaComponent(0.8).setStroke()
         } else {
-          NSColor.tertiaryLabelColor.setStroke()
+          NSColor.secondaryLabelColor.withAlphaComponent(0.4).setStroke()
         }
       } else {
-        NSColor.secondaryLabelColor.withAlphaComponent(0.4).setStroke()
+        if isInActiveWindow {
+          NSColor.secondaryLabelColor.withAlphaComponent(0.4).setStroke()
+        } else {
+          NSColor.secondaryLabelColor.withAlphaComponent(0.2).setStroke()
+        }
       }
     } else {
       if hasSourceListAppearance {
         if isInActiveWindow {
           // print(NSColor.unemphasizedSelectedContentBackgroundColor)
           // print(NSColor.alternatingContentBackgroundColors[0])
-          NSColor.unemphasizedSelectedContentBackgroundColor.withAlphaComponent(0.4).setFill()
+          NSColor.alternatingContentBackgroundColors[0].setFill()
+          //NSColor.unemphasizedSelectedContentBackgroundColor.withAlphaComponent(0.4).setFill()
           //NSColor.alternatingContentBackgroundColors[0].setFill()
           //NSColor.controlTextColor.withAlphaComponent(0.5).setFill()
-          NSColor.secondaryLabelColor.withAlphaComponent(0.3).setStroke()
         } else {
           NSColor.alternatingContentBackgroundColors[1].setFill()
           // NSColor.alternatingContentBackgroundColors[1].setFill()
           // NSColor.quaternaryLabelColor.setStroke()
-          NSColor.secondaryLabelColor.withAlphaComponent(0.3).setStroke()
         }
+        NSColor.secondaryLabelColor.withAlphaComponent(0.3).setStroke()
       } else {
         if isInActiveWindow {
           // NSColor.textBackgroundColor.withAlphaComponent(0.6).setFill()
           // NSColor.quaternaryLabelColor.withAlphaComponent(0.1).setFill()
-          NSColor.controlBackgroundColor.withAlphaComponent(0.7).setFill()
+          NSColor.unemphasizedSelectedContentBackgroundColor.withAlphaComponent(0.6).setFill()
         } else {
           NSColor.textBackgroundColor.setFill()
         }
@@ -162,5 +175,16 @@ public class FilterSearchFieldCell: NSSearchFieldCell {
   public override func select(withFrame rect: NSRect, in controlView: NSView, editor textObj: NSText, delegate: Any?, start selStart: Int, length selLength: Int) {
     let insetRect = rect.insetBy(dx: Self.padding.width, dy: Self.padding.height)
     super.select(withFrame: insetRect, in: controlView, editor: textObj, delegate: delegate, start: selStart, length: selLength)
+  }
+}
+
+extension NSImage {
+  func tinted(with color: NSColor) -> NSImage {
+    return NSImage(size: size, flipped: false) { rect in
+      color.set()
+      rect.fill()
+      self.draw(in: rect, from: NSRect(origin: .zero, size: self.size), operation: .destinationIn, fraction: 1)
+      return true
+    }
   }
 }

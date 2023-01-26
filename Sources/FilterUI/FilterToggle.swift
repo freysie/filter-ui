@@ -2,7 +2,9 @@ import SwiftUI
 
 public struct FilterToggle: View {
   let systemImage: String
-  @Binding var isOn: Bool
+
+  @Binding private var isOn: Bool
+  @Environment(\.controlActiveState) private var activeState
   
   public init(systemImage: String, isOn: Binding<Bool>) {
     self.systemImage = systemImage
@@ -21,9 +23,10 @@ public struct FilterToggle: View {
     }
     .frame(width: 22, height: 14)
     .buttonStyle(.borderless)
-    // .focusable()
     .tint(isOn ? .accentColor : nil)
     .symbolVariant(isOn ? .fill : .none)
+    .opacity(activeState == .inactive ? 0.4 : 0.8)
+    // .disabled(activeState == .inactive)
   }
 }
 

@@ -61,7 +61,7 @@ public class FilterSearchField: NSSearchField, CALayerDelegate {
       super.placeholderString = newValue ?? NSLocalizedString("Filter", bundle: .module, comment: "")
       placeholderAttributedString = NSAttributedString(
         string: placeholderString!,
-        attributes: [.font: font!, .foregroundColor: NSColor.tertiaryLabelColor]
+        attributes: [.font: font!, .foregroundColor: NSColor.secondaryLabelColor]
       )
     }
   }
@@ -118,20 +118,6 @@ public class FilterSearchField: NSSearchField, CALayerDelegate {
     //  print(layer!.sublayers as Any)
     //  print(layer!.debugDescription)
     //  print(heightAnchor.constraintsAffectingLayout as NSArray)
-    
-    if let cancelButtonCell = (cell as? NSSearchFieldCell)?.cancelButtonCell {
-      cancelButtonCell.image = NSImage(systemSymbolName: .clearIcon, accessibilityDescription: nil)!
-//        .withSymbolConfiguration(
-//          NSImage.SymbolConfiguration(paletteColors: [.textBackgroundColor, .secondaryLabelColor])
-//            .applying(.init(pointSize: 12, weight: .regular))
-//        )
-      
-      cancelButtonCell.alternateImage = NSImage(systemSymbolName: .clearIcon, accessibilityDescription: nil)!
-        .withSymbolConfiguration(
-          NSImage.SymbolConfiguration(paletteColors: [.textBackgroundColor, .textColor])
-        //    .applying(.init(pointSize: 12, weight: .regular))
-        )
-    }
   }
   
   required init?(coder: NSCoder) {
