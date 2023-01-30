@@ -7,11 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3B4BC58B29882A7E0090B669 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3B4BC58929882A7E0090B669 /* Localizable.strings */; };
 		3BDD452728213E38003D77E3 /* FilterUIExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDD452628213E38003D77E3 /* FilterUIExampleApp.swift */; };
 		3BDD453A28213EC9003D77E3 /* FilterUI in Frameworks */ = {isa = PBXBuildFile; productRef = 3BDD453928213EC9003D77E3 /* FilterUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3B4BC58A29882A7E0090B669 /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Localizable.strings; sourceTree = "<group>"; };
 		3BDD452328213E38003D77E3 /* FilterUIExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FilterUIExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3BDD452628213E38003D77E3 /* FilterUIExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterUIExampleApp.swift; sourceTree = "<group>"; };
 		3BDD453628213E90003D77E3 /* filter-ui */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "filter-ui"; path = ..; sourceTree = "<group>"; };
@@ -32,6 +34,7 @@
 		3BDD451A28213E38003D77E3 = {
 			isa = PBXGroup;
 			children = (
+				3B4BC58929882A7E0090B669 /* Localizable.strings */,
 				3BDD452628213E38003D77E3 /* FilterUIExampleApp.swift */,
 				3BDD453528213E90003D77E3 /* Packages */,
 				3BDD452428213E38003D77E3 /* Products */,
@@ -100,6 +103,7 @@
 			knownRegions = (
 				en,
 				Base,
+				da,
 			);
 			mainGroup = 3BDD451A28213E38003D77E3;
 			productRefGroup = 3BDD452428213E38003D77E3 /* Products */;
@@ -116,6 +120,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3B4BC58B29882A7E0090B669 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -138,6 +143,17 @@
 			productRef = 3BB9AF502836FCD800470721 /* FilterUI */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		3B4BC58929882A7E0090B669 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3B4BC58A29882A7E0090B669 /* da */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		3BDD453028213E3A003D77E3 /* Debug */ = {

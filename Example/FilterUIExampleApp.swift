@@ -1,6 +1,6 @@
 import SwiftUI
 @testable import FilterUI
-@testable import FilterUICore
+import FilterUICore
 
 @main
 struct FilterUIExampleApp: App {

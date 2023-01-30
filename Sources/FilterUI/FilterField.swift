@@ -12,7 +12,7 @@ public enum FilterFieldStyle {
 /// A control that displays an editable text interface optimized for performing text-based filtering.
 public struct FilterField<Accessory: View>: NSViewRepresentable {
   @Binding var text: String
-  var prompt: String?
+  var prompt: LocalizedStringKey? = nil
   var isFiltering: Bool // TODO: do this with preference values instead
   var onMake: ((_ searchField: FilterSearchField) -> Void)?
   var onCommit: ((_ text: String) -> Void)?
@@ -22,7 +22,7 @@ public struct FilterField<Accessory: View>: NSViewRepresentable {
 
   public init(
     text: Binding<String>,
-    prompt: String? = nil,
+    prompt: LocalizedStringKey? = nil,
     isFiltering: Bool? = nil,
     onMake: ((_ searchField: FilterSearchField) -> Void)? = nil,
     onCommit: ((_ text: String) -> Void)? = nil
@@ -39,7 +39,7 @@ public struct FilterField<Accessory: View>: NSViewRepresentable {
   
   public init(
     text: Binding<String>,
-    prompt: String? = nil,
+    prompt: LocalizedStringKey? = nil,
     isFiltering: Bool? = nil,
     @ViewBuilder accessory: () -> Accessory,
     onMake: ((_ searchField: FilterSearchField) -> Void)? = nil,
@@ -55,7 +55,7 @@ public struct FilterField<Accessory: View>: NSViewRepresentable {
   
   public func makeNSView(context: Context) -> FilterSearchField {
     let view = FilterSearchField()
-    view.placeholderString = prompt
+    view.placeholderString = prompt?.string
     view.delegate = context.coordinator
     // view.isFiltering = isFiltering
     if type(of: accessory) != EmptyView.self {
@@ -66,7 +66,7 @@ public struct FilterField<Accessory: View>: NSViewRepresentable {
   }
   
   public func updateNSView(_ view: FilterSearchField, context: Context) {
-    view.placeholderString = prompt
+    view.placeholderString = prompt?.string
     view.stringValue = text
     view.isFiltering = isFiltering
     view.controlSize = controlSize.nsControlSize
@@ -280,3 +280,13 @@ struct FilterField_Previews: PreviewProvider {
 //    [.ultraLight, .thin, .light, .regular, .medium, .semibold, .bold, .heavy, .black]
 //  }
 //}
+
+extension LocalizedStringKey {
+  var key: String {
+    Mirror(reflecting: self).children.first { $0.label == "key" }?.value as? String ?? ""
+  }
+
+  var string: String {
+    NSLocalizedString(key, comment: "")
+  }
+}
