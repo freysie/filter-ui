@@ -3,11 +3,11 @@ import AppKit
 // TODO: change background and border colors based on window key state
 
 /// An AppKit filter field.
-public class FilterSearchField: NSSearchField, CALayerDelegate {
-  public override class var cellClass: AnyClass? { get { FilterSearchFieldCell.self } set {} }
+open class FilterSearchField: NSSearchField, CALayerDelegate {
+  open override class var cellClass: AnyClass? { get { FilterSearchFieldCell.self } set {} }
 
   /// Whether accessory views are filtering.
-  public var isFiltering = false {
+  open var isFiltering = false {
     didSet {
       self.needsDisplay = true
       layer?.setNeedsDisplay()
@@ -19,7 +19,7 @@ public class FilterSearchField: NSSearchField, CALayerDelegate {
   // public override var needsPanelToBecomeKey: Bool { true }
   
   /// The field’s accessory view.
-  public var accessoryView: NSView? {
+  open var accessoryView: NSView? {
     didSet {
       if let accessoryView = accessoryView {
         addSubview(accessoryView)
@@ -40,22 +40,22 @@ public class FilterSearchField: NSSearchField, CALayerDelegate {
     }
   }
 
-  public var hasSourceListAppearance = false
+  open var hasSourceListAppearance = false
 
-  public var hasFilteringAppearance: Bool {
+  open var hasFilteringAppearance: Bool {
     isFiltering || !stringValue.isEmpty || window?.firstResponder == currentEditor()
   }
   
-  public override func viewWillDraw() {
+  open override func viewWillDraw() {
     guard let cell = cell as? FilterSearchFieldCell else { return }
     cell.hasSourceListAppearance = hasSourceListAppearance
     cell.hasFilteringAppearance = hasFilteringAppearance
   }
   
-  public override var allowsVibrancy: Bool { !hasFilteringAppearance }
+  open override var allowsVibrancy: Bool { !hasFilteringAppearance }
 
   // FIXME?
-  public override var placeholderString: String? {
+  open override var placeholderString: String? {
     get { super.placeholderString }
     set {
       super.placeholderString = newValue ?? NSLocalizedString("Filter", bundle: .module, comment: "")
@@ -66,7 +66,7 @@ public class FilterSearchField: NSSearchField, CALayerDelegate {
     }
   }
 
-  public override var intrinsicContentSize: NSSize {
+  open override var intrinsicContentSize: NSSize {
     switch controlSize {
     case .mini: return NSMakeSize(-1, 18)
     case .small: return NSMakeSize(-1, 20)
@@ -120,7 +120,7 @@ public class FilterSearchField: NSSearchField, CALayerDelegate {
     //  print(heightAnchor.constraintsAffectingLayout as NSArray)
   }
   
-  required init?(coder: NSCoder) {
+  public required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
 }
