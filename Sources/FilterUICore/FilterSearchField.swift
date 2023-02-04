@@ -1,7 +1,5 @@
 import AppKit
 
-// TODO: change background and border colors based on window key state
-
 /// An AppKit filter field.
 open class FilterSearchField: NSSearchField, CALayerDelegate {
   open override class var cellClass: AnyClass? { get { FilterSearchFieldCell.self } set {} }
@@ -13,10 +11,6 @@ open class FilterSearchField: NSSearchField, CALayerDelegate {
       layer?.setNeedsDisplay()
     }
   }
-  
-  // public override var canBecomeKeyView: Bool { true }
-  
-  // public override var needsPanelToBecomeKey: Bool { true }
   
   /// The field’s accessory view.
   open var accessoryView: NSView? {
