@@ -10,6 +10,7 @@ let package = Package(
   products: [
     .library(name: "FilterUI", targets: ["FilterUI"]),
     .library(name: "FilterUICore", targets: ["FilterUICore"]),
+    .library(name: "FilterUICoreObjC", targets: ["FilterUICoreObjC"]),
   ],
   dependencies: [
     .package(url: "https://github.com/freyaariel/previews-capture.git", branch: "main"),
@@ -17,8 +18,10 @@ let package = Package(
   targets: [
     .target(name: "FilterUI", dependencies: [
       "FilterUICore",
+      "FilterUICoreObjC",
       .product(name: "PreviewsCapture", package: "previews-capture"),
     ]),
-    .target(name: "FilterUICore", dependencies: [])
+    .target(name: "FilterUICore", dependencies: ["FilterUICoreObjC"]),
+    .target(name: "FilterUICoreObjC", dependencies: [], publicHeadersPath: ".")
   ]
 )

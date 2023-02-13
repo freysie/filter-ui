@@ -11,7 +11,7 @@ public class FilteringMenu: NSMenu, NSMenuDelegate, NSSearchFieldDelegate {
 
   public private(set) var wrappedDelegate: NSMenuDelegate? // TODO: make private and only expose through `delegate`
 
-  private var initiallyShowsFilterField = false
+  private var initiallyShowsFilterField = true
   
   private var delegateRespondsToMenuHasKeyEquivalentForEventTargetAction = false
   private var delegateRespondsToMenuUpdateItemAtIndexShouldCancel = false
@@ -100,29 +100,29 @@ public class FilteringMenu: NSMenu, NSMenuDelegate, NSSearchFieldDelegate {
   }
   
   private func highlightFilteringItem(in menu: FilteringMenu, with event: NSEvent) {
-    print((#function, menu))
+    print((#function, menu, event))
     guard let filteringItem = menu.items.first as? FilteringMenuItem else { return }
     guard !(filteringItem.view?.window?.firstResponder is NSText) else { return }
     
     filteringItem.isHidden = false
-//    menu.highlightItem(filteringItem)
-//
+    menu.highlightItem(filteringItem)
+
 //    //DispatchQueue.main.async {
-//      filteringItem.filteringView.filterField.becomeFirstResponder()
+      filteringItem.filteringView.filterField.becomeFirstResponder()
 //    //}
 
     guard let editor = filteringItem.filteringView.filterField.currentEditor() else { return }
     editor.selectedRange = NSMakeRange(0, editor.string.count)
   }
 
-  public override func itemChanged(_ item: NSMenuItem) {
-    guard let filteringItem = item as? FilteringMenuItem, !item.isHidden else { return }
-    print((#function, Self.activeMenu))
-//    DispatchQueue.main.async {
-      Self.activeMenu?.highlightItem(filteringItem)
-      filteringItem.filteringView.filterField.becomeFirstResponder()
-//    }
-  }
+//  public override func itemChanged(_ item: NSMenuItem) {
+//    guard let filteringItem = item as? FilteringMenuItem, !item.isHidden else { return }
+//    print((#function, Self.activeMenu))
+////    DispatchQueue.main.async {
+//      Self.activeMenu?.highlightItem(filteringItem)
+//      filteringItem.filteringView.filterField.becomeFirstResponder()
+////    }
+//  }
 
 //  - (id)_handleCarbonEvents:(const struct EventTypeSpec { unsigned int x1; unsigned int x2; }*)arg1 count:(unsigned long long)arg2 handler:(id)arg3;
 
@@ -253,7 +253,7 @@ class FilteringMenuItem: NSMenuItem {
 //  }
 
   override var isHidden: Bool {
-    didSet { view?.frame.size.height = isHidden ? 0 : 28 }
+    didSet { view?.frame.size.height = isHidden ? 0 : 27 }
   }
 }
 
@@ -264,7 +264,7 @@ class FilteringMenuItemView: NSView {
   var menuItem: NSMenuItem!
   
   convenience init() {
-    self.init(frame: NSMakeRect(0, 0, 120, 28))
+    self.init(frame: NSMakeRect(0, 0, 120, 27))
   }
   
   override init(frame frameRect: NSRect) {
@@ -336,4 +336,19 @@ extension NSMenu {
 
 extension NSMenuItem: FuzzySearchable {
   public var fuzzyStringToMatch: String { title }
+}
+
+extension FourCharCode {
+  var string: String? {
+    String(
+      cString: [
+        CChar(self >> 24 & 0xFF),
+        CChar(self >> 16 & 0xFF),
+        CChar(self >> 8  & 0xFF),
+        CChar(self       & 0xFF),
+        0
+      ],
+      encoding: .ascii
+    )
+  }
 }

@@ -1,6 +1,6 @@
 # Filter UI
 
-Filter field and menu filtering for AppKit and SwiftUI.
+Filter field <!--and menu filtering--> for AppKit and SwiftUI.
 
 ![](/Screenshots/FilterUI.png?raw=true)
 
@@ -75,6 +75,7 @@ While typing, menu items are filtered based on fuzzy search matching of the item
 
 ### 1.0
 
+* Finish menu filtering
 * ~~Find solution to border issue~~
 * Resolve text wrapping issue
 
@@ -83,7 +84,7 @@ While typing, menu items are filtered based on fuzzy search matching of the item
 
 * More sizes?
 * Menu w/ pill-shaped icon?
-* Pixel-perfect 13 px filter icon?
+* ~~Pixel-perfect 13 px filter icon?~~
 
 
 ## Acknowledgements

@@ -1,4 +1,6 @@
 import SwiftUI
+import FilterUICore
+import FilterUICoreObjC
 
 struct FilteringMenu_Previews: PreviewProvider {
   static var previews: some View { Example() }
@@ -8,11 +10,11 @@ struct FilteringMenu_Previews: PreviewProvider {
       let menu = makeExampleMenu()
       menu.delegate = context.coordinator
 
-      defer {
-        DispatchQueue.main.async {
-          menu.popUp(positioning: nil, at: .zero, in: view)
-        }
-      }
+//      defer {
+//        DispatchQueue.main.async {
+//          menu.popUp(positioning: nil, at: .zero, in: view)
+//        }
+//      }
 
       let view = NSView()
       view.menu = menu
@@ -24,14 +26,15 @@ struct FilteringMenu_Previews: PreviewProvider {
     func makeCoordinator() -> Coordinator { Coordinator() }
 
     func makeExampleMenu() -> NSMenu {
-      let menu = FilteringMenu()
+      let menu = _FilteringMenu()
       menu.autoenablesItems = false
       addExampleItems(to: menu)
 
-      let submenu = FilteringMenu()
+      let submenu = _FilteringMenu()
       // let submenu = NSMenu()
       submenu.autoenablesItems = false
       addExampleItems(to: submenu)
+      for _ in 0..<40 { addExampleItems(to: submenu) }
 
       let item = menu.addItem(withTitle: "Menu", action: nil, keyEquivalent: "")
       item.submenu = submenu

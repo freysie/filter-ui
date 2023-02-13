@@ -1,7 +1,7 @@
 import AppKit
 
 /// The cell interface for AppKit filter fields.
-open class FilterSearchFieldCell: NSSearchFieldCell {
+@objcMembers open class FilterSearchFieldCell: NSSearchFieldCell {
   private static let padding = CGSize(width: -5, height: 3)
   var accessoryWidth: CGFloat { (controlView as? FilterSearchField)?.accessoryView?.bounds.width ?? 0 }
   var hasSourceListAppearance = false
@@ -124,7 +124,7 @@ open class FilterSearchFieldCell: NSSearchFieldCell {
     filterButtonCell.alternateImage = searchButtonCell!.image
 //    filterButtonCell.draw(withFrame: searchButtonRect(forBounds: cellFrame), in: controlView)
 
-    let insetRect = cellFrame.insetBy(dx: Self.padding.width, dy: Self.padding.height)
+    let insetRect = cellFrame.insetBy(dx: Self.padding.width, dy: Self.padding.height - (controlSize == .small ? 1 : 0))
     super.drawInterior(withFrame: insetRect, in: controlView)
 
 //    if !stringValue.isEmpty {
@@ -134,7 +134,7 @@ open class FilterSearchFieldCell: NSSearchFieldCell {
   
   open override func cellSize(forBounds rect: NSRect) -> NSSize {
     var size = super.cellSize(forBounds: rect)
-    size.height += (Self.padding.height * 2)
+    size.height += ((Self.padding.height - (controlSize == .small ? 1 : 0)) * 2)
     return size
   }
   
@@ -145,32 +145,32 @@ open class FilterSearchFieldCell: NSSearchFieldCell {
   }
   
   open override func searchButtonRect(forBounds rect: NSRect) -> NSRect {
-    super.searchButtonRect(forBounds: rect).offsetBy(dx: 2, dy: -0.5)
+    super.searchButtonRect(forBounds: rect).offsetBy(dx: 2, dy: controlSize == .small ? 0 : -0.5)
   }
 
   open override func cancelButtonRect(forBounds rect: NSRect) -> NSRect {
-    var rect = super.cancelButtonRect(forBounds: rect).offsetBy(dx: -4, dy: -0.5)
+    var rect = super.cancelButtonRect(forBounds: rect).offsetBy(dx: -4, dy: controlSize == .small ? 0 : -0.5)
     rect.origin.x -= accessoryWidth + (accessoryWidth > 0 ? 1 : 0)
     return rect
   }
   
   open override func titleRect(forBounds rect: NSRect) -> NSRect {
-    rect.insetBy(dx: Self.padding.width, dy: Self.padding.height)
+    rect.insetBy(dx: Self.padding.width, dy: Self.padding.height - (controlSize == .small ? 1 : 0))
   }
   
 //      open override func drawingRect(forBounds rect: NSRect) -> NSRect {
-//        let insetRect = rect.insetBy(dx: Self.padding.width, dy: Self.padding.height)
+//        let insetRect = rect.insetBy(dx: Self.padding.width, dy: Self.padding.height - (controlSize == .small ? 1 : 0))
 //        return super.drawingRect(forBounds: insetRect)
 //      }
   
   open override func edit(withFrame rect: NSRect, in controlView: NSView, editor textObj: NSText, delegate: Any?, event: NSEvent?) {
-    let insetRect = rect.insetBy(dx: Self.padding.width, dy: Self.padding.height)
+    let insetRect = rect.insetBy(dx: Self.padding.width, dy: Self.padding.height - (controlSize == .small ? 1 : 0))
     // rect.size.width -= accessoryWidth + (accessoryWidth > 0 ? 1 : 0)
     super.edit(withFrame: insetRect, in: controlView, editor: textObj, delegate: delegate, event: event)
   }
   
   open override func select(withFrame rect: NSRect, in controlView: NSView, editor textObj: NSText, delegate: Any?, start selStart: Int, length selLength: Int) {
-    let insetRect = rect.insetBy(dx: Self.padding.width, dy: Self.padding.height)
+    let insetRect = rect.insetBy(dx: Self.padding.width, dy: Self.padding.height - (controlSize == .small ? 1 : 0))
     super.select(withFrame: insetRect, in: controlView, editor: textObj, delegate: delegate, start: selStart, length: selLength)
   }
 }

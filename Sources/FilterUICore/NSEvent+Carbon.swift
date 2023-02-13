@@ -62,4 +62,3 @@ extension NSEvent {
     RemoveEventHandler(monitor.carbonHandler)
   }
 }
-

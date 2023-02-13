@@ -1,6 +1,7 @@
 import SwiftUI
 @testable import FilterUI
-import FilterUICore
+@testable import FilterUICore
+@testable import FilterUICoreObjC
 
 @main
 struct FilterUIExampleApp: App {
@@ -8,7 +9,10 @@ struct FilterUIExampleApp: App {
     WindowGroup {
 //      FilterUI_Previews.previews
       
-//      FilteringMenu_Previews.previews
+      FilteringMenu_Previews.previews
+        .onAppear {
+          print(FilterUICoreObjC.FilteringMenu2())
+        }
 
       FilterField_Previews.previews
         .onAppear {

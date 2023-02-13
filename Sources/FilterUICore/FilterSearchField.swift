@@ -1,7 +1,7 @@
 import AppKit
 
 /// An AppKit filter field.
-open class FilterSearchField: NSSearchField, CALayerDelegate {
+@objcMembers open class FilterSearchField: NSSearchField, CALayerDelegate {
   open override class var cellClass: AnyClass? { get { FilterSearchFieldCell.self } set {} }
 
   /// Whether accessory views are filtering.
