@@ -1,12 +1,12 @@
 {
   "images" : [
     {
-      "filename" : "Filter Menu-Line_Normal.png",
+      "filename" : "filter.menu.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "Filter Menu-Line_Normal@2x.png",
+      "filename" : "filter.menu@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },

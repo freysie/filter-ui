@@ -162,13 +162,34 @@ struct FilterField_Previews: PreviewProvider {
         FilterToggle(systemImage: "pin.square", isOn: $accessoryIsOn2)
         FilterToggle(systemImage: "mic.square", isOn: $accessoryIsOn2)
       }
+
+      Group {
+        NSViewPreview { FilterSearchField() }
+        NSViewPreview { let f = FilterSearchField(); f.controlSize = .small; return f }
+        NSViewPreview { let f = FilterSearchField(); f.controlSize = .mini; return f }
+
+        NSViewPreview { FilterTokenField() }
+        NSViewPreview { let f = FilterTokenField(); f.controlSize = .small; return f }
+        NSViewPreview { let f = FilterTokenField(); f.controlSize = .mini; return f }
+
+        NSViewPreview {
+          let f = FilterTokenField()
+          f.objectValue = [
+            FilterTokenFieldValue(objectValue: "hi", operatorType: .contains),
+            FilterTokenFieldValue(objectValue: "there", operatorType: .doesNotContain),
+            FilterTokenFieldValue(objectValue: "token", operatorType: .beginsWith),
+            FilterTokenFieldValue(objectValue: "field", operatorType: .endsWith)
+          ]
+          return f
+        }
+      }
     }
   }
   
   static var previews: some View {
     NavigationView {
-      Form { Example() }.padding().frame(maxWidth: 200).filterFieldStyle(.sourceList)
-      Form { Example() }.padding().frame(maxWidth: 200)// .background(.regularMaterial)
+      Form { Example() }.padding().frame(maxWidth: 240).filterFieldStyle(.sourceList)
+      Form { Example() }.padding().frame(maxWidth: 400)// .background(.regularMaterial)
     }
     
 //    ForEach(Font.Weight.allCases) { weight in
@@ -288,5 +309,19 @@ extension LocalizedStringKey {
 
   var string: String {
     NSLocalizedString(key, comment: "")
+  }
+}
+
+struct NSViewPreview<View: NSView>: NSViewRepresentable {
+  let view: View
+  init(_ builder: @escaping () -> View) {
+    view = builder()
+  }
+  func makeNSView(context: Context) -> NSView {
+    view
+  }
+  func updateNSView(_ view: NSView, context: Context) {
+    view.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+    view.setContentHuggingPriority(.defaultHigh, for: .vertical)
   }
 }

@@ -46,40 +46,52 @@ import AppKit
     cell.hasFilteringAppearance = hasFilteringAppearance
   }
   
-  open override var allowsVibrancy: Bool { !hasFilteringAppearance }
+//  open override var allowsVibrancy: Bool { !hasFilteringAppearance }
 
-  // FIXME?
-  open override var placeholderString: String? {
-    get { super.placeholderString }
-    set {
-      super.placeholderString = newValue ?? NSLocalizedString("Filter", bundle: .module, comment: "")
-      placeholderAttributedString = NSAttributedString(
-        string: placeholderString!,
-        attributes: [.font: font!, .foregroundColor: NSColor.secondaryLabelColor]
-      )
-    }
+  open override var allowsVibrancy: Bool {
+    let isFirstResponder = window?.firstResponder == currentEditor()
+    let isFiltering = !stringValue.isEmpty
+    return !(isFirstResponder || isFiltering)
+  }
+
+//  // FIXME?
+//  open override var placeholderString: String? {
+//    get { super.placeholderString }
+//    set {
+//      super.placeholderString = newValue ?? NSLocalizedString("Filter", bundle: .module, comment: "")
+//      placeholderAttributedString = NSAttributedString(
+//        string: placeholderString!,
+//        attributes: [.font: font!, .foregroundColor: NSColor.secondaryLabelColor]
+//      )
+//    }
+//  }
+
+  open override var controlSize: NSControl.ControlSize {
+    didSet { invalidateIntrinsicContentSize() }
   }
 
   open override var intrinsicContentSize: NSSize {
     switch controlSize {
-    case .mini: return NSMakeSize(-1, 18)
-    case .small: return NSMakeSize(-1, 20)
-    case .large: return NSMakeSize(-1, 24)
-    default: return NSMakeSize(-1, 22)
+    case .mini: return NSMakeSize(NSView.noIntrinsicMetric, 16)
+    case .small: return NSMakeSize(NSView.noIntrinsicMetric, 19)
+    case .regular: return NSMakeSize(NSView.noIntrinsicMetric, 22)
+    case .large: return NSMakeSize(NSView.noIntrinsicMetric, 24)
+    @unknown default: fatalError()
     }
   }
-  
+
   public override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
     
     // TODO: move most of this to the cell so it can be used individually
     font = .systemFont(ofSize: NSFont.smallSystemFontSize)
-    textColor = .textColor
-    isBezeled = false
-    isBordered = true
-    wantsLayer = true
-    focusRingType = .none
-    drawsBackground = false
+    placeholderString = NSLocalizedString("Filter", bundle: .module, comment: "")
+//    textColor = .textColor
+//    isBezeled = false
+//    isBordered = true
+//    wantsLayer = true
+//    focusRingType = .none
+//    drawsBackground = false
     // layerContentsRedrawPolicy = .onSetNeedsDisplay
 
     // TODO: searchMenuTemplate

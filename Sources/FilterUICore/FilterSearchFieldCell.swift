@@ -10,7 +10,20 @@ import AppKit
   private var isInActiveWindow = false {
     didSet {
       cancelButtonCell?.isEnabled = isInActiveWindow
-      controlView?.setNeedsDisplay(.infinite)
+      controlView?.needsDisplay = true
+    }
+  }
+
+  open override var placeholderString: String? {
+    didSet {
+      placeholderAttributedString = placeholderString.map {
+        NSAttributedString(string: $0, attributes: [
+          .font: font!,
+          .foregroundColor: controlView?.effectiveAppearance.allowsVibrancy == true
+          ? NSColor(named: "vibrantPlaceholderText", bundle: .module)!
+          : NSColor(named: "nonVibrantPlaceholderText", bundle: .module)!
+        ])
+      }
     }
   }
 
@@ -51,51 +64,93 @@ import AppKit
   
   open var activeFilterImage = Bundle.module.image(forResource: .activeFilterIcon)!
     .tinted(with: .controlAccentColor)
-  
+
+  open override func drawFocusRingMask(withFrame cellFrame: NSRect, in controlView: NSView) {}
+
   open override func draw(withFrame cellFrame: NSRect, in controlView: NSView) {
-    // this… i… help——
-    if hasFilteringAppearance {
-      NSColor.textBackgroundColor.setFill()
-      if hasSourceListAppearance {
-        if isInActiveWindow {
-          NSColor.secondaryLabelColor.withAlphaComponent(0.8).setStroke()
-        } else {
-          NSColor.secondaryLabelColor.withAlphaComponent(0.4).setStroke()
-        }
-      } else {
-        if isInActiveWindow {
-          NSColor.secondaryLabelColor.withAlphaComponent(0.4).setStroke()
-        } else {
-          NSColor.secondaryLabelColor.withAlphaComponent(0.2).setStroke()
-        }
-      }
+//    // this… i… help——
+//    if hasFilteringAppearance {
+//      NSColor.textBackgroundColor.setFill()
+//      if hasSourceListAppearance {
+//        if isInActiveWindow {
+//          NSColor.secondaryLabelColor.withAlphaComponent(0.8).setStroke()
+//        } else {
+//          NSColor.secondaryLabelColor.withAlphaComponent(0.4).setStroke()
+//        }
+//      } else {
+//        if isInActiveWindow {
+//          NSColor.secondaryLabelColor.withAlphaComponent(0.4).setStroke()
+//        } else {
+//          NSColor.secondaryLabelColor.withAlphaComponent(0.2).setStroke()
+//        }
+//      }
+//    } else {
+//      if hasSourceListAppearance {
+//        if isInActiveWindow {
+//          // print(NSColor.unemphasizedSelectedContentBackgroundColor)
+//          // print(NSColor.alternatingContentBackgroundColors[0])
+//          NSColor.alternatingContentBackgroundColors[0].setFill()
+//          //NSColor.unemphasizedSelectedContentBackgroundColor.withAlphaComponent(0.4).setFill()
+//          //NSColor.alternatingContentBackgroundColors[0].setFill()
+//          //NSColor.controlTextColor.withAlphaComponent(0.5).setFill()
+//        } else {
+//          NSColor.alternatingContentBackgroundColors[1].setFill()
+//          // NSColor.alternatingContentBackgroundColors[1].setFill()
+//          // NSColor.quaternaryLabelColor.setStroke()
+//        }
+//        NSColor.secondaryLabelColor.withAlphaComponent(0.3).setStroke()
+//      } else {
+//        if isInActiveWindow {
+//          NSColor.windowBackgroundColor.setFill()
+//        } else {
+//          NSColor.textBackgroundColor.setFill()
+//        }
+//        NSColor.quaternaryLabelColor.withAlphaComponent(0.2).setStroke()
+//      }
+//    }
+
+    let shouldIncreaseContrast = NSWorkspace.shared.accessibilityDisplayShouldIncreaseContrast
+    let allowsVibrancy = controlView.effectiveAppearance.allowsVibrancy
+    let isKeyOrMainWindow = controlView.window?.isKeyWindow == true || controlView.window?.isMainWindow == true
+    let hasKeyboardFocus = controlView.window?.firstResponder == (controlView as? NSControl)?.currentEditor()
+    let hasActiveFilter = !stringValue.isEmpty
+
+    if shouldIncreaseContrast || (isKeyOrMainWindow && (hasKeyboardFocus || hasActiveFilter)) {
+      NSColor(named: "keyFocusBackground", bundle: .module)!.setFill()
     } else {
-      if hasSourceListAppearance {
-        if isInActiveWindow {
-          // print(NSColor.unemphasizedSelectedContentBackgroundColor)
-          // print(NSColor.alternatingContentBackgroundColors[0])
-          NSColor.alternatingContentBackgroundColors[0].setFill()
-          //NSColor.unemphasizedSelectedContentBackgroundColor.withAlphaComponent(0.4).setFill()
-          //NSColor.alternatingContentBackgroundColors[0].setFill()
-          //NSColor.controlTextColor.withAlphaComponent(0.5).setFill()
+      if allowsVibrancy {
+        if isKeyOrMainWindow {
+          NSColor(named: "vibrantActiveBackground", bundle: .module)!.setFill()
         } else {
-          NSColor.alternatingContentBackgroundColors[1].setFill()
-          // NSColor.alternatingContentBackgroundColors[1].setFill()
-          // NSColor.quaternaryLabelColor.setStroke()
+          NSColor(named: "vibrantInactiveBackground", bundle: .module)!.setFill()
         }
-        NSColor.secondaryLabelColor.withAlphaComponent(0.3).setStroke()
       } else {
-        if isInActiveWindow {
-          // NSColor.textBackgroundColor.withAlphaComponent(0.6).setFill()
-          // NSColor.quaternaryLabelColor.withAlphaComponent(0.1).setFill()
-          NSColor.unemphasizedSelectedContentBackgroundColor.withAlphaComponent(0.6).setFill()
+        if isKeyOrMainWindow {
+          NSColor(named: "nonVibrantActiveBackground", bundle: .module)!.setFill()
         } else {
-          NSColor.textBackgroundColor.setFill()
+          NSColor(named: "nonVibrantInactiveBackground", bundle: .module)!.setFill()
         }
-        NSColor.quaternaryLabelColor.withAlphaComponent(0.2).setStroke()
       }
     }
-    
+
+    if shouldIncreaseContrast {
+      if isKeyOrMainWindow {
+        NSColor(named: "highContrastActiveBorder", bundle: .module)!.setStroke()
+      } else {
+        NSColor(named: "highContrastInactiveBorder", bundle: .module)!.setStroke()
+      }
+    } else {
+      if allowsVibrancy {
+        NSColor(calibratedWhite: 0.5, alpha: 0.25).setStroke()
+      } else {
+        if isKeyOrMainWindow && (hasActiveFilter || hasKeyboardFocus) {
+          NSColor(calibratedWhite: 0.5, alpha: 0.7).setStroke()
+        } else {
+          NSColor(calibratedWhite: 0.5, alpha: 0.35).setStroke()
+        }
+      }
+    }
+
     let path = NSBezierPath(roundedRect: cellFrame.insetBy(dx: 0.5, dy: 0.5), xRadius: 6, yRadius: 6)
 //    let path = NSBezierPath(roundedRect: cellFrame, xRadius: 6, yRadius: 6)
     path.lineWidth = 1
@@ -106,7 +161,9 @@ import AppKit
   }
   
   open override func setUpFieldEditorAttributes(_ textObj: NSText) -> NSText {
+    let textObj = super.setUpFieldEditorAttributes(textObj)
     guard let textView = textObj as? NSTextView else { return textObj }
+    print(textView)
     textView.smartInsertDeleteEnabled = false
     return textView
   }

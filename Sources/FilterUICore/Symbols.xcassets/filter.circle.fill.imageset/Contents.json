@@ -1,12 +1,12 @@
 {
   "images" : [
     {
-      "filename" : "Filter-Fill_Normal.png",
+      "filename" : "filter.circle.fill.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "Filter-Fill_Normal@2x.png",
+      "filename" : "filter.circle.fill@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },

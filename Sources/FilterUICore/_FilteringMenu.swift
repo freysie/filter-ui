@@ -107,6 +107,7 @@ public class _FilteringMenu: NSMenu, NSMenuDelegate, NSSearchFieldDelegate, Filt
   private func setUpFilterField(in menu: NSMenu, with string: String) {
     // print((#function, menu, string))
 
+    // TODO: loop all the way in
     var menu = menu
     if menu.highlightedItem?.hasSubmenu == true {
       // print("highlighted item has submenu, reeeeee")
