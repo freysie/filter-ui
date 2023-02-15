@@ -8,6 +8,8 @@ import Combine
 // TODO: clear button
 // TODO: menu should trigger on right click
 // TODO: ≠, ••• with different font color
+// ✓ TODO: light mode
+// ✓ TODO: don’t interfere with standard token fields
 // FIXME: Y offset jitter
 // FIXME: search icon shouldn’t select all tokens on click
 // FIXME: single-line field editor
@@ -40,7 +42,6 @@ import Combine
     font = .systemFont(ofSize: NSFont.smallSystemFontSize)
     tokenStyle = .squared
     usesSingleLineMode = true
-    placeholderString = NSLocalizedString("Filter", bundle: .module, comment: "")
 
     Publishers.MergeMany(
       NotificationCenter.default.publisher(for: NSWindow.didBecomeKeyNotification, object: nil),
@@ -84,6 +85,11 @@ import Combine
 
   public func textView(_ textView: NSTextView, doubleClickedOn cell: NSTextAttachmentCellProtocol, in cellFrame: NSRect, at charIndex: Int) {
     textView.replaceCharacters(in: NSMakeRange(charIndex, 1), with: (cell as? NSCell)?.stringValue ?? "")
+  }
+
+  open override func resignFirstResponder() -> Bool {
+    // print(#function)
+    return super.resignFirstResponder()
   }
 }
 

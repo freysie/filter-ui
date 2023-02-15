@@ -85,7 +85,8 @@ import AppKit
     
     // TODO: move most of this to the cell so it can be used individually
     font = .systemFont(ofSize: NSFont.smallSystemFontSize)
-    placeholderString = NSLocalizedString("Filter", bundle: .module, comment: "")
+    // placeholderString = NSLocalizedString("Filter", bundle: .module, comment: "")
+
 //    textColor = .textColor
 //    isBezeled = false
 //    isBordered = true

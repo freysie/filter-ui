@@ -182,6 +182,8 @@ struct FilterField_Previews: PreviewProvider {
           ]
           return f
         }
+
+        NSViewPreview { NSTokenField() }
       }
     }
   }

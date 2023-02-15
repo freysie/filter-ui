@@ -1,45 +1,54 @@
 import SwiftUI
+import FilterUICore
 import PreviewsCapture
 
-struct FilterUI_Previews: PreviewProvider {
+class FilterUI_Previews: PreviewProvider, PreviewCaptureBatch {
   static var previews: some View {
     Logo()
-      .preferredColorScheme(.dark)
+      //.preferredColorScheme(.dark)
       .background()
-      .previewScreenshot("Logo~dark")
+      .previewScreenshot("Logo-1")
+
+    Logo(caret: true)
+      //.preferredColorScheme(.dark)
+      .background()
+      .previewScreenshot("Logo-2")
+
+    //Logo()
+    //  .preferredColorScheme(.light)
+    //  .background()
+    //  .previewScreenshot("_Logo~light")
+
+    BasicUsage()
+      .background()
+      .previewScreenshot("BasicUsage")
+
+    AccessoryToggles()
+      .background()
+      .previewScreenshot("AccessoryToggles")
+
 //      BasicUsage().preferredColorScheme(.light)//.screenshotName("BasicUsage~light")
 //      BasicUsage().preferredColorScheme(.dark)//.screenshotName("BasicUsage~dark")
 //      // CustomPrompt().screenshotName("CustomPrompt")
 //      AccessoryToggles().preferredColorScheme(.light)//.screenshotName("AccessoryToggles~light")
 //      AccessoryToggles().preferredColorScheme(.dark)//.screenshotName("AccessoryToggles~dark")
   }
-  
+
+  // TODO: don’t offset but have varying widths instead?
   struct Logo: View {
+    var caret = false
     var body: some View {
-//      LazyVGrid(rows: [
-//        GridItem(.fixed(172)),
-//        GridItem(.fixed(172)),
-//        GridItem(.fixed(172)),
-//        GridItem(.fixed(172)),
-//        GridItem(.fixed(172)),
-//        GridItem(.fixed(172)),
-//      ]) {
-//        row()
-//        row().offset(x: 50, y: 0)
-//        row().offset(x: -50, y: 0)
-//      }
-//      .frame(width: 640, height: 240)
-      
-      VStack {
-        row()
-        row().offset(x: 50, y: 0)
-        row().offset(x: -50, y: 0)
+      let offset: CGFloat = 8
+      return VStack {
+        row().offset(x: offset * -3)
+        row().offset(x: offset * -2)//.offset(x: 50, y: 0)
+        row().offset(x: offset * -1)//.offset(x: -50, y: 0)
         
         HStack(alignment: .top) {
-          FilterField(text: .constant("")).frame(width: 172)
-          FilterField(text: .constant("")).frame(width: 172)
+          field()
+          //NSViewPreview { FilterTokenField() }.frame(width: 172)
           FilterField(text: .constant("Filter UI")).frame(width: 172)
-            // .overlay { Rectangle().size(width: 1, height: 14).offset(x: 63, y: 4).fill(.primary) }
+            .overlay { if caret { Rectangle().size(width: 1, height: 14).offset(x: 63, y: 4).fill(.primary) } }
   
 //          Image(nsImage: NSImage(contentsOf: URL(fileURLWithPath: "../../Screenshots/FilteringMenu.png", relativeTo: URL(fileURLWithPath: #filePath))) ?? NSImage())
 //            .padding(-20)
@@ -49,20 +58,19 @@ struct FilterUI_Previews: PreviewProvider {
 //              Image(nsImage: NSImage(contentsOf: URL(fileURLWithPath: "../../Screenshots/FilteringMenu.png", relativeTo: URL(fileURLWithPath: #filePath)))!)
 //            }
           
-          FilterField(text: .constant("")).frame(width: 172)
-          FilterField(text: .constant("")).frame(width: 172)
+          field()
         }
 
-        row().offset(x: 50, y: 0)
-        row().offset(x: -50, y: 0)
-        row()
+        row().offset(x: offset * 1)//.offset(x: 50, y: 0)
+        row().offset(x: offset * 2)//.offset(x: -50, y: 0)
+        row().offset(x: offset * 3)
       }
       .frame(width: 640, height: 240)
     }
     
     func row() -> some View {
       HStack {
-        ForEach(0..<6) { _ in
+        ForEach(0..<3) { _ in
           field()
         }
       }
@@ -89,29 +97,29 @@ struct FilterUI_Previews: PreviewProvider {
           Text("Regular")
           FilterField(text: .constant(""))
         }
-        
+
         VStack(alignment: .leading) {
           Text("Focused")
           FilterField(text: .constant(""), isFiltering: true)
         }
-        
+
         VStack(alignment: .leading) {
           Text("Non-Empty")
           FilterField(text: .constant("Lorem Ipsum"), isFiltering: true)
         }
       }
-      .padding(.horizontal)
+      .padding()
       .frame(width: 200)
     }
   }
-  
+
   struct CustomPrompt: View {
     var body: some View {
       FilterField(text: .constant(""), prompt: "Hello, Filter!")
         .frame(width: 200)
     }
   }
-  
+
   struct AccessoryToggles: View {
     var body: some View {
       VStack(spacing: 15) {
@@ -137,7 +145,7 @@ struct FilterUI_Previews: PreviewProvider {
         }
       }
       // .background(.background)
-      .padding(.horizontal)
+      .padding()
       .frame(width: 200)
     }
   }
@@ -165,23 +173,6 @@ let logoToggleImages = [
   "doc",
   "c.square",
 ]
-
-// import GameplayKit
-
-//class PreviewRandomSource: RandomNumberGenerator {
-//  var i: UInt64 = 0
-//  func next() -> UInt64 { i += 1000; return i }
-//}
-
-// var r = PreviewRandomSource()
-//var r = SystemRandomNumberGenerator()
-
-//var r = GKLinearCongruentialRandomSource(seed: 0)
-//
-//extension GKRandomSource: RandomNumberGenerator {
-//  public func next() -> UInt64 { UInt64(nextInt()) }
-//}
-// let rng = RandomNumberGenerator
 
 var r = Xoroshiro256StarStar.init(seed: (0, 0, 0, 1))
 

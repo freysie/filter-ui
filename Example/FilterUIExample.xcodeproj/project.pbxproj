@@ -8,18 +8,31 @@
 
 /* Begin PBXBuildFile section */
 		3B4BC58B29882A7E0090B669 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3B4BC58929882A7E0090B669 /* Localizable.strings */; };
+		3B65DD75299C84DE00F08583 /* FilterUI in Frameworks */ = {isa = PBXBuildFile; productRef = 3B65DD71299C84DE00F08583 /* FilterUI */; };
+		3B65DD77299C84DE00F08583 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3B4BC58929882A7E0090B669 /* Localizable.strings */; };
+		3B65DD7D299C855500F08583 /* FilterUIScreenshots.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B65DD7C299C855500F08583 /* FilterUIScreenshots.swift */; };
 		3BDD452728213E38003D77E3 /* FilterUIExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDD452628213E38003D77E3 /* FilterUIExampleApp.swift */; };
 		3BDD453A28213EC9003D77E3 /* FilterUI in Frameworks */ = {isa = PBXBuildFile; productRef = 3BDD453928213EC9003D77E3 /* FilterUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		3B4BC58A29882A7E0090B669 /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Localizable.strings; sourceTree = "<group>"; };
+		3B65DD7B299C84DE00F08583 /* FilterUIScreenshots.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FilterUIScreenshots.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3B65DD7C299C855500F08583 /* FilterUIScreenshots.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterUIScreenshots.swift; sourceTree = "<group>"; };
 		3BDD452328213E38003D77E3 /* FilterUIExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FilterUIExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3BDD452628213E38003D77E3 /* FilterUIExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterUIExampleApp.swift; sourceTree = "<group>"; };
 		3BDD453628213E90003D77E3 /* filter-ui */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "filter-ui"; path = ..; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		3B65DD74299C84DE00F08583 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3B65DD75299C84DE00F08583 /* FilterUI in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3BDD452028213E38003D77E3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -36,6 +49,7 @@
 			children = (
 				3B4BC58929882A7E0090B669 /* Localizable.strings */,
 				3BDD452628213E38003D77E3 /* FilterUIExampleApp.swift */,
+				3B65DD7C299C855500F08583 /* FilterUIScreenshots.swift */,
 				3BDD453528213E90003D77E3 /* Packages */,
 				3BDD452428213E38003D77E3 /* Products */,
 			);
@@ -45,6 +59,7 @@
 			isa = PBXGroup;
 			children = (
 				3BDD452328213E38003D77E3 /* FilterUIExample.app */,
+				3B65DD7B299C84DE00F08583 /* FilterUIScreenshots.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -60,6 +75,27 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		3B65DD6F299C84DE00F08583 /* FilterUIScreenshots */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3B65DD78299C84DE00F08583 /* Build configuration list for PBXNativeTarget "FilterUIScreenshots" */;
+			buildPhases = (
+				3B65DD72299C84DE00F08583 /* Sources */,
+				3B65DD74299C84DE00F08583 /* Frameworks */,
+				3B65DD76299C84DE00F08583 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3B65DD70299C84DE00F08583 /* PBXTargetDependency */,
+			);
+			name = FilterUIScreenshots;
+			packageProductDependencies = (
+				3B65DD71299C84DE00F08583 /* FilterUI */,
+			);
+			productName = FilterUIExample;
+			productReference = 3B65DD7B299C84DE00F08583 /* FilterUIScreenshots.app */;
+			productType = "com.apple.product-type.application";
+		};
 		3BDD452228213E38003D77E3 /* FilterUIExample */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3BDD453228213E3A003D77E3 /* Build configuration list for PBXNativeTarget "FilterUIExample" */;
@@ -111,11 +147,20 @@
 			projectRoot = "";
 			targets = (
 				3BDD452228213E38003D77E3 /* FilterUIExample */,
+				3B65DD6F299C84DE00F08583 /* FilterUIScreenshots */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		3B65DD76299C84DE00F08583 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3B65DD77299C84DE00F08583 /* Localizable.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3BDD452128213E38003D77E3 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -127,6 +172,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		3B65DD72299C84DE00F08583 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3B65DD7D299C855500F08583 /* FilterUIScreenshots.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3BDD451F28213E38003D77E3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -138,6 +191,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		3B65DD70299C84DE00F08583 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 3BB9AF502836FCD800470721 /* FilterUI */;
+		};
 		3BB9AF512836FCD800470721 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			productRef = 3BB9AF502836FCD800470721 /* FilterUI */;
@@ -156,6 +213,56 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		3B65DD79299C84DE00F08583 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = local.FilterUIExample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		3B65DD7A299C84DE00F08583 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = local.FilterUIExample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 		3BDD453028213E3A003D77E3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -322,6 +429,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		3B65DD78299C84DE00F08583 /* Build configuration list for PBXNativeTarget "FilterUIScreenshots" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3B65DD79299C84DE00F08583 /* Debug */,
+				3B65DD7A299C84DE00F08583 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		3BDD451E28213E38003D77E3 /* Build configuration list for PBXProject "FilterUIExample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -343,6 +459,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		3B65DD71299C84DE00F08583 /* FilterUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FilterUI;
+		};
 		3BB9AF502836FCD800470721 /* FilterUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = FilterUI;

@@ -34,13 +34,18 @@ import AppKit
   open override func cellBaselineOffset() -> NSPoint {
     //print(NSMakePoint(0, font?.descender ?? 0))
     //return NSMakePoint(0, ((font?.descender ?? 0) - 1).rounded())
-    NSMakePoint(0, font?.descender ?? 0)
+    NSMakePoint(0, (font?.descender ?? 0))
   }
 
   open override func cellSize() -> NSSize {
     let textSize = (stringValue as NSString).size(withAttributes: [.font: font!])
     return NSMakeSize(textSize.width.rounded() + 12 + 1 + 3 * 2 + 2 * 2, 15)
   }
+
+//  open override nonisolated func cellFrame(for textContainer: NSTextContainer, proposedLineFragment lineFrag: NSRect, glyphPosition position: NSPoint, characterIndex charIndex: Int) -> NSRect {
+//    print(super.cellFrame(for: textContainer, proposedLineFragment: lineFrag, glyphPosition: position, characterIndex: charIndex))
+//    return NSMakeRect(0, 0, cellSize().width, cellSize().height)
+//  }
   
   func menuChevronRect(forBounds rect: NSRect) -> NSRect {
     NSMakeRect(rect.minX + 1, rect.minY, 14, 15)
@@ -83,14 +88,22 @@ import AppKit
     secondRect.size.width -= 1
 
     NSGraphicsContext.current?.saveGraphicsState()
-    (isSelected ? NSColor.lightGray : NSColor.darkGray).setFill()
     firstRect.clip()
+    if isSelected {
+      NSColor(named: "tokenSelectedColor", bundle: .module)!.setFill()
+    } else {
+      NSColor(named: "tokenRegularKeyColor", bundle: .module)!.setFill()
+    }
     NSBezierPath(roundedRect: cellFrame.insetBy(dx: 2, dy: 0), xRadius: 2, yRadius: 2).fill()
     NSGraphicsContext.current?.restoreGraphicsState()
 
     NSGraphicsContext.current?.saveGraphicsState()
-    (isSelected ? NSColor.lightGray : NSColor.darkGray.withAlphaComponent(0.65)).setFill()
     secondRect.clip()
+    if isSelected {
+      NSColor(named: "tokenSelectedColor", bundle: .module)!.setFill()
+    } else {
+      NSColor(named: "tokenRegularValueColor", bundle: .module)!.setFill()
+    }
     NSBezierPath(roundedRect: cellFrame.insetBy(dx: 2, dy: 0), xRadius: 2, yRadius: 2).fill()
     NSGraphicsContext.current?.restoreGraphicsState()
   }
@@ -98,7 +111,7 @@ import AppKit
   func drawMenuChevron(withFrame cellFrame: NSRect, in controlView: NSView) {
     guard let image = NSImage(systemSymbolName: "chevron.down", accessibilityDescription: nil)?
       .withSymbolConfiguration(NSImage.SymbolConfiguration(pointSize: 6, weight: .bold, scale: .medium))?
-      .tinted(with: .textColor) else { return }
+      .tinted(with: isSelected ? .alternateSelectedControlTextColor : .controlTextColor) else { return }
 
     image.draw(in: image.size.centered(in: menuChevronRect(forBounds: cellFrame)).integral)
   }
@@ -106,7 +119,7 @@ import AppKit
   func drawTitle(withFrame cellFrame: NSRect, in controlView: NSView) {
     (stringValue as NSString).draw(in: titleRect(forBounds: cellFrame), withAttributes: [
       .font: font!,
-      .foregroundColor: NSColor.controlTextColor
+      .foregroundColor: isSelected ? NSColor.alternateSelectedControlTextColor : NSColor.controlTextColor
     ])
   }
 

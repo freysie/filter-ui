@@ -11,6 +11,8 @@ import ObjectiveC
   public override init(textCell string: String) {
     super.init(textCell: string)
     delegate = self
+    font = .systemFont(ofSize: NSFont.smallSystemFontSize)
+    placeholderString = nil
   }
 
   required public init(coder: NSCoder) {
@@ -35,14 +37,15 @@ import ObjectiveC
 
   open override var placeholderString: String? {
     didSet {
-      placeholderAttributedString = placeholderString.map {
-        NSAttributedString(string: $0, attributes: [
+      placeholderAttributedString = NSAttributedString(
+        string: placeholderString ?? NSLocalizedString("Filter", bundle: .module, comment: ""),
+        attributes: [
           .font: font!,
           .foregroundColor: controlView?.effectiveAppearance.allowsVibrancy == true
-          ? NSColor(named: "vibrantPlaceholderText", bundle: .module)!
-          : NSColor(named: "nonVibrantPlaceholderText", bundle: .module)!
-        ])
-      }
+          ? NSColor(named: "filterFieldVibrantPlaceholderTextColor", bundle: .module)!
+          : NSColor(named: "filterFieldNonVibrantPlaceholderTextColor", bundle: .module)!
+        ]
+      )
     }
   }
 
@@ -58,28 +61,28 @@ import ObjectiveC
     let hasActiveFilter = !stringValue.isEmpty
 
     if shouldIncreaseContrast || (isKeyOrMainWindow && (hasKeyboardFocus || hasActiveFilter)) {
-      NSColor(named: "keyFocusBackground", bundle: .module)!.setFill()
+      NSColor(named: "filterFieldKeyFocusBackgroundColor", bundle: .module)!.setFill()
     } else {
       if allowsVibrancy {
         if isKeyOrMainWindow {
-          NSColor(named: "vibrantActiveBackground", bundle: .module)!.setFill()
+          NSColor(named: "filterFieldVibrantActiveBackgroundColor", bundle: .module)!.setFill()
         } else {
-          NSColor(named: "vibrantInactiveBackground", bundle: .module)!.setFill()
+          NSColor(named: "filterFieldVibrantInactiveBackgroundColor", bundle: .module)!.setFill()
         }
       } else {
         if isKeyOrMainWindow {
-          NSColor(named: "nonVibrantActiveBackground", bundle: .module)!.setFill()
+          NSColor(named: "filterFieldNonVibrantActiveBackgroundColor", bundle: .module)!.setFill()
         } else {
-          NSColor(named: "nonVibrantInactiveBackground", bundle: .module)!.setFill()
+          NSColor(named: "filterFieldNonVibrantInactiveBackgroundColor", bundle: .module)!.setFill()
         }
       }
     }
 
     if shouldIncreaseContrast {
       if isKeyOrMainWindow {
-        NSColor(named: "highContrastActiveBorder", bundle: .module)!.setStroke()
+        NSColor(named: "filterFieldHighContrastActiveBorderColor", bundle: .module)!.setStroke()
       } else {
-        NSColor(named: "highContrastInactiveBorder", bundle: .module)!.setStroke()
+        NSColor(named: "filterFieldHighContrastInactiveBorderColor", bundle: .module)!.setStroke()
       }
     } else {
       if allowsVibrancy {
@@ -142,6 +145,11 @@ import ObjectiveC
 
   // MARK: - Attachment Cells
 
+  public func tokenFieldCell(_ tokenFieldCell: NSTokenFieldCell, shouldAdd tokens: [Any], at index: Int) -> [Any] {
+    print((#function, tokens, index))
+    return tokens
+  }
+
   public func tokenFieldCell(_ tokenFieldCell: NSTokenFieldCell, displayStringForRepresentedObject representedObject: Any) -> String? {
     guard let value = representedObject as? FilterTokenFieldValue, let string = value.objectValue as? String else { return nil }
     switch value.operatorType {
@@ -158,8 +166,13 @@ import ObjectiveC
   }
 
   public func tokenFieldCell(_ tokenFieldCell: NSTokenFieldCell, representedObjectForEditing editingString: String) -> Any? {
-    FilterTokenFieldValue(objectValue: editingString, operatorType: .contains)
-    // FilterTokenAttachmentCell()
+    if editingString.hasPrefix("*") {
+      return FilterTokenFieldValue(objectValue: String(editingString.dropFirst()), operatorType: .endsWith)
+    } else if editingString.hasSuffix("*") {
+      return FilterTokenFieldValue(objectValue: String(editingString.dropLast()), operatorType: .beginsWith)
+    } else {
+      return FilterTokenFieldValue(objectValue: editingString, operatorType: .contains)
+    }
   }
 
   public func tokenFieldCell(_ tokenFieldCell: NSTokenFieldCell, readFrom pboard: NSPasteboard) -> [Any]? {
@@ -196,7 +209,19 @@ import ObjectiveC
   }
 
   public func tokenTextStorage(_ textStorage: FilterTokenTextStorage, updateTokenAttachment attachment: NSTextAttachment, forRange range: NSRange) {
-    updateTokenAttachment(attachment, forAttributedString: textStorage.attributedSubstring(from: range))
+    if (attachment.attachmentCell as? NSCell)?.representedObject is FilterTokenFieldValue {
+      updateTokenAttachment(attachment, forAttributedString: textStorage.attributedSubstring(from: range))
+    }
+  }
+
+  open override var objectValue: Any? {
+    get { super.objectValue }
+    set { super.objectValue = newValue }
+  }
+
+  open override func takeObjectValueFrom(_ sender: Any?) {
+    print(#function)
+    super.takeObjectValueFrom(sender)
   }
 
   open override var attributedStringValue: NSAttributedString {
@@ -210,23 +235,38 @@ import ObjectiveC
       return attrString
     }
     set {
-      var objects = [Any?]()
-      newValue.enumerateAttribute(.attachment, in: NSMakeRange(0, newValue.length)) { attachment, range, _ in
+      let attrString = newValue
+      // print(attrString)
+      attrString.enumerateAttribute(.attachment, in: NSMakeRange(0, attrString.length)) { [self] attachment, range, _ in
         if let attachment = attachment as? NSTextAttachment {
-          // print((attachment, (attachment.attachmentCell as? NSCell)?.representedObject as Any))
-          //objects.append(representedObjectWithAttachment(attachment, attributedString: newValue.attributedSubstring(from: range)))
-          objects.append((attachment.attachmentCell as? NSCell)?.representedObject)
+          updateTokenAttachment(attachment, forAttributedString: attrString.attributedSubstring(from: range))
         }
       }
-      objectValue = objects
+      super.attributedStringValue = attrString
     }
+//    set {
+//      var objects = [Any?]()
+//      newValue.enumerateAttribute(.attachment, in: NSMakeRange(0, newValue.length)) { attachment, range, _ in
+//        if let attachment = attachment as? NSTextAttachment {
+//          // print((attachment, (attachment.attachmentCell as? NSCell)?.representedObject as Any))
+//          //objects.append(representedObjectWithAttachment(attachment, attributedString: newValue.attributedSubstring(from: range)))
+//          objects.append((attachment.attachmentCell as? NSCell)?.representedObject)
+//        }
+//      }
+//      objectValue = objects
+//    }
   }
+
+  // open override func fieldEditor(for controlView: NSView) -> NSTextView? {
+  //   print(#function)
+  //   return NSTextView()
+  // }
 
   open override func setUpFieldEditorAttributes(_ textObj: NSText) -> NSText {
     let textObj = super.setUpFieldEditorAttributes(textObj)
 
     if let textView = textObj as? NSTextView, let layoutManager = textView.textContainer?.layoutManager {
-      print(textView)
+//      print(textView)
 
       if let textStorage = layoutManager.textStorage, !(textStorage is FilterTokenTextStorage) {
         let newTextStorage = FilterTokenTextStorage(textStorage: textStorage)
@@ -240,6 +280,8 @@ import ObjectiveC
   }
 
   open override func endEditing(_ textObj: NSText) {
+    // print((#function, objectValue))
+
     if let textView = textObj as? NSTextView, let layoutManager = textView.textContainer?.layoutManager {
       (layoutManager.textStorage as? FilterTokenTextStorage)?.tokenDelegate = nil
     }

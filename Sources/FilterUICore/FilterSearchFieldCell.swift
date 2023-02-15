@@ -16,19 +16,23 @@ import AppKit
 
   open override var placeholderString: String? {
     didSet {
-      placeholderAttributedString = placeholderString.map {
-        NSAttributedString(string: $0, attributes: [
+      placeholderAttributedString = NSAttributedString(
+        string: placeholderString ?? NSLocalizedString("Filter", bundle: .module, comment: ""),
+        attributes: [
           .font: font!,
           .foregroundColor: controlView?.effectiveAppearance.allowsVibrancy == true
-          ? NSColor(named: "vibrantPlaceholderText", bundle: .module)!
-          : NSColor(named: "nonVibrantPlaceholderText", bundle: .module)!
-        ])
-      }
+          ? NSColor(named: "filterFieldVibrantPlaceholderTextColor", bundle: .module)!
+          : NSColor(named: "filterFieldNonVibrantPlaceholderTextColor", bundle: .module)!
+        ]
+      )
     }
   }
 
   public override init(textCell string: String) {
     super.init(textCell: string)
+
+    font = .systemFont(ofSize: NSFont.smallSystemFontSize)
+    placeholderString = nil
 
     NotificationCenter.default.addObserver(self, selector: #selector(windowDidBecomeKey(_:)), name: NSWindow.didBecomeKeyNotification, object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(windowDidResignKey(_:)), name: NSWindow.didResignKeyNotification, object: nil)
@@ -116,28 +120,28 @@ import AppKit
     let hasActiveFilter = !stringValue.isEmpty
 
     if shouldIncreaseContrast || (isKeyOrMainWindow && (hasKeyboardFocus || hasActiveFilter)) {
-      NSColor(named: "keyFocusBackground", bundle: .module)!.setFill()
+      NSColor(named: "filterFieldKeyFocusBackgroundColor", bundle: .module)!.setFill()
     } else {
       if allowsVibrancy {
         if isKeyOrMainWindow {
-          NSColor(named: "vibrantActiveBackground", bundle: .module)!.setFill()
+          NSColor(named: "filterFieldVibrantActiveBackgroundColor", bundle: .module)!.setFill()
         } else {
-          NSColor(named: "vibrantInactiveBackground", bundle: .module)!.setFill()
+          NSColor(named: "filterFieldVibrantInactiveBackgroundColor", bundle: .module)!.setFill()
         }
       } else {
         if isKeyOrMainWindow {
-          NSColor(named: "nonVibrantActiveBackground", bundle: .module)!.setFill()
+          NSColor(named: "filterFieldNonVibrantActiveBackgroundColor", bundle: .module)!.setFill()
         } else {
-          NSColor(named: "nonVibrantInactiveBackground", bundle: .module)!.setFill()
+          NSColor(named: "filterFieldNonVibrantInactiveBackgroundColor", bundle: .module)!.setFill()
         }
       }
     }
 
     if shouldIncreaseContrast {
       if isKeyOrMainWindow {
-        NSColor(named: "highContrastActiveBorder", bundle: .module)!.setStroke()
+        NSColor(named: "filterFieldHighContrastActiveBorderColor", bundle: .module)!.setStroke()
       } else {
-        NSColor(named: "highContrastInactiveBorder", bundle: .module)!.setStroke()
+        NSColor(named: "filterFieldHighContrastInactiveBorderColor", bundle: .module)!.setStroke()
       }
     } else {
       if allowsVibrancy {

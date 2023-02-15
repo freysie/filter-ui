@@ -7,7 +7,7 @@ import ObjectiveC
 ///
 /// If there is only one filter result when the enter key is pressed, that item will be selected and the menu will
 /// close.
-public class _FilteringMenu: NSMenu, NSMenuDelegate, NSSearchFieldDelegate, FilteringMenuFilterViewDelegate {
+@objcMembers open class _FilteringMenu: NSMenu, NSMenuDelegate, NSSearchFieldDelegate, FilteringMenuFilterViewDelegate {
   public private(set) var wrappedDelegate: NSMenuDelegate? // TODO: make private and only expose through `delegate`
 
   private var initiallyShowsFilterField = false
@@ -88,7 +88,7 @@ public class _FilteringMenu: NSMenu, NSMenuDelegate, NSSearchFieldDelegate, Filt
     }
   }
 
-  required init(coder: NSCoder) {
+  public required init(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
 
