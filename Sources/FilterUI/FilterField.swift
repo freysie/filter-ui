@@ -118,15 +118,11 @@ struct FilterField_Previews: PreviewProvider {
     var body: some View {
       FilterField(text: $text1)
         // .filterFieldRecentsMenu(.visible)
-      
-      FilterField(text: $text1, prompt: "Hello")
 
-      FilterField(text: $text1, isFiltering: accessoryIsOn1) {
+      FilterField(text: $text1, prompt: "Hello", isFiltering: accessoryIsOn1) {
         FilterToggle(systemImage: "location.square", isOn: $accessoryIsOn1)
           .help("Show only items with location data")
       }
-
-      FilterField(text: $text2)
 
       FilterField(text: $text2, isFiltering: accessoryIsOn1 || accessoryIsOn2 || accessoryIsOn3) {
         FilterToggle(systemImage: "location.square", isOn: $accessoryIsOn1)
@@ -137,53 +133,31 @@ struct FilterField_Previews: PreviewProvider {
           .help("Show only items with Wi-Fi data")
       }
 
-      FilterField(text: $text2, isFiltering: accessoryIsOn1 || accessoryIsOn2 || accessoryIsOn3) {
-        FilterToggle(systemImage: "bookmark.square", isOn: $accessoryIsOn1)
-        FilterToggle(systemImage: "heart.square", isOn: $accessoryIsOn1)
-        FilterToggle(systemImage: "star.square", isOn: $accessoryIsOn3)
-      }
-
-      FilterField(text: $text2, isFiltering: accessoryIsOn1 || accessoryIsOn2 || accessoryIsOn3) {
-        FilterToggle(systemImage: "flag.square", isOn: $accessoryIsOn2)
-        FilterToggle(systemImage: "bolt.square", isOn: $accessoryIsOn2)
-        FilterToggle(systemImage: "eye.square", isOn: $accessoryIsOn2)
-      }
-
-      FilterField(text: $text2, isFiltering: accessoryIsOn1 || accessoryIsOn2 || accessoryIsOn3) {
-        FilterToggle(systemImage: "icloud.square", isOn: $accessoryIsOn2)
-        FilterToggle(systemImage: "lock.square", isOn: $accessoryIsOn2)
-        FilterToggle(systemImage: "square.text.square", isOn: $accessoryIsOn2)
-        FilterToggle(systemImage: "person.crop.square", isOn: $accessoryIsOn2)
-      }
-
-      FilterField(text: $text2, isFiltering: accessoryIsOn1 || accessoryIsOn2 || accessoryIsOn3) {
-        FilterToggle(systemImage: "bell.square", isOn: $accessoryIsOn2)
-        FilterToggle(systemImage: "dot.square", isOn: $accessoryIsOn2)
-        FilterToggle(systemImage: "pin.square", isOn: $accessoryIsOn2)
-        FilterToggle(systemImage: "mic.square", isOn: $accessoryIsOn2)
-      }
-
       Group {
         NSViewPreview { FilterSearchField() }
-        NSViewPreview { let f = FilterSearchField(); f.controlSize = .small; return f }
-        NSViewPreview { let f = FilterSearchField(); f.controlSize = .mini; return f }
+        // NSViewPreview { let f = FilterSearchField(); f.controlSize = .small; return f }
+        // NSViewPreview { let f = FilterSearchField(); f.controlSize = .mini; return f }
 
         NSViewPreview { FilterTokenField() }
-        NSViewPreview { let f = FilterTokenField(); f.controlSize = .small; return f }
-        NSViewPreview { let f = FilterTokenField(); f.controlSize = .mini; return f }
+        // NSViewPreview { let f = FilterTokenField(); f.controlSize = .small; return f }
+        // NSViewPreview { let f = FilterTokenField(); f.controlSize = .mini; return f }
 
         NSViewPreview {
           let f = FilterTokenField()
           f.objectValue = [
-            FilterTokenFieldValue(objectValue: "hi", operatorType: .contains),
-            FilterTokenFieldValue(objectValue: "there", operatorType: .doesNotContain),
-            FilterTokenFieldValue(objectValue: "token", operatorType: .beginsWith),
-            FilterTokenFieldValue(objectValue: "field", operatorType: .endsWith)
+            FilterTokenValue(objectValue: "hi", comparisonType: .contains),
+            FilterTokenValue(objectValue: "there", comparisonType: .doesNotContain),
+            FilterTokenValue(objectValue: "token", comparisonType: .beginsWith),
+            FilterTokenValue(objectValue: "field", comparisonType: .endsWith)
           ]
           return f
         }
 
-        NSViewPreview { NSTokenField() }
+        NSViewPreview {
+          let f = NSTokenField()
+          f.cell!.isScrollable = true
+          return f
+        }
       }
     }
   }

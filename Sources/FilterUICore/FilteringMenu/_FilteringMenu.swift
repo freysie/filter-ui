@@ -1,7 +1,6 @@
 import AppKit
 import Carbon
 import FilterUICoreObjC
-import ObjectiveC
 
 /// A filtering menu.
 ///
@@ -49,10 +48,10 @@ import ObjectiveC
     return visibleItems.count == 1 ? visibleItems.first! : nil
   }
 
-  /// Initializes and returns a filtering menu having the specified title and with autoenabling of menu items turned on.
+  /// Initializes and returns a filtering menu.
   ///
   /// FilteringMenu needs `-[NSMenu highlightItem:]` and `-[NSMenu _handleCarbonEvents:count:handler:]` in order to work.
-  /// The existence of these selectors is checked on initialization. If they doesn’t exist the menu will fall back to the standard type-select behavior.
+  /// If `NSMenu` doesn’t repsond to these private selectors the menu will fall back to the standard type-select behavior.
   public override init(title: String) {
     super.init(title: title)
     super.delegate = self
@@ -110,7 +109,6 @@ import ObjectiveC
     // TODO: loop all the way in
     var menu = menu
     if menu.highlightedItem?.hasSubmenu == true {
-      // print("highlighted item has submenu, reeeeee")
       if let submenu = menu.highlightedItem?.submenu {
         if let carbonMenu = (submenu as? Self)?.carbonMenu?.takeUnretainedValue() {
           var data = MenuTrackingData()
@@ -256,8 +254,6 @@ import ObjectiveC
               setUpFilterField(in: menu, with: string)
               return OSStatus(menuItemNotFoundErr)
             }
-//          } else {
-//            print(("reeeeeE", string.rangeOfCharacter(from: Self.invertedControlAndSpaceCharacterSet)))
           }
         }
 
@@ -320,32 +316,6 @@ import ObjectiveC
     default:
       return false
     }
-
-//    switch commandSelector {
-//    case #selector(NSResponder.moveDown(_:)):
-//      let visibleItems = items.dropFirst().filter { !$0.isHidden }
-//      guard visibleItems.count > 0 else { return true }
-//      highlight(visibleItems[0])
-//      return true
-//
-//    case #selector(NSResponder.insertNewline(_:)):
-//      let visibleItems = items.dropFirst().filter { !$0.isHidden }
-//
-//      guard
-//        visibleItems.count == 1,
-//        let returnKeyEvent = CGEvent(keyboardEventSource: nil, virtualKey: .return, keyDown: true)
-//      else { return false }
-//
-//      highlight(visibleItems[0])
-//      NSEvent(cgEvent: returnKeyEvent).map(NSApp.sendEvent)
-//
-//      // control.nextResponder?.keyDown(with: NSApp.currentEvent!)
-//
-//      return true
-//
-//    default:
-//      return false
-//    }
   }
 
   // MARK: - Filter View Delegate
@@ -365,63 +335,5 @@ import ObjectiveC
     }
 
     performFiltering(with: filterField.stringValue, in: filterView.menuItem.menu!)
-  }
-}
-
-protocol FilteringMenuFilterViewDelegate: NSObjectProtocol {
-  func filterView(_ filterView: FilteringMenuFilterView, makeFilterFieldKey filterField: FilterSearchField)
-}
-
-class FilteringMenuFilterView: NSView {
-  static let horizontalPadding: CGFloat = 20
-
-  var initialStringValue: String?
-  var filterField: FilterSearchField!
-  var menuItem: NSMenuItem!
-  weak var delegate: FilteringMenuFilterViewDelegate?
-  
-  convenience init() {
-    self.init(frame: NSMakeRect(0, 0, 120, 27))
-  }
-  
-  override init(frame frameRect: NSRect) {
-    super.init(frame: frameRect)
-
-    autoresizingMask = .width
-
-    filterField = FilterSearchField(frame: frameRect.insetBy(dx: Self.horizontalPadding, dy: 4))
-    filterField.hasSourceListAppearance = true
-    filterField.controlSize = .small
-    filterField.autoresizingMask = .width
-    addSubview(filterField)
-  }
-  
-  required init?(coder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
-  }
-  
-  override func draw(_ dirtyRect: NSRect) {
-    super.draw(dirtyRect)
-  }
-  
-  override func viewDidMoveToWindow() {
-    super.viewDidMoveToWindow()
-
-    // print((#function, window))
-    guard window != nil else { return }
-
-    if let initialStringValue {
-      filterField.stringValue = initialStringValue
-      self.initialStringValue = nil
-    } else {
-      filterField.stringValue = ""
-    }
-
-    delegate?.filterView(self, makeFilterFieldKey: filterField)
-
-    if let currentEditor = filterField.currentEditor() {
-      // currentEditor.selectedRange = NSMakeRange(0, currentEditor.string.count)
-      currentEditor.selectedRange = NSMakeRange(currentEditor.string.count, 0)
-    }
   }
 }

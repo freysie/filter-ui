@@ -1,36 +1,44 @@
 import AppKit
 import ObjectiveC
 
+// TODO: unify background drawing with FilterSearchFieldCell
+
 /// The cell interface for AppKit filter fields with token capabilities.
 @objcMembers open class FilterTokenFieldCell: NSTokenFieldCell, NSTokenFieldCellDelegate, FilterTokenTextStorageDelegate {
   public static var representedObjectKey: UInt8 = 0
-
-  open var filterImage = Bundle.module.image(forResource: .filterMenuIcon)!.tinted(with: NSColor.secondaryLabelColor)
-  open var activeFilterImage = Bundle.module.image(forResource: .activeFilterMenuIcon)!.tinted(with: .controlAccentColor)
+  public static let wildCardPattern = try! NSRegularExpression(pattern: ".+\\*.+|^\\*.+\\*$")
 
   public override init(textCell string: String) {
     super.init(textCell: string)
     delegate = self
     font = .systemFont(ofSize: NSFont.smallSystemFontSize)
     placeholderString = nil
+    isScrollable = true
   }
 
-  required public init(coder: NSCoder) {
+  public required init(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
 
   // MARK: - Layout
 
-  open override var controlSize: NSControl.ControlSize {
-    didSet { (controlView as? NSControl)?.invalidateIntrinsicContentSize(for: self) }
-  }
+  // open override var controlSize: NSControl.ControlSize {
+  //   didSet { (controlView as? NSControl)?.invalidateIntrinsicContentSize(for: self) }
+  // }
 
-  open func filterButtonRect(forBounds rect: NSRect) -> NSRect {
-    NSRect(x: rect.minX + 4, y: ((rect.size.height - 15) / 2).rounded(.down), width: 28, height: 15)
-  }
+  // open func filterButtonRect(forBounds rect: NSRect) -> NSRect {
+  //   NSRect(x: rect.minX + 4, y: ((rect.size.height - 15) / 2).rounded(.down), width: 28, height: 15)
+  // }
+
+  // open func cancelButtonRect(forBounds rect: NSRect) -> NSRect {
+  //   NSRect(x: rect.maxX - 20, y: ((rect.size.height - 15) / 2).rounded(.down), width: 24, height: 15)
+  // }
 
   open override func drawingRect(forBounds rect: NSRect) -> NSRect {
-    super.drawingRect(forBounds: rect).insetBy(dx: 15.5, dy: 0).offsetBy(dx: 15.5, dy: 0)
+    var rect = super.drawingRect(forBounds: rect)
+    rect.origin.x += 28 + 3
+    rect.size.width -= 28 + 3 + 24
+    return rect
   }
 
   // MARK: - Drawing
@@ -102,48 +110,12 @@ import ObjectiveC
     path.fill()
     path.stroke()
 
-    (hasActiveFilter ? activeFilterImage : filterImage).draw(in: filterButtonRect(forBounds: cellFrame))
+    // (hasActiveFilter ? activeFilterImage : filterImage).draw(in: filterButtonRect(forBounds: cellFrame))
 
     drawInterior(withFrame: cellFrame, in: controlView)
   }
 
-  //  public func tokenFieldCell(_ tokenFieldCell: FilterTokenFieldCell!, attachmentCellForRepresentedObject representedObject: Any!) -> NSTextAttachmentCell! {
-  ////    let cell = FilterTokenAttachmentCell()
-  ////    cell.representedObject = representedObject
-  ////    return cell
-  //    let cell = FilterTokenAttachmentCell(textCell: representedObject)!
-  //    cell.tokenStyle = .squared
-  //    return cell
-  //  }
-
-  // MARK: - Recents Menu
-  // TODO: use NSView instead? at least fix the bug where clicking the icon selects all tokens
-
-  open override func trackMouse(with event: NSEvent, in cellFrame: NSRect, of controlView: NSView, untilMouseUp flag: Bool) -> Bool {
-    let location = controlView.convert(event.locationInWindow, from: nil)
-    if filterButtonRect(forBounds: cellFrame).contains(location) {
-      if let menu = menu(for: event, in: cellFrame, of: controlView) {
-        return menu.popUp(positioning: nil, at: NSMakePoint(3, -menu.size.height + 6), in: controlView)
-      }
-    }
-
-    return false
-  }
-
-  open override func menu(for event: NSEvent, in cellFrame: NSRect, of view: NSView) -> NSMenu? {
-    let menu = NSMenu()
-    menu.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
-    menu.addItem(withTitle: "Recent Filters", action: nil, keyEquivalent: "").isEnabled = false
-    menu.addItem(withTitle: "Matching “aaaa”", action: nil, keyEquivalent: "").indentationLevel = 1
-    menu.addItem(withTitle: "Matching “aaaaaaa”", action: nil, keyEquivalent: "").indentationLevel = 1
-    menu.addItem(withTitle: "Matching “aa”", action: nil, keyEquivalent: "").indentationLevel = 1
-    menu.addItem(.separator())
-    menu.addItem(withTitle: "Clear Recents", action: nil, keyEquivalent: "")
-    menu.autoenablesItems = false
-    return menu
-  }
-
-  // MARK: - Attachment Cells
+  // MARK: - Token Field Cell Delegate
 
   public func tokenFieldCell(_ tokenFieldCell: NSTokenFieldCell, shouldAdd tokens: [Any], at index: Int) -> [Any] {
     print((#function, tokens, index))
@@ -151,32 +123,31 @@ import ObjectiveC
   }
 
   public func tokenFieldCell(_ tokenFieldCell: NSTokenFieldCell, displayStringForRepresentedObject representedObject: Any) -> String? {
-    guard let value = representedObject as? FilterTokenFieldValue, let string = value.objectValue as? String else { return nil }
-    switch value.operatorType {
-    case .contains: return string
-    case .doesNotContain: return "≠" + string
-    case .beginsWith: return string + "···"
-    case .endsWith: return "•••" + string
-    }
+    (representedObject as? FilterTokenValue)?.objectValue as? String
   }
 
   public func tokenFieldCell(_ tokenFieldCell: NSTokenFieldCell, editingStringForRepresentedObject representedObject: Any) -> String? {
-    guard let value = representedObject as? FilterTokenFieldValue else { return nil }
+    guard let value = representedObject as? FilterTokenValue else { return nil }
     return value.objectValue as? String
   }
 
   public func tokenFieldCell(_ tokenFieldCell: NSTokenFieldCell, representedObjectForEditing editingString: String) -> Any? {
-    if editingString.hasPrefix("*") {
-      return FilterTokenFieldValue(objectValue: String(editingString.dropFirst()), operatorType: .endsWith)
+    //let hasKeyboardFocus = controlView?.window?.firstResponder == (controlView as? NSControl)?.currentEditor()
+    // print((#function, editingString, isEditable, isHighlighted))
+    let editingString = editingString.trimmingCharacters(in: .whitespacesAndNewlines)
+    if Self.wildCardPattern.numberOfMatches(in: editingString, range: NSMakeRange(0, editingString.count)) > 0 {
+      return FilterTokenValue(objectValue: editingString, comparisonType: nil)
+    } else if editingString.hasPrefix("*") {
+      return FilterTokenValue(objectValue: String(editingString.dropFirst()), comparisonType: .endsWith)
     } else if editingString.hasSuffix("*") {
-      return FilterTokenFieldValue(objectValue: String(editingString.dropLast()), operatorType: .beginsWith)
+      return FilterTokenValue(objectValue: String(editingString.dropLast()), comparisonType: .beginsWith)
     } else {
-      return FilterTokenFieldValue(objectValue: editingString, operatorType: .contains)
+      return FilterTokenValue(objectValue: editingString, comparisonType: .contains)
     }
   }
 
   public func tokenFieldCell(_ tokenFieldCell: NSTokenFieldCell, readFrom pboard: NSPasteboard) -> [Any]? {
-    pboard.readObjects(forClasses: [FilterTokenFieldValue.self])
+    pboard.readObjects(forClasses: [FilterTokenValue.self])
   }
 
   public func tokenFieldCell(_ tokenFieldCell: NSTokenFieldCell, writeRepresentedObjects objects: [Any], to pboard: NSPasteboard) -> Bool {
@@ -190,39 +161,54 @@ import ObjectiveC
   }
 
   public func tokenFieldCell(_ tokenFieldCell: NSTokenFieldCell, menuForRepresentedObject representedObject: Any) -> NSMenu? {
-    guard let value = representedObject as? FilterTokenFieldValue else { return nil }
+    guard let value = representedObject as? FilterTokenValue else { return nil }
 
-    let menu = FilterTokenFieldMenu()
+    let menu = NSMenu()
     menu.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
-    menu.representedObject = representedObject as AnyObject
-    for type in FilterTokenOperatorType.allCases {
-      let item = menu.addItem(withTitle: type.displayName, action: #selector(FilterTokenField.takeOperatorTypeFromSender(_:)), keyEquivalent: "")
-      item.state = type == value.operatorType ? .on : .off
-      item.representedObject = type
+    for type in FilterTokenComparisonType.allCases {
+      let item = menu.addItem(
+        withTitle: type.displayName,
+        action: #selector(FilterTokenField.takeComparisonTypeFromSender(_:)),
+        keyEquivalent: ""
+      )
+      item.tag = type.rawValue
+      item.state = type == value.comparisonType ? .on : .off
+      item.representedObject = representedObject
     }
     menu.autoenablesItems = false
     return menu
   }
 
   public func tokenFieldCell(_ tokenFieldCell: NSTokenFieldCell, hasMenuForRepresentedObject representedObject: Any) -> Bool {
-    representedObject is FilterTokenFieldValue
+    representedObject is FilterTokenValue
   }
 
+  public func tokenFieldCell(_ tokenFieldCell: NSTokenFieldCell, styleForRepresentedObject representedObject: Any) -> NSTokenField.TokenStyle {
+    print((#function, representedObject))
+    return representedObject is String ? .none : .squared
+  }
+
+  // MARK: - Token Text Storage Delegate
+
   public func tokenTextStorage(_ textStorage: FilterTokenTextStorage, updateTokenAttachment attachment: NSTextAttachment, forRange range: NSRange) {
-    if (attachment.attachmentCell as? NSCell)?.representedObject is FilterTokenFieldValue {
+    if (attachment.attachmentCell as? NSCell)?.representedObject is FilterTokenValue {
       updateTokenAttachment(attachment, forAttributedString: textStorage.attributedSubstring(from: range))
     }
   }
 
+  // MARK: - Attachment Cell Handling
+
   open override var objectValue: Any? {
-    get { super.objectValue }
-    set { super.objectValue = newValue }
+    didSet {
+      print((Self.self, #function))
+    }
   }
 
-  open override func takeObjectValueFrom(_ sender: Any?) {
-    print(#function)
-    super.takeObjectValueFrom(sender)
-  }
+//  open override var objectValue: Any? {
+//    get { super.objectValue }
+//    set { super.objectValue = newValue }
+//    didSet { (controlView as? FilterTokenField)?.objectValueDidChange() }
+//  }
 
   open override var attributedStringValue: NSAttributedString {
     get {
@@ -243,6 +229,7 @@ import ObjectiveC
         }
       }
       super.attributedStringValue = attrString
+      // (controlView as? FilterTokenField)?.objectValueDidChange()
     }
 //    set {
 //      var objects = [Any?]()
@@ -257,17 +244,10 @@ import ObjectiveC
 //    }
   }
 
-  // open override func fieldEditor(for controlView: NSView) -> NSTextView? {
-  //   print(#function)
-  //   return NSTextView()
-  // }
-
   open override func setUpFieldEditorAttributes(_ textObj: NSText) -> NSText {
     let textObj = super.setUpFieldEditorAttributes(textObj)
 
     if let textView = textObj as? NSTextView, let layoutManager = textView.textContainer?.layoutManager {
-//      print(textView)
-
       if let textStorage = layoutManager.textStorage, !(textStorage is FilterTokenTextStorage) {
         let newTextStorage = FilterTokenTextStorage(textStorage: textStorage)
         layoutManager.replaceTextStorage(newTextStorage)
@@ -280,8 +260,8 @@ import ObjectiveC
   }
 
   open override func endEditing(_ textObj: NSText) {
-    // print((#function, objectValue))
-
+    print(#function)
+    
     if let textView = textObj as? NSTextView, let layoutManager = textView.textContainer?.layoutManager {
       (layoutManager.textStorage as? FilterTokenTextStorage)?.tokenDelegate = nil
     }
@@ -309,17 +289,11 @@ import ObjectiveC
 
   func representedObjectWithAttachment(_ attachment: NSTextAttachment, attributedString attrString: NSAttributedString) -> Any? {
     if let object = objc_getAssociatedObject(attachment, &Self.representedObjectKey) {
-      return object as? FilterTokenFieldValue
+      return object as? FilterTokenValue
     }
 
     let cell = NSTokenFieldCell()
     cell.attributedStringValue = attrString
     return (cell.objectValue as? NSArray)?.firstObject ?? attrString.string
-    //return FilterTokenFieldValue(objectValue: (cell.objectValue as? NSArray)?.firstObject ?? attrString.string, operatorType: .beginsWith)
   }
-
-}
-
-open class FilterTokenFieldMenu: NSMenu {
-  open weak var representedObject: AnyObject?
 }

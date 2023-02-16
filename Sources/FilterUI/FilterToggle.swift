@@ -1,5 +1,6 @@
 import SwiftUI
 
+// TODO: convert to AppKit ><
 public struct FilterToggle: View {
   let systemImage: String
 

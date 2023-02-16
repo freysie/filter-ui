@@ -8,7 +8,3 @@ Filter field and filtering menu for AppKit and SwiftUI.
 
 - ``FilterField``
 - ``FilterToggle``
-
-### Menu Filtering
-
-- ``FitleringMenu``

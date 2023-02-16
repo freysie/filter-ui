@@ -88,6 +88,7 @@ While typing, menu items are filtered based on fuzzy search matching of the item
 
 * Menu filtering
 * Token field
+* AppKit-based accessory views
 * ~~Find solution to border issue~~
 * Resolve text wrapping issue
 * ~~Menu w/ pill-shaped icon?~~
@@ -96,10 +97,14 @@ While typing, menu items are filtered based on fuzzy search matching of the item
 
 ### Later
 
-* More sizes?
+* Mini, small, and large sizes
+* Token fields should support keys
 
 
 ## Acknowledgements
 
 Fuzzy search implementation is based on [FuzzySearch](https://github.com/viktorasl/FuzzySearch) by Viktoras Laukevičius.
+
+Big thanks goes out to [OEXTokenField](https://github.com/octiplex/OEXTokenField) by 
+Octiplex.
 
