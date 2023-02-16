@@ -61,13 +61,8 @@ struct FilteringMenu_Previews: PreviewProvider {
 
     @objc(Coordinator)
     class Coordinator: NSObject, NSMenuDelegate {
-      func menuNeedsUpdate(_ menu: NSMenu) {
-        print("Coordinator." + #function)
-      }
-
-      func menuWillOpen(_ menu: NSMenu) {
-        print("Coordinator." + #function)
-      }
+      func menuNeedsUpdate(_ menu: NSMenu) {}
+      func menuWillOpen(_ menu: NSMenu) {}
     }
   }
 }

@@ -144,10 +144,6 @@ import FilterUICoreObjC
 
     var data = MenuTrackingData()
     guard GetMenuTrackingData(menu, &data) == noErr else { return false }
-    // print(data.virtualMenuBottom as Any)
-    // print(data.virtualMenuTop as Any)
-    // print(data.itemSelected as Any)
-    // return data.itemSelected != 1
     return data.virtualMenuTop < data.itemRect.top
   }
   
@@ -180,9 +176,7 @@ import FilterUICoreObjC
     }
 
 //    let textView = filterField.window?.firstResponder as? NSTextView
-//    print((#function, textView))
 //    if textView?.isFieldEditor == false || textView?.delegate as? FilteringMenu != self {
-//      print((#function, "yas"))
 //      filterField.window?.makeFirstResponder(filterField)
 //    }
 //    return true
@@ -238,16 +232,13 @@ import FilterUICoreObjC
 
           var modifiers: UInt32 = 0
           GetEventParameter(textEvent, EventParamName(kEventParamKeyModifiers), typeUInt32, nil, 4, nil, &modifiers)
-//          let controlDown = modifiers & UInt32(controlKey) == UInt32(controlKey)
-//          let optionDown = modifiers & UInt32(optionKey) == UInt32(optionKey)
-          let cmdDown = modifiers & UInt32(cmdKey) == UInt32(cmdKey)
+          let commandKeyDown = modifiers & UInt32(cmdKey) == UInt32(cmdKey)
 
           let string = NSString(characters: text, length: actualSize >> 1) as String
-          // print((#function, string, modifiers, controlDown: controlDown, optionDown: optionDown, cmdDown: cmdDown))
           text.deallocate()
 
           if string.rangeOfCharacter(from: Self.invertedControlAndSpaceCharacterSet) != nil {
-            if !cmdDown {
+            if !commandKeyDown {
               setUpFilterField(in: menu, with: string)
               return OSStatus(menuItemNotFoundErr)
             }

@@ -62,10 +62,9 @@ import ObjectiveC
 
   // MARK: - Field Cell Delegate
 
-  public func tokenFieldCell(_ tokenFieldCell: NSTokenFieldCell, shouldAdd tokens: [Any], at index: Int) -> [Any] {
-    // print((#function, tokens, index))
-    return tokens
-  }
+  // public func tokenFieldCell(_ tokenFieldCell: NSTokenFieldCell, shouldAdd tokens: [Any], at index: Int) -> [Any] {
+  //   return tokens
+  // }
 
   public func tokenFieldCell(_ tokenFieldCell: NSTokenFieldCell, displayStringForRepresentedObject representedObject: Any) -> String? {
     (representedObject as? FilterTokenValue)?.objectValue as? String
@@ -78,7 +77,6 @@ import ObjectiveC
 
   public func tokenFieldCell(_ tokenFieldCell: NSTokenFieldCell, representedObjectForEditing editingString: String) -> Any? {
     //let hasKeyboardFocus = controlView?.window?.firstResponder == (controlView as? NSControl)?.currentEditor()
-    // print((#function, editingString, isEditable, isHighlighted))
     let editingString = editingString.trimmingCharacters(in: .whitespacesAndNewlines)
     if Self.wildCardPattern.numberOfMatches(in: editingString, range: NSMakeRange(0, editingString.count)) > 0 {
       return FilterTokenValue(objectValue: editingString, comparisonType: nil)
@@ -96,7 +94,6 @@ import ObjectiveC
   }
 
   public func tokenFieldCell(_ tokenFieldCell: NSTokenFieldCell, writeRepresentedObjects objects: [Any], to pboard: NSPasteboard) -> Bool {
-    // print(pboard)
     pboard.clearContents()
     if let objects = objects as? [NSPasteboardWriting] {
       return pboard.writeObjects(objects)
@@ -129,8 +126,7 @@ import ObjectiveC
   }
 
   public func tokenFieldCell(_ tokenFieldCell: NSTokenFieldCell, styleForRepresentedObject representedObject: Any) -> NSTokenField.TokenStyle {
-    // print((#function, representedObject))
-    return representedObject is String ? .none : .squared
+    representedObject is String ? .none : .squared
   }
 
   // MARK: - Text Storage Delegate
@@ -142,19 +138,6 @@ import ObjectiveC
   }
 
   // MARK: - Attachment Cells
-
-  open override var objectValue: Any? {
-    didSet {
-      // print((Self.self, #function))
-      // controlView?.needsLayout = true
-    }
-  }
-
-//  open override var objectValue: Any? {
-//    get { super.objectValue }
-//    set { super.objectValue = newValue }
-//    didSet { (controlView as? FilterTokenField)?.objectValueDidChange() }
-//  }
 
   open override var attributedStringValue: NSAttributedString {
     get {
@@ -168,20 +151,17 @@ import ObjectiveC
     }
     set {
       let attrString = newValue
-      // print(attrString)
       attrString.enumerateAttribute(.attachment, in: NSMakeRange(0, attrString.length)) { [self] attachment, range, _ in
         if let attachment = attachment as? NSTextAttachment {
           updateTokenAttachment(attachment, forAttributedString: attrString.attributedSubstring(from: range))
         }
       }
       super.attributedStringValue = attrString
-      // (controlView as? FilterTokenField)?.objectValueDidChange()
     }
 //    set {
 //      var objects = [Any?]()
 //      newValue.enumerateAttribute(.attachment, in: NSMakeRange(0, newValue.length)) { attachment, range, _ in
 //        if let attachment = attachment as? NSTextAttachment {
-//          // print((attachment, (attachment.attachmentCell as? NSCell)?.representedObject as Any))
 //          //objects.append(representedObjectWithAttachment(attachment, attributedString: newValue.attributedSubstring(from: range)))
 //          objects.append((attachment.attachmentCell as? NSCell)?.representedObject)
 //        }
@@ -239,8 +219,6 @@ import ObjectiveC
 //  }
 
   open override func endEditing(_ textObj: NSText) {
-    // print(#function)
-    
     if let textView = textObj as? NSTextView, let layoutManager = textView.textContainer?.layoutManager {
       (layoutManager.textStorage as? FilterTokenTextStorage)?.tokenDelegate = nil
     }
@@ -249,8 +227,6 @@ import ObjectiveC
   }
 
   func updateTokenAttachment(_ attachment: NSTextAttachment, forAttributedString attrString: NSAttributedString) {
-    // print((attachment, (attachment.attachmentCell as? NSCell)?.objectValue, (attachment.attachmentCell as? NSCell)?.menu, (attachment.attachmentCell as? NSCell)?.representedObject, (attachment.attachmentCell as? NSCell)?.value(forKey: "_view"), (attachment.attachmentCell as? NSCell)?.value(forKey: "_representedObject"), (attachment.attachmentCell as? NSCell)?.value(forKey: "_textColor"), (attachment.attachmentCell as? NSCell)?.value(forKey: "menu"), (attachment.attachmentCell as? NSCell)?.value(forKey: "pullDownImage")))
-
     guard objc_getAssociatedObject(attachment, &Self.representedObjectKey) == nil else { return }
     guard let cell = attachment.attachmentCell as? NSCell else { return }
 

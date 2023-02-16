@@ -39,7 +39,6 @@ class FilteringMenuFilterView: NSView {
   override func viewDidMoveToWindow() {
     super.viewDidMoveToWindow()
 
-    // print((#function, window))
     guard window != nil else { return }
 
     if let initialStringValue {

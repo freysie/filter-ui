@@ -186,7 +186,6 @@ import Combine
   }
 
   open func insertRecentFromMenuItem(_ sender: NSMenuItem) {
-    // print((#function, ))
     objectValue = sender.representedObject
   }
 

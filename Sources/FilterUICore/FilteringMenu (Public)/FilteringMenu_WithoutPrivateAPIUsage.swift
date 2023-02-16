@@ -99,7 +99,6 @@ public class FilteringMenu_WithoutPrivateAPIUsage: NSMenu, NSMenuDelegate, NSSea
   }
   
   private func highlightFilteringItem(in menu: FilteringMenu_WithoutPrivateAPIUsage, with event: NSEvent) {
-    // print((#function, menu, event))
     guard let filteringItem = menu.items.first as? FilteringMenuItem else { return }
     guard !(filteringItem.view?.window?.firstResponder is NSText) else { return }
     
@@ -116,7 +115,6 @@ public class FilteringMenu_WithoutPrivateAPIUsage: NSMenu, NSMenuDelegate, NSSea
 
 //  public override func itemChanged(_ item: NSMenuItem) {
 //    guard let filteringItem = item as? FilteringMenuItem, !item.isHidden else { return }
-//    print((#function, Self.activeMenu))
 ////    DispatchQueue.main.async {
 //      Self.activeMenu?.highlightItem(filteringItem)
 //      filteringItem.filteringView.filterField.becomeFirstResponder()
@@ -138,27 +136,22 @@ public class FilteringMenu_WithoutPrivateAPIUsage: NSMenu, NSMenuDelegate, NSSea
   // MARK: - NSMenuDelegate
   
   public func menuNeedsUpdate(_ menu: NSMenu) {
-//    print(className + "." + #function)
     wrappedDelegate?.menuNeedsUpdate?(menu)
   }
   
   public func numberOfItems(in menu: NSMenu) -> Int {
-//    print(className + "." + #function)
     return wrappedDelegate?.numberOfItems?(in: menu) ?? 0
   }
   
   public func menu(_ menu: NSMenu, update item: NSMenuItem, at index: Int, shouldCancel: Bool) -> Bool {
-//    print(className + "." + #function)
     return wrappedDelegate?.menu?(menu, update: item, at: index, shouldCancel: shouldCancel) ?? false
   }
   
   public func menuHasKeyEquivalent(_ menu: NSMenu, for event: NSEvent, target: AutoreleasingUnsafeMutablePointer<AnyObject?>, action: UnsafeMutablePointer<Selector?>) -> Bool {
-//    print(className + "." + #function)
     return wrappedDelegate?.menuHasKeyEquivalent?(menu, for: event, target: target, action: action) ?? false
   }
   
   public func menuWillOpen(_ menu: NSMenu) {
-//    print(className + "." + #function)
     wrappedDelegate?.menuWillOpen?(menu)
     Self.activeMenu = menu as? FilteringMenu_WithoutPrivateAPIUsage
 //    guard let fiteringItemView = items.first?.view as? FilteringMenuItemView else { return }
@@ -169,7 +162,6 @@ public class FilteringMenu_WithoutPrivateAPIUsage: NSMenu, NSMenuDelegate, NSSea
   }
   
   public func menuDidClose(_ menu: NSMenu) {
-//    print(className + "." + #function)
     wrappedDelegate?.menuDidClose?(menu)
 
     guard let filteringItem = menu.items.first as? FilteringMenuItem else { return }
@@ -179,13 +171,11 @@ public class FilteringMenu_WithoutPrivateAPIUsage: NSMenu, NSMenuDelegate, NSSea
   }
   
   public func menu(_ menu: NSMenu, willHighlight item: NSMenuItem?) {
-//    print(className + "." + #function)
     Self.activeMenu = menu as? FilteringMenu_WithoutPrivateAPIUsage
     wrappedDelegate?.menu?(menu, willHighlight: item)
   }
   
   public func confinementRect(for menu: NSMenu, on screen: NSScreen?) -> NSRect {
-//    print(className + "." + #function)
     return wrappedDelegate?.confinementRect?(for: menu, on: screen) ?? .zero
   }
   
