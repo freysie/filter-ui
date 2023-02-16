@@ -1,10 +1,8 @@
 import AppKit
 import ObjectiveC
 
-// TODO: unify background drawing with FilterSearchFieldCell
-
 /// The cell interface for AppKit filter fields with token capabilities.
-@objcMembers open class FilterTokenFieldCell: NSTokenFieldCell, NSTokenFieldCellDelegate, FilterTokenTextStorageDelegate {
+@objcMembers open class FilterTokenFieldCell: NSTokenFieldCell, NSTokenFieldCellDelegate, FilterTokenTextStorageDelegate, NSLayoutManagerDelegate {
   public static var representedObjectKey: UInt8 = 0
   public static let wildCardPattern = try! NSRegularExpression(pattern: ".+\\*.+|^\\*.+\\*$")
 
@@ -22,103 +20,50 @@ import ObjectiveC
 
   // MARK: - Layout
 
-  // open override var controlSize: NSControl.ControlSize {
-  //   didSet { (controlView as? NSControl)?.invalidateIntrinsicContentSize(for: self) }
-  // }
-
-  // open func filterButtonRect(forBounds rect: NSRect) -> NSRect {
-  //   NSRect(x: rect.minX + 4, y: ((rect.size.height - 15) / 2).rounded(.down), width: 28, height: 15)
-  // }
-
-  // open func cancelButtonRect(forBounds rect: NSRect) -> NSRect {
-  //   NSRect(x: rect.maxX - 20, y: ((rect.size.height - 15) / 2).rounded(.down), width: 24, height: 15)
-  // }
-
   open override func drawingRect(forBounds rect: NSRect) -> NSRect {
     var rect = super.drawingRect(forBounds: rect)
+    // rect.origin.y += stringValue.isEmpty ? 1 : 0
     rect.origin.x += 28 + 3
-    rect.size.width -= 28 + 3 + 24
+    rect.origin.y += 1
+    rect.size.width -= 28 + 3 + 21
     return rect
   }
+
+//  open override func edit(withFrame rect: NSRect, in controlView: NSView, editor textObj: NSText, delegate: Any?, event: NSEvent?) {
+//    super.edit(withFrame: rect.offsetBy(dx: 0, dy: 1), in: controlView, editor: textObj, delegate: delegate, event: event)
+//  }
+//
+//  open override func select(withFrame rect: NSRect, in controlView: NSView, editor textObj: NSText, delegate: Any?, start selStart: Int, length selLength: Int) {
+//    super.select(withFrame: rect.offsetBy(dx: 0, dy: 1), in: controlView, editor: textObj, delegate: delegate, start: selStart, length: selLength)
+//  }
 
   // MARK: - Drawing
 
   open override var placeholderString: String? {
-    didSet {
-      placeholderAttributedString = NSAttributedString(
-        string: placeholderString ?? NSLocalizedString("Filter", bundle: .module, comment: ""),
-        attributes: [
-          .font: font!,
-          .foregroundColor: controlView?.effectiveAppearance.allowsVibrancy == true
-          ? NSColor(named: "filterFieldVibrantPlaceholderTextColor", bundle: .module)!
-          : NSColor(named: "filterFieldNonVibrantPlaceholderTextColor", bundle: .module)!
-        ]
-      )
-    }
+    didSet { placeholderAttributedString = FilterSearchFieldCell.placeholderAttributedString(for: self) }
   }
 
   open override func drawFocusRingMask(withFrame cellFrame: NSRect, in controlView: NSView) {}
 
   open override func draw(withFrame cellFrame: NSRect, in controlView: NSView) {
-    //super.draw(withFrame: cellFrame, in: controlView)
-    // NSDottedFrameRect(cellFrame)
-    let shouldIncreaseContrast = NSWorkspace.shared.accessibilityDisplayShouldIncreaseContrast
-    let allowsVibrancy = controlView.effectiveAppearance.allowsVibrancy
-    let isKeyOrMainWindow = controlView.window?.isKeyWindow == true || controlView.window?.isMainWindow == true
-    let hasKeyboardFocus = controlView.window?.firstResponder == (controlView as? NSControl)?.currentEditor()
-    let hasActiveFilter = !stringValue.isEmpty
+    FilterSearchFieldCell.drawBackground(
+      withFrame: cellFrame,
+      in: controlView,
+      hasActiveFilter: !stringValue.isEmpty
+    )
 
-    if shouldIncreaseContrast || (isKeyOrMainWindow && (hasKeyboardFocus || hasActiveFilter)) {
-      NSColor(named: "filterFieldKeyFocusBackgroundColor", bundle: .module)!.setFill()
-    } else {
-      if allowsVibrancy {
-        if isKeyOrMainWindow {
-          NSColor(named: "filterFieldVibrantActiveBackgroundColor", bundle: .module)!.setFill()
-        } else {
-          NSColor(named: "filterFieldVibrantInactiveBackgroundColor", bundle: .module)!.setFill()
-        }
-      } else {
-        if isKeyOrMainWindow {
-          NSColor(named: "filterFieldNonVibrantActiveBackgroundColor", bundle: .module)!.setFill()
-        } else {
-          NSColor(named: "filterFieldNonVibrantInactiveBackgroundColor", bundle: .module)!.setFill()
-        }
-      }
-    }
-
-    if shouldIncreaseContrast {
-      if isKeyOrMainWindow {
-        NSColor(named: "filterFieldHighContrastActiveBorderColor", bundle: .module)!.setStroke()
-      } else {
-        NSColor(named: "filterFieldHighContrastInactiveBorderColor", bundle: .module)!.setStroke()
-      }
-    } else {
-      if allowsVibrancy {
-        NSColor(calibratedWhite: 0.5, alpha: 0.25).setStroke()
-      } else {
-        if isKeyOrMainWindow && (hasActiveFilter || hasKeyboardFocus) {
-          NSColor(calibratedWhite: 0.5, alpha: 0.7).setStroke()
-        } else {
-          NSColor(calibratedWhite: 0.5, alpha: 0.35).setStroke()
-        }
-      }
-    }
-
-    let path = NSBezierPath(roundedRect: cellFrame.insetBy(dx: 0.5, dy: 0.5), xRadius: 6, yRadius: 6)
-    // let path = NSBezierPath(roundedRect: cellFrame.integral, xRadius: 6, yRadius: 6)
-    path.lineWidth = 1
-    path.fill()
-    path.stroke()
-
-    // (hasActiveFilter ? activeFilterImage : filterImage).draw(in: filterButtonRect(forBounds: cellFrame))
-
+    // drawInterior(withFrame: cellFrame.insetBy(dx: 0, dy: 1), in: controlView)
     drawInterior(withFrame: cellFrame, in: controlView)
+
+    // if stringValue.isEmpty, controlView.window?.firstResponder == (controlView as? NSControl)?.currentEditor() {
+    //   placeholderAttributedString?.draw(in: titleRect(forBounds: cellFrame.insetBy(dx: 0, dy: 1)))
+    // }
   }
 
-  // MARK: - Token Field Cell Delegate
+  // MARK: - Field Cell Delegate
 
   public func tokenFieldCell(_ tokenFieldCell: NSTokenFieldCell, shouldAdd tokens: [Any], at index: Int) -> [Any] {
-    print((#function, tokens, index))
+    // print((#function, tokens, index))
     return tokens
   }
 
@@ -184,11 +129,11 @@ import ObjectiveC
   }
 
   public func tokenFieldCell(_ tokenFieldCell: NSTokenFieldCell, styleForRepresentedObject representedObject: Any) -> NSTokenField.TokenStyle {
-    print((#function, representedObject))
+    // print((#function, representedObject))
     return representedObject is String ? .none : .squared
   }
 
-  // MARK: - Token Text Storage Delegate
+  // MARK: - Text Storage Delegate
 
   public func tokenTextStorage(_ textStorage: FilterTokenTextStorage, updateTokenAttachment attachment: NSTextAttachment, forRange range: NSRange) {
     if (attachment.attachmentCell as? NSCell)?.representedObject is FilterTokenValue {
@@ -196,11 +141,12 @@ import ObjectiveC
     }
   }
 
-  // MARK: - Attachment Cell Handling
+  // MARK: - Attachment Cells
 
   open override var objectValue: Any? {
     didSet {
-      print((Self.self, #function))
+      // print((Self.self, #function))
+      // controlView?.needsLayout = true
     }
   }
 
@@ -254,13 +200,46 @@ import ObjectiveC
       }
 
       (layoutManager.textStorage as? FilterTokenTextStorage)?.tokenDelegate = self
+
+      // textView.wantsLayer = true
+      // textView.layer?.borderWidth = 1
+      // textView.layer?.borderColor = NSColor.systemPink.withAlphaComponent(0.2).cgColor
+      // textView.setValue(nil, forKey: "placeholderAttributedString")
     }
 
     return textObj
   }
 
+//  public func layoutManager(
+//    _ layoutManager: NSLayoutManager,
+//    shouldSetLineFragmentRect lineFragmentRect: UnsafeMutablePointer<NSRect>,
+//    lineFragmentUsedRect: UnsafeMutablePointer<NSRect>,
+//    baselineOffset: UnsafeMutablePointer<CGFloat>,
+//    in textContainer: NSTextContainer,
+//    forGlyphRange glyphRange: NSRange
+//  ) -> Bool {
+//    //let lineHeightMultiple: CGFloat = 1.6
+//    let fontLineHeight = layoutManager.defaultLineHeight(for: font!)
+//    let lineHeight = fontLineHeight + 1
+//    let baselineNudge = (lineHeight - fontLineHeight)
+//    // The following factor is a result of experimentation:
+//    * 0.6
+//
+//    var rect = lineFragmentRect.pointee
+//    rect.size.height = lineHeight
+//
+//    var usedRect = lineFragmentUsedRect.pointee
+//    usedRect.size.height = max(lineHeight, usedRect.size.height) // keep emoji sizes
+//
+//    lineFragmentRect.pointee = rect
+//    lineFragmentUsedRect.pointee = usedRect
+//    baselineOffset.pointee = baselineOffset.pointee + baselineNudge
+//
+//    return true
+//  }
+
   open override func endEditing(_ textObj: NSText) {
-    print(#function)
+    // print(#function)
     
     if let textView = textObj as? NSTextView, let layoutManager = textView.textContainer?.layoutManager {
       (layoutManager.textStorage as? FilterTokenTextStorage)?.tokenDelegate = nil

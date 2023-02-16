@@ -1,6 +1,8 @@
 import AppKit
 import Combine
 
+// FIXME: cancel button highlight glitch (the right edge’s highlight gets stuck when moving the mouse outside while holding down the mouse button)
+
 /// An AppKit filter field.
 @objcMembers open class FilterSearchField: NSSearchField, CALayerDelegate {
   open override class var cellClass: AnyClass? { get { FilterSearchFieldCell.self } set {} }

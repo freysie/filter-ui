@@ -175,3 +175,9 @@ public extension Collection where Iterator.Element: FuzzySearchable {
     }
   }
 }
+
+import AppKit
+
+extension NSMenuItem: FuzzySearchable {
+  public var fuzzyStringToMatch: String { title }
+}

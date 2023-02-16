@@ -15,8 +15,10 @@ import Combine
 // ✓ FIXME: search icon shouldn’t select all tokens on click
 // ✓ FIXME: single-line field editor
 
+// TODO: consider creating a controller object for this to manage recents, etc.
+
 /// An AppKit filter field with token capabilities.
-@objcMembers open class FilterTokenField: NSTokenField, NSTextViewDelegate {
+@objcMembers open class FilterTokenField: NSTokenField, NSTextDelegate, NSTextViewDelegate {
   open override class var cellClass: AnyClass? { get { FilterTokenFieldCell.self } set {} }
 
   open var searchButton: FilterTokenFieldButton!
@@ -24,6 +26,8 @@ import Combine
 
   open var filterImage = Bundle.module.image(forResource: "filter.menu")!//.tinted(with: .secondaryLabelColor)
   open var activeFilterImage = Bundle.module.image(forResource: "filter.menu.fill")!.tinted(with: .controlAccentColor)
+
+  open var recentFilterValues = [Any]()
 
   private var subscriptions = Set<AnyCancellable>()
 
@@ -47,7 +51,7 @@ import Combine
     super.init(frame: frameRect)
 
     font = .systemFont(ofSize: NSFont.smallSystemFontSize)
-    tokenStyle = .squared
+    tokenStyle = .rounded
     usesSingleLineMode = true
 
     searchButton = FilterTokenFieldButton(frame: NSMakeRect(2, 0, 32, frameRect.height))
@@ -86,20 +90,22 @@ import Combine
     .store(in: &subscriptions)
 
     objectValueDidChange()
+
+    recentFilterValues = ["aaaA", "aaaaaa", "aaa"]
   }
   
   public required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
 
-  open func objectValueDidChange() {
-    cancelButton?.isHidden = stringValue.isEmpty
-    searchButton?.image = stringValue.isEmpty ? filterImage : activeFilterImage
+  open override var objectValue: Any? {
+    didSet { objectValueDidChange() }
   }
 
-  open override func textDidChange(_ notification: Notification) {
-    super.textDidChange(notification)
-    objectValueDidChange()
+  open func objectValueDidChange() {
+    let isEmpty = stringValue.isEmpty
+    cancelButton?.isHidden = isEmpty
+    searchButton?.image = isEmpty ? filterImage : activeFilterImage
   }
 
   open func takeComparisonTypeFromSender(_ sender: NSMenuItem) {
@@ -113,18 +119,37 @@ import Combine
     let menu = NSMenu()
     menu.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
     menu.autoenablesItems = false
-    menu.addItem(withTitle: NSLocalizedString("Recent Filters", bundle: .module, comment: ""), action: nil, keyEquivalent: "")
-      .isEnabled = false
-    for value in ["aaaA", "aaaaaa", "aaa"] {
-      menu.addItem(
-        withTitle: String(format: NSLocalizedString("Matching %@", bundle: .module, comment: ""), "“\(value)”"),
+
+    if !recentFilterValues.isEmpty {
+      let headingItem = menu.addItem(
+        withTitle: NSLocalizedString("Recent Filters", bundle: .module, comment: ""),
         action: nil,
         keyEquivalent: ""
       )
-        .indentationLevel = 1
+      headingItem.isEnabled = false
+
+      for value in recentFilterValues {
+        let value = (value as? FilterTokenValue)?.objectValue ?? value
+        let item = menu.addItem(
+          withTitle: String(format: NSLocalizedString("Matching %@", bundle: .module, comment: ""), "“\(value)”"),
+          action: #selector(insertRecentFromMenuItem(_:)),
+          keyEquivalent: ""
+        )
+        item.target = self
+        item.representedObject = value
+        item.indentationLevel = 1
+      }
+      menu.addItem(.separator())
     }
-    menu.addItem(.separator())
-    menu.addItem(withTitle: NSLocalizedString("Clear Recents", bundle: .module, comment: ""), action: nil, keyEquivalent: "")
+
+    let clearRecentsItem = menu.addItem(
+      withTitle: NSLocalizedString("Clear Recents", bundle: .module, comment: ""),
+      action: #selector(clearRecents),
+      keyEquivalent: ""
+    )
+    clearRecentsItem.target = self
+    clearRecentsItem.isEnabled = !recentFilterValues.isEmpty
+
     menu.popUp(positioning: nil, at: NSMakePoint(1, -menu.size.height + 6), in: searchButton)
   }
 
@@ -152,48 +177,31 @@ import Combine
     clearTokens()
   }
 
-//  open func untokenizeAttachment(_ attachment: NSTextAttachment, at range: NSRange) {}
-
-//  open override func textDidChange(_ notification: Notification) {
-//    super.textDidChange(notification)
-//    print((#function, notification))
-//  }
-
-//  public func textView(_ textView: NSTextView, shouldChangeTypingAttributes oldTypingAttributes: [String : Any] = [:], toAttributes newTypingAttributes: [NSAttributedString.Key : Any] = [:]) -> [NSAttributedString.Key : Any] {
-//    print((#function, oldTypingAttributes, newTypingAttributes))
-//    return newTypingAttributes
-//  }
-
-  open override func textShouldEndEditing(_ textObject: NSText) -> Bool {
-    print(#function)
-    return super.textShouldEndEditing(textObject)
+  open func clearRecents() {
+    recentFilterValues = []
   }
 
-  // var isBecomingFirstResponder = false
-  // open override func becomeFirstResponder() -> Bool {
-  //   isBecomingFirstResponder = true
-  //   let returnValue = super.becomeFirstResponder()
-  //   isBecomingFirstResponder = false
-  //   return returnValue
+  open func updateRecents() {
+
+  }
+
+  open func insertRecentFromMenuItem(_ sender: NSMenuItem) {
+    // print((#function, ))
+    objectValue = sender.representedObject
+  }
+
+  // MARK: - Text Delegate
+
+  open override func textDidChange(_ notification: Notification) {
+    super.textDidChange(notification)
+    objectValueDidChange()
+  }
+
+  // open override func textDidEndEditing(_ notification: Notification) {
+  //   if NSApp.currentEvent?.keyCode == .return {
+  //     super.textDidEndEditing(notification)
+  //   }
   // }
-
-//  public func textView(_ textView: NSTextView, willChangeSelectionFromCharacterRange oldSelectedCharRange: NSRange, toCharacterRange newSelectedCharRange: NSRange) -> NSRange {
-//    print(#function)
-//    return newSelectedCharRange
-//  }
-
-  open override func textDidEndEditing(_ notification: Notification) {
-    let text = notification.object as! NSText
-    print((#function, text.string))
-    super.textDidEndEditing(notification)
-    // print((#function, text.string, objectValue))
-    // cell!.endEditing(notification.object as! NSText)
-  }
-
-  open override func resignFirstResponder() -> Bool {
-    // print(#function)
-    return super.resignFirstResponder()
-  }
 
   // MARK: - Text View Delegate
 

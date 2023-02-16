@@ -4,8 +4,8 @@ import AppKit
 ///
 /// If there is only one filter result when the enter key is pressed, that item will be selected and the menu will
 /// close.
-public class FilteringMenu: NSMenu, NSMenuDelegate, NSSearchFieldDelegate {
-  private static var activeMenu: FilteringMenu?
+public class FilteringMenu_WithoutPrivateAPIUsage: NSMenu, NSMenuDelegate, NSSearchFieldDelegate {
+  private static var activeMenu: FilteringMenu_WithoutPrivateAPIUsage?
   private static var eventMonitor: Any?
 
   public private(set) var wrappedDelegate: NSMenuDelegate? // TODO: make private and only expose through `delegate`
@@ -98,8 +98,8 @@ public class FilteringMenu: NSMenu, NSMenuDelegate, NSSearchFieldDelegate {
     // update()
   }
   
-  private func highlightFilteringItem(in menu: FilteringMenu, with event: NSEvent) {
-    print((#function, menu, event))
+  private func highlightFilteringItem(in menu: FilteringMenu_WithoutPrivateAPIUsage, with event: NSEvent) {
+    // print((#function, menu, event))
     guard let filteringItem = menu.items.first as? FilteringMenuItem else { return }
     guard !(filteringItem.view?.window?.firstResponder is NSText) else { return }
     
@@ -160,7 +160,7 @@ public class FilteringMenu: NSMenu, NSMenuDelegate, NSSearchFieldDelegate {
   public func menuWillOpen(_ menu: NSMenu) {
 //    print(className + "." + #function)
     wrappedDelegate?.menuWillOpen?(menu)
-    Self.activeMenu = menu as? FilteringMenu
+    Self.activeMenu = menu as? FilteringMenu_WithoutPrivateAPIUsage
 //    guard let fiteringItemView = items.first?.view as? FilteringMenuItemView else { return }
 //    fiteringItemView.frame.size.height = 0
     // update()
@@ -180,7 +180,7 @@ public class FilteringMenu: NSMenu, NSMenuDelegate, NSSearchFieldDelegate {
   
   public func menu(_ menu: NSMenu, willHighlight item: NSMenuItem?) {
 //    print(className + "." + #function)
-    Self.activeMenu = menu as? FilteringMenu
+    Self.activeMenu = menu as? FilteringMenu_WithoutPrivateAPIUsage
     wrappedDelegate?.menu?(menu, willHighlight: item)
   }
   
@@ -229,13 +229,13 @@ public class FilteringMenu: NSMenu, NSMenuDelegate, NSSearchFieldDelegate {
   }
 }
 
-extension CGKeyCode {
+fileprivate extension CGKeyCode {
   static let `return`: Self = 36
   static let downArrow: Self = 125
   static let upArrow: Self = 126
 }
 
-class FilteringMenuItem: NSMenuItem {
+fileprivate class FilteringMenuItem: NSMenuItem {
   let filteringView = FilteringMenuItemView()
 
   init() {
@@ -256,7 +256,7 @@ class FilteringMenuItem: NSMenuItem {
   }
 }
 
-class FilteringMenuItemView: NSView {
+fileprivate class FilteringMenuItemView: NSView {
   static let horizontalPadding: CGFloat = 20
 
   var filterField: FilterSearchField!
@@ -289,7 +289,7 @@ class FilteringMenuItemView: NSView {
   }
 }
 
-let ignoredKeyCodes: [UInt16] = [
+fileprivate let ignoredKeyCodes: [UInt16] = [
   51 , // Backspace
   115, // Home
   117, // Delete
@@ -328,11 +328,7 @@ let ignoredKeyCodes: [UInt16] = [
   80 , // F19
 ]
 
-extension NSMenu {
+fileprivate extension NSMenu {
   static let defaultFont = NSMenu().font
   var recursiveFont: NSFont { font == Self.defaultFont ? supermenu?.recursiveFont ?? font : font }
-}
-
-extension NSMenuItem: FuzzySearchable {
-  public var fuzzyStringToMatch: String { title }
 }

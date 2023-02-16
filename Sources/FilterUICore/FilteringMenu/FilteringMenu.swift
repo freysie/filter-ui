@@ -4,12 +4,11 @@ import FilterUICoreObjC
 
 /// A filtering menu.
 ///
-/// If there is only one filter result when the enter key is pressed, that item will be selected and the menu will
-/// close.
-@objcMembers open class _FilteringMenu: NSMenu, NSMenuDelegate, NSSearchFieldDelegate, FilteringMenuFilterViewDelegate {
-  public private(set) var wrappedDelegate: NSMenuDelegate? // TODO: make private and only expose through `delegate`
+/// If there is only one filter result when the enter key is pressed, that item will be selected and the menu will close.
+@objcMembers open class FilteringMenu: NSMenu, NSMenuDelegate, NSSearchFieldDelegate, FilteringMenuFilterViewDelegate {
+  open private(set) var wrappedDelegate: NSMenuDelegate? // TODO: make private and only expose through `delegate`
 
-  private var initiallyShowsFilterField = false
+  open var initiallyShowsFilterField = false
   var carbonMenu: Unmanaged<Menu>?
   
   private var delegateRespondsToMenuHasKeyEquivalentForEventTargetAction = false
@@ -37,13 +36,13 @@ import FilterUICoreObjC
     }
   }
 
-  private static var invertedControlAndSpaceCharacterSet = {
+  public static var invertedControlAndSpaceCharacterSet = {
     var set = NSMutableCharacterSet.controlCharacters
     set.insert(charactersIn: " ")
     return set.inverted
   }()
 
-  private var singleVisibleMenuItem: NSMenuItem? {
+  open var singleVisibleMenuItem: NSMenuItem? {
     let visibleItems = items.dropFirst().filter { !$0.isHidden }
     return visibleItems.count == 1 ? visibleItems.first! : nil
   }
@@ -91,7 +90,7 @@ import FilterUICoreObjC
     fatalError("init(coder:) has not been implemented")
   }
 
-  private func makeFilterFieldItem() -> NSMenuItem {
+  open func makeFilterFieldItem() -> NSMenuItem {
     let view = FilteringMenuFilterView()
     view.delegate = self
     view.filterField.delegate = self
@@ -103,12 +102,10 @@ import FilterUICoreObjC
     return item
   }
   
-  private func setUpFilterField(in menu: NSMenu, with string: String) {
-    // print((#function, menu, string))
-
+  open func setUpFilterField(in menu: NSMenu, with string: String) {
     // TODO: loop all the way in
     var menu = menu
-    if menu.highlightedItem?.hasSubmenu == true {
+    repeat {
       if let submenu = menu.highlightedItem?.submenu {
         if let carbonMenu = (submenu as? Self)?.carbonMenu?.takeUnretainedValue() {
           var data = MenuTrackingData()
@@ -117,11 +114,11 @@ import FilterUICoreObjC
           }
         }
       }
-    }
+    } while menu.highlightedItem?.hasSubmenu == true
 
     var filterFieldItem = menu.item(withTag: 1000)
     if filterFieldItem == nil {
-      filterFieldItem = makeFilterFieldItem()
+      filterFieldItem = (menu as! Self).makeFilterFieldItem()
       if let view = filterFieldItem!.view as? FilteringMenuFilterView {
         view.setFrameSize(NSMakeSize(max(size.width, 182), view.frame.height))
         view.initialStringValue = string
@@ -138,12 +135,12 @@ import FilterUICoreObjC
     }
   }
 
-  private func highlightFilterFieldItem(in menu: NSMenu) {
+  open func highlightFilterFieldItem(in menu: NSMenu) {
     menu.highlight(menu.item(withTag: 1000))
   }
 
-  private func isFilterFieldScrolledOutOfView(in menu: NSMenu) -> Bool {
-    guard let menu = menu as? _FilteringMenu, let menu = menu.carbonMenu?.takeUnretainedValue() else { return false }
+  open func isFilterFieldScrolledOutOfView(in menu: NSMenu) -> Bool {
+    guard let menu = menu as? FilteringMenu, let menu = menu.carbonMenu?.takeUnretainedValue() else { return false }
 
     var data = MenuTrackingData()
     guard GetMenuTrackingData(menu, &data) == noErr else { return false }
@@ -154,8 +151,8 @@ import FilterUICoreObjC
     return data.virtualMenuTop < data.itemRect.top
   }
   
-  private func performFiltering(with string: String, in menu: NSMenu) {
-    guard let menu = menu as? _FilteringMenu else { return }
+  open func performFiltering(with string: String, in menu: NSMenu) {
+    guard let menu = menu as? FilteringMenu else { return }
 
     //var contentView: Unmanaged<HIView>
     let contentView = UnsafeMutablePointer<Unmanaged<HIView>>.allocate(capacity: 1)
@@ -172,7 +169,7 @@ import FilterUICoreObjC
     HIViewSetNeedsDisplay(contentView.pointee.takeUnretainedValue(), true)
   }
   
-  private func filterFieldShouldTakeFocus(_ filterField: FilterSearchField) -> Bool {
+  open func filterFieldShouldTakeFocus(_ filterField: FilterSearchField) -> Bool {
     let firstResponder = filterField.window?.firstResponder
     let textView = firstResponder as? NSTextView
     if firstResponder == filterField || (textView?.isFieldEditor == true && textView?.delegate as? Self? == self) {
@@ -184,7 +181,7 @@ import FilterUICoreObjC
 
 //    let textView = filterField.window?.firstResponder as? NSTextView
 //    print((#function, textView))
-//    if textView?.isFieldEditor == false || textView?.delegate as? _FilteringMenu != self {
+//    if textView?.isFieldEditor == false || textView?.delegate as? FilteringMenu != self {
 //      print((#function, "yas"))
 //      filterField.window?.makeFirstResponder(filterField)
 //    }
@@ -193,23 +190,23 @@ import FilterUICoreObjC
 
   // MARK: - Menu Delegate
   
-  public func menuNeedsUpdate(_ menu: NSMenu) {
+  open func menuNeedsUpdate(_ menu: NSMenu) {
     wrappedDelegate?.menuNeedsUpdate?(menu)
   }
   
-  public func numberOfItems(in menu: NSMenu) -> Int {
+  open func numberOfItems(in menu: NSMenu) -> Int {
     return wrappedDelegate?.numberOfItems?(in: menu) ?? 0
   }
   
-  public func menu(_ menu: NSMenu, update item: NSMenuItem, at index: Int, shouldCancel: Bool) -> Bool {
+  open func menu(_ menu: NSMenu, update item: NSMenuItem, at index: Int, shouldCancel: Bool) -> Bool {
     return wrappedDelegate?.menu?(menu, update: item, at: index, shouldCancel: shouldCancel) ?? false
   }
   
-  public func menuHasKeyEquivalent(_ menu: NSMenu, for event: NSEvent, target: AutoreleasingUnsafeMutablePointer<AnyObject?>, action: UnsafeMutablePointer<Selector?>) -> Bool {
+  open func menuHasKeyEquivalent(_ menu: NSMenu, for event: NSEvent, target: AutoreleasingUnsafeMutablePointer<AnyObject?>, action: UnsafeMutablePointer<Selector?>) -> Bool {
     return wrappedDelegate?.menuHasKeyEquivalent?(menu, for: event, target: target, action: action) ?? false
   }
   
-  public func menuWillOpen(_ menu: NSMenu) {
+  open func menuWillOpen(_ menu: NSMenu) {
     wrappedDelegate?.menuWillOpen?(menu)
 
     let filterFieldItem = menu.item(withTag: 1000)
@@ -262,7 +259,7 @@ import FilterUICoreObjC
     }
   }
   
-  public func menuDidClose(_ menu: NSMenu) {
+  open func menuDidClose(_ menu: NSMenu) {
     if !initiallyShowsFilterField {
       item(withTag: 1000)?.view = nil
     }
@@ -270,17 +267,17 @@ import FilterUICoreObjC
     wrappedDelegate?.menuDidClose?(menu)
   }
   
-  public func menu(_ menu: NSMenu, willHighlight item: NSMenuItem?) {
+  open func menu(_ menu: NSMenu, willHighlight item: NSMenuItem?) {
     wrappedDelegate?.menu?(menu, willHighlight: item)
   }
   
-  public func confinementRect(for menu: NSMenu, on screen: NSScreen?) -> NSRect {
+  open func confinementRect(for menu: NSMenu, on screen: NSScreen?) -> NSRect {
     return wrappedDelegate?.confinementRect?(for: menu, on: screen) ?? .zero
   }
   
   // MARK: - Control Text Editing Delegate
   
-  public func controlTextDidChange(_ notification: Notification) {
+  open func controlTextDidChange(_ notification: Notification) {
     guard
       let field = notification.object as? FilterSearchField,
       let view = field.superview as? FilteringMenuFilterView,
@@ -290,7 +287,7 @@ import FilterUICoreObjC
     performFiltering(with: field.stringValue, in: menu)
   }
   
-  public func control(_ control: NSControl, textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
+  open func control(_ control: NSControl, textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
     switch commandSelector {
     case #selector(NSResponder.moveDown(_:)):
       control.nextResponder?.keyDown(with: NSApp.currentEvent!)

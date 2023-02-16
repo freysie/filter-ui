@@ -25,6 +25,10 @@ import AppKit
     NSMakeRect(rect.minX + 2 + (hasMenu ? 12 + 1 : 0) + 3, rect.minY, rect.width - (hasMenu ? 12 + 1 : 0) - 3 * 2 - 2, rect.height).integral
   }
 
+  // open override func drawingRect(forBounds rect: NSRect) -> NSRect {
+  //   rect.offsetBy(dx: 0, dy: 2)
+  // }
+
   // MARK: - Drawing
 
   func tokenFillColor(named name: String, for controlView: NSView) -> NSColor {
@@ -41,6 +45,10 @@ import AppKit
       isSelected = false
     }
 
+    //let isFirstResponder = controlView?.window?.firstResponder == controlView
+    //drawInterior(withFrame: cellFrame.offsetBy(dx: 0, dy: isFirstResponder ? 0 : 1), in: controlView ?? NSView())
+    // drawInterior(withFrame: cellFrame.offsetBy(dx: isFirstResponder ? 0, dy: 1), in: controlView ?? NSView())
+    //drawInterior(withFrame: cellFrame.offsetBy(dx: 0, dy: 1), in: controlView ?? NSView())
     drawInterior(withFrame: cellFrame, in: controlView ?? NSView())
   }
 
@@ -53,6 +61,7 @@ import AppKit
   }
 
   open override func drawInterior(withFrame cellFrame: NSRect, in controlView: NSView) {
+    // NSDottedFrameRect(cellFrame)
     drawBackground(withFrame: cellFrame, in: controlView)
     drawMenuChevron(withFrame: cellFrame, in: controlView)
     drawTitle(withFrame: cellFrame.integral, in: controlView)

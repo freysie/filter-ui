@@ -25,14 +25,26 @@ struct FilteringMenu_Previews: PreviewProvider {
     func makeCoordinator() -> Coordinator { Coordinator() }
 
     func makeExampleMenu() -> NSMenu {
-      let menu = _FilteringMenu()
+      let menu = FilteringMenu()
       menu.autoenablesItems = false
       addExampleItems(to: menu)
 
-      let submenu = _FilteringMenu()
+      let submenu = FilteringMenu()
       // let submenu = NSMenu()
       submenu.autoenablesItems = false
       addExampleItems(to: submenu)
+
+      submenu.addItem(.separator())
+
+      let subsubmenu = FilteringMenu()
+      subsubmenu.autoenablesItems = false
+      addExampleItems(to: subsubmenu)
+
+      let subitem = submenu.addItem(withTitle: "Menu", action: nil, keyEquivalent: "")
+      subitem.submenu = subsubmenu
+
+      submenu.addItem(.separator())
+
       for _ in 0..<40 { addExampleItems(to: submenu) }
 
       let item = menu.addItem(withTitle: "Menu", action: nil, keyEquivalent: "")

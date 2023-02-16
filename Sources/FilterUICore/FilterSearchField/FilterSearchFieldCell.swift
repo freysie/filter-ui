@@ -11,6 +11,7 @@ import AppKit
     super.init(textCell: string)
 
     font = .systemFont(ofSize: NSFont.smallSystemFontSize)
+    isScrollable = true
     placeholderString = nil
 
     if let cancelButtonCell {
@@ -64,33 +65,25 @@ import AppKit
 //        return super.drawingRect(forBounds: insetRect)
 //      }
 
-  // MARK: - Drawing
+  // MARK: - Shared Drawing
 
-  open var filterImage = Bundle.module.image(forResource: "filter.circle")!.tinted(with: .secondaryLabelColor)
-  open var activeFilterImage = Bundle.module.image(forResource: "filter.circle.fill")!.tinted(with: .controlAccentColor)
-
-  open override var placeholderString: String? {
-    didSet {
-      placeholderAttributedString = NSAttributedString(
-        string: placeholderString ?? NSLocalizedString("Filter", bundle: .module, comment: ""),
-        attributes: [
-          .font: font!,
-          .foregroundColor: controlView?.effectiveAppearance.allowsVibrancy == true
-          ? NSColor(named: "filterFieldVibrantPlaceholderTextColor", bundle: .module)!
-          : NSColor(named: "filterFieldNonVibrantPlaceholderTextColor", bundle: .module)!
-        ]
-      )
-    }
+  open class func placeholderAttributedString(for cell: NSTextFieldCell) -> NSAttributedString {
+    NSAttributedString(
+      string: cell.placeholderString ?? NSLocalizedString("Filter", bundle: .module, comment: ""),
+      attributes: [
+        .font: cell.font!,
+        .foregroundColor: cell.controlView?.effectiveAppearance.allowsVibrancy == true
+        ? NSColor(named: "filterFieldVibrantPlaceholderTextColor", bundle: .module)!
+        : NSColor(named: "filterFieldNonVibrantPlaceholderTextColor", bundle: .module)!
+      ]
+    )
   }
 
-  open override func drawFocusRingMask(withFrame cellFrame: NSRect, in controlView: NSView) {}
-
-  open override func draw(withFrame cellFrame: NSRect, in controlView: NSView) {
+  open class func drawBackground(withFrame cellFrame: NSRect, in controlView: NSView, hasActiveFilter: Bool) {
     let shouldIncreaseContrast = NSWorkspace.shared.accessibilityDisplayShouldIncreaseContrast
     let allowsVibrancy = controlView.effectiveAppearance.allowsVibrancy
     let isKeyOrMainWindow = controlView.window?.isKeyWindow == true || controlView.window?.isMainWindow == true
     let hasKeyboardFocus = controlView.window?.firstResponder == (controlView as? NSControl)?.currentEditor()
-    let hasActiveFilter = !stringValue.isEmpty || hasFilteringAppearance
 
     if shouldIncreaseContrast || (isKeyOrMainWindow && (hasKeyboardFocus || hasActiveFilter)) {
       NSColor(named: "filterFieldKeyFocusBackgroundColor", bundle: .module)!.setFill()
@@ -129,10 +122,28 @@ import AppKit
     }
 
     let path = NSBezierPath(roundedRect: cellFrame.insetBy(dx: 0.5, dy: 0.5), xRadius: 6, yRadius: 6)
-//    let path = NSBezierPath(roundedRect: cellFrame, xRadius: 6, yRadius: 6)
     path.lineWidth = 1
     path.fill()
     path.stroke()
+  }
+
+  // MARK: - Drawing
+
+  open var filterImage = Bundle.module.image(forResource: "filter.circle")!.tinted(with: .secondaryLabelColor)
+  open var activeFilterImage = Bundle.module.image(forResource: "filter.circle.fill")!.tinted(with: .controlAccentColor)
+
+  open override var placeholderString: String? {
+    didSet { placeholderAttributedString = FilterSearchFieldCell.placeholderAttributedString(for: self) }
+  }
+
+  open override func drawFocusRingMask(withFrame cellFrame: NSRect, in controlView: NSView) {}
+
+  open override func draw(withFrame cellFrame: NSRect, in controlView: NSView) {
+    FilterSearchFieldCell.drawBackground(
+      withFrame: cellFrame,
+      in: controlView,
+      hasActiveFilter: !stringValue.isEmpty || hasFilteringAppearance
+    )
 
     drawInterior(withFrame: cellFrame, in: controlView)
   }
@@ -160,6 +171,12 @@ import AppKit
     let textObj = super.setUpFieldEditorAttributes(textObj)
     guard let textView = textObj as? NSTextView else { return textObj }
     textView.smartInsertDeleteEnabled = false
+
+    // textView.wantsLayer = true
+    // textView.layer?.borderWidth = 1
+    // //textView.textContainerInset = NSMakeSize(1, 2)
+    // textView.layer?.borderColor = NSColor.systemPink.withAlphaComponent(0.2).cgColor
+
     return textView
   }
 
