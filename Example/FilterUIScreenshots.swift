@@ -1,9 +1,11 @@
 import SwiftUI
-import PreviewsCapture
+@_exported import PreviewsCapture
 
 @main
-struct CapturePreviews: App {
+struct ScreenshotApp: App {
   var body: some Scene {
-    _PreviewCaptureBatchScene()
+    ScreenshotsScene { settings in
+      settings.outputPath = "../../Screenshots"
+    }
   }
 }

@@ -3,10 +3,10 @@
     "pins": [
       {
         "package": "previews-capture",
-        "repositoryURL": "https://github.com/freyaariel/previews-capture.git",
+        "repositoryURL": "https://github.com/freyaalminde/previews-capture.git",
         "state": {
-          "branch": "main",
-          "revision": "07075adb94eefc6db82ab284cfe62d7a78f340de",
+          "branch": "refactor",
+          "revision": "8a9b4ab5c30fa87a04b0aff0af829286e5bc3807",
           "version": null
         }
       }

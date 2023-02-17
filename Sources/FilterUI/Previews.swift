@@ -2,30 +2,23 @@ import SwiftUI
 import FilterUICore
 import PreviewsCapture
 
-class FilterUI_Previews: PreviewProvider, PreviewCaptureBatch {
+class FilterUI_Previews: PreviewProvider, ScreenshotProvider {
   static var previews: some View {
     Logo()
-      //.preferredColorScheme(.dark)
       .background()
-      .previewScreenshot("Logo-1")
+      .previewDisplayName("Logo-1")
 
     Logo(caret: true)
-      //.preferredColorScheme(.dark)
       .background()
-      .previewScreenshot("Logo-2")
-
-    //Logo()
-    //  .preferredColorScheme(.light)
-    //  .background()
-    //  .previewScreenshot("_Logo~light")
+      .previewDisplayName("Logo-2")
 
     BasicUsage()
       .background()
-      .previewScreenshot("BasicUsage")
+      .previewDisplayName("BasicUsage")
 
     AccessoryToggles()
       .background()
-      .previewScreenshot("AccessoryToggles")
+      .previewDisplayName("AccessoryToggles")
 
 //      BasicUsage().preferredColorScheme(.light)//.screenshotName("BasicUsage~light")
 //      BasicUsage().preferredColorScheme(.dark)//.screenshotName("BasicUsage~dark")

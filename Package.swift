@@ -13,7 +13,7 @@ let package = Package(
     .library(name: "FilterUICoreObjC", targets: ["FilterUICoreObjC"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/freyaariel/previews-capture.git", branch: "main"),
+    .package(url: "https://github.com/freyaalminde/previews-capture.git", branch: "refactor"),
   ],
   targets: [
     .target(name: "FilterUI", dependencies: [
