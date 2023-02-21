@@ -2,6 +2,7 @@ import AppKit
 import Carbon
 import FuzzySearch
 import FilterUICoreObjC
+import ObjectiveC
 
 extension NSMenuItem: FuzzySearchable {
   public var fuzzyStringToMatch: String { title }
@@ -11,6 +12,9 @@ extension NSMenuItem: FuzzySearchable {
 ///
 /// If there is only one filter result when the enter key is pressed, that item will be selected and the menu will close.
 @objcMembers open class FilteringMenu: NSMenu, NSMenuDelegate, NSSearchFieldDelegate, FilteringMenuFilterViewDelegate {
+  static let filterFieldItemTag = 1000
+  static var attributedTitleKey = UInt8(0)
+
   open private(set) var wrappedDelegate: NSMenuDelegate? // TODO: make private and only expose through `delegate`
 
   open var initiallyShowsFilterField = false
@@ -48,7 +52,7 @@ extension NSMenuItem: FuzzySearchable {
   }()
 
   open var singleVisibleMenuItem: NSMenuItem? {
-    let visibleItems = items.dropFirst().filter { !$0.isHidden }
+    let visibleItems = items.filter { $0.tag != Self.filterFieldItemTag && !$0.isHidden }
     return visibleItems.count == 1 ? visibleItems.first! : nil
   }
 
@@ -101,14 +105,13 @@ extension NSMenuItem: FuzzySearchable {
     view.filterField.delegate = self
 
     let item = NSMenuItem()
-    item.tag = 1000
+    item.tag = Self.filterFieldItemTag
     item.view = view
     view.menuItem = item
     return item
   }
   
   open func setUpFilterField(in menu: NSMenu, with string: String) {
-    // TODO: loop all the way in
     var menu = menu
     repeat {
       if let submenu = menu.highlightedItem?.submenu {
@@ -119,9 +122,10 @@ extension NSMenuItem: FuzzySearchable {
           }
         }
       }
+      // FIXME: fix infinite loop bug
     } while menu.highlightedItem?.hasSubmenu == true
 
-    var filterFieldItem = menu.item(withTag: 1000)
+    var filterFieldItem = menu.item(withTag: Self.filterFieldItemTag)
     if filterFieldItem == nil {
       filterFieldItem = (menu as! Self).makeFilterFieldItem()
       if let view = filterFieldItem!.view as? FilteringMenuFilterView {
@@ -141,7 +145,7 @@ extension NSMenuItem: FuzzySearchable {
   }
 
   open func highlightFilterFieldItem(in menu: NSMenu) {
-    menu.highlight(menu.item(withTag: 1000))
+    menu.highlight(menu.item(withTag: Self.filterFieldItemTag))
   }
 
   open func isFilterFieldScrolledOutOfView(in menu: NSMenu) -> Bool {
@@ -162,15 +166,24 @@ extension NSMenuItem: FuzzySearchable {
       HIViewSetDrawingEnabled(contentView.pointee.takeUnretainedValue(), false)
     }
 
-    let items = menu.items.dropFirst()
+    let items = menu.items.filter { $0.tag != Self.filterFieldItemTag }
 
     for item in items {
       item.isHidden = !string.isEmpty
-      item.attributedTitle = nil
+
+      if let attributedTitle = objc_getAssociatedObject(item, &Self.attributedTitleKey) as? NSAttributedString {
+        item.attributedTitle = attributedTitle
+        objc_setAssociatedObject(item, &Self.attributedTitleKey, nil, .OBJC_ASSOCIATION_RETAIN)
+      } else if objc_getAssociatedObject(item, &Self.attributedTitleKey) is NSNull {
+        item.attributedTitle = nil
+        objc_setAssociatedObject(item, &Self.attributedTitleKey, nil, .OBJC_ASSOCIATION_RETAIN)
+      }
     }
 
     for (item, result) in items.fuzzyMatch(string) {
       item.isHidden = false
+
+      // TODO: consider turning secondaryLabelColor into tertiaryLabelColor for existing attributed titles while filtering
 
       let attributedTitle = NSMutableAttributedString(string: item.title, attributes: [
         .foregroundColor: NSColor.secondaryLabelColor//.withAlphaComponent(0.9)
@@ -183,6 +196,7 @@ extension NSMenuItem: FuzzySearchable {
         )
       }
 
+      objc_setAssociatedObject(item, &Self.attributedTitleKey, item.attributedTitle ?? NSNull(), .OBJC_ASSOCIATION_RETAIN)
       item.attributedTitle = attributedTitle
     }
 
@@ -228,7 +242,7 @@ extension NSMenuItem: FuzzySearchable {
   open func menuWillOpen(_ menu: NSMenu) {
     wrappedDelegate?.menuWillOpen?(menu)
 
-    let filterFieldItem = menu.item(withTag: 1000)
+    let filterFieldItem = menu.item(withTag: Self.filterFieldItemTag)
     if initiallyShowsFilterField {
       if filterFieldItem == nil {
         setUpFilterField(in: menu, with: "")
@@ -277,7 +291,7 @@ extension NSMenuItem: FuzzySearchable {
   
   open func menuDidClose(_ menu: NSMenu) {
     if !initiallyShowsFilterField {
-      item(withTag: 1000)?.view = nil
+      item(withTag: Self.filterFieldItemTag)?.view = nil
     }
 
     wrappedDelegate?.menuDidClose?(menu)
