@@ -1,6 +1,11 @@
 import AppKit
 import Carbon
+import FuzzySearch
 import FilterUICoreObjC
+
+extension NSMenuItem: FuzzySearchable {
+  public var fuzzyStringToMatch: String { title }
+}
 
 /// A filtering menu.
 ///
@@ -158,8 +163,28 @@ import FilterUICoreObjC
     }
 
     let items = menu.items.dropFirst()
-    for item in items { item.isHidden = !string.isEmpty }
-    for (item, _) in items.fuzzyMatch(string) { item.isHidden = false }
+
+    for item in items {
+      item.isHidden = !string.isEmpty
+      item.attributedTitle = nil
+    }
+
+    for (item, result) in items.fuzzyMatch(string) {
+      item.isHidden = false
+
+      let attributedTitle = NSMutableAttributedString(string: item.title, attributes: [
+        .foregroundColor: NSColor.secondaryLabelColor//.withAlphaComponent(0.9)
+      ])
+
+      for range in result.parts {
+        attributedTitle.addAttributes(
+          [.foregroundColor: NSColor.textColor, .font: NSFontManager.shared.convert(font, toHaveTrait: .boldFontMask)],
+          range: range
+        )
+      }
+
+      item.attributedTitle = attributedTitle
+    }
 
     HIViewSetDrawingEnabled(contentView.pointee.takeUnretainedValue(), true)
     HIViewSetNeedsDisplay(contentView.pointee.takeUnretainedValue(), true)

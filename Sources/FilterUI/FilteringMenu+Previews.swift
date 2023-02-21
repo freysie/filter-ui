@@ -26,10 +26,12 @@ struct FilteringMenu_Previews: PreviewProvider {
 
     func makeExampleMenu() -> NSMenu {
       let menu = FilteringMenu()
+      menu.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
       menu.autoenablesItems = false
       addExampleItems(to: menu)
 
       let submenu = FilteringMenu()
+      submenu.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
       // let submenu = NSMenu()
       submenu.autoenablesItems = false
       addExampleItems(to: submenu)
@@ -37,6 +39,7 @@ struct FilteringMenu_Previews: PreviewProvider {
       submenu.addItem(.separator())
 
       let subsubmenu = FilteringMenu()
+      subsubmenu.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
       subsubmenu.autoenablesItems = false
       addExampleItems(to: subsubmenu)
 
