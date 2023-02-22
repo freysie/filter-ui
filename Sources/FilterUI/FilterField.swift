@@ -136,24 +136,21 @@ struct FilterField_Previews: PreviewProvider {
       Group {
         NSViewPreview { FilterSearchField() }
 
-        NSViewPreview {
-          let f = FilterSearchField()
+        NSViewPreview<FilterSearchField> { f in
           f.progress = FilterSearchField.indeterminateProgress
-          return f
         }
 
-        // NSViewPreview<FilterSearchField> { f in
-        //   f.progress = FilterSearchField.indeterminateProgress
-        // }
+        NSViewPreview<FilterSearchField> { f in
+          f.stringValue = "Lorem Ipsum"
+        }
 
-        NSViewPreview {
-          let f = FilterSearchField()
+        NSViewPreview<FilterSearchField> { f in
           f.progress = 0
           Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
             if let progress = f.progress { f.progress = progress >= 1 ? 0 : progress + 0.05 }
           }
-          return f
         }
+
         // NSViewPreview { let f = FilterSearchField(); f.controlSize = .small; return f }
         // NSViewPreview { let f = FilterSearchField(); f.controlSize = .mini; return f }
 

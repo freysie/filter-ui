@@ -50,9 +50,9 @@ import Combine
     progressIndicator.isHidden = true
     progressIndicator.isIndeterminate = false
     progressIndicator.translatesAutoresizingMaskIntoConstraints = false
-    // TODO: make smaller:
-    //progressIndicator.wantsLayer = true
-    //progressIndicator.layer?.sublayerTransform = CATransform3DMakeScale(0.8, 0.8, 0.8)
+    progressIndicator.wantsLayer = true
+    // TODO: tweak for retina
+    progressIndicator.layer?.sublayerTransform = CATransform3DTranslate(CATransform3DMakeScale(13/16, 13/16, 1), 13/16 * 2, 13/16 * 2, 0)
     addSubview(progressIndicator)
 
     NSLayoutConstraint.activate([
