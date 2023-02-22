@@ -6,6 +6,7 @@ import AppKit
   var accessoryWidth: CGFloat { (controlView as? FilterSearchField)?.accessoryView?.bounds.width ?? 0 }
   var hasSourceListAppearance = false
   var hasFilteringAppearance = false
+  var showsProgressIndicator = false
 
   public override init(textCell string: String) {
     super.init(textCell: string)
@@ -51,6 +52,8 @@ import AppKit
   }
 
   open override func cancelButtonRect(forBounds rect: NSRect) -> NSRect {
+    guard !showsProgressIndicator else { return .zero }
+
     var rect = super.cancelButtonRect(forBounds: rect).offsetBy(dx: -4, dy: controlSize == .small ? 0 : -0.5)
     rect.origin.x -= accessoryWidth + (accessoryWidth > 0 ? 1 : 0)
     return rect
@@ -163,6 +166,10 @@ import AppKit
 //    if !stringValue.isEmpty {
 //      cancelButtonCell.draw(withFrame: cancelButtonRect(forBounds: cellFrame), in: controlView)
 //    }
+  }
+
+  open func drawProgressIndicator() {
+
   }
 
   // MARK: - Editing
