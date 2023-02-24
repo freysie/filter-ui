@@ -47,6 +47,8 @@ import Combine
     return !(isFirstResponder || isFiltering)
   }
 
+  // MARK: - Initialization
+
   public override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
 
@@ -98,6 +100,8 @@ import Combine
     fatalError("init(coder:) has not been implemented")
   }
 
+  // MARK: - Object Value
+
   open override var objectValue: Any? {
     didSet { objectValueDidChange() }
   }
@@ -108,12 +112,40 @@ import Combine
     searchButton?.image = isEmpty ? filterImage : activeFilterImage
   }
 
+  // MARK: - Actions
+
   open func takeComparisonTypeFromSender(_ sender: NSMenuItem) {
     if let type = FilterTokenComparisonType(rawValue: sender.tag) {
       (sender.representedObject as? FilterTokenValue)?.comparisonType = type
       refreshTokens()
     }
   }
+
+  open func refreshTokens() {
+    if let range = currentEditor()?.selectedRange {
+      // let value = attributedStringValue
+      // objectValue = nil
+      // attributedStringValue = value
+      let value = objectValue
+      objectValue = nil
+      objectValue = value
+      currentEditor()?.selectedRange = range
+      currentEditor()?.scrollRangeToVisible(range)
+    }
+
+    validateEditing()
+  }
+
+  open func clearTokens() {
+    stringValue = ""
+    objectValueDidChange()
+  }
+
+  open override func cancelOperation(_ sender: Any?) {
+    clearTokens()
+  }
+
+  // MARK: - Recents
 
   open func popUpMenu() {
     let menu = NSMenu()
@@ -151,30 +183,6 @@ import Combine
     clearRecentsItem.isEnabled = !recentFilterValues.isEmpty
 
     menu.popUp(positioning: nil, at: NSMakePoint(1, -menu.size.height + 6), in: searchButton)
-  }
-
-  open func refreshTokens() {
-    if let range = currentEditor()?.selectedRange {
-      // let value = attributedStringValue
-      // objectValue = nil
-      // attributedStringValue = value
-      let value = objectValue
-      objectValue = nil
-      objectValue = value
-      currentEditor()?.selectedRange = range
-      currentEditor()?.scrollRangeToVisible(range)
-    }
-
-    validateEditing()
-  }
-
-  open func clearTokens() {
-    stringValue = ""
-    objectValueDidChange()
-  }
-
-  open override func cancelOperation(_ sender: Any?) {
-    clearTokens()
   }
 
   open func clearRecents() {

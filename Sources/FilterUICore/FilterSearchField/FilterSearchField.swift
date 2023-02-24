@@ -2,6 +2,8 @@ import AppKit
 import Combine
 
 // FIXME: cancel button highlight glitch (the right edge’s highlight gets stuck when moving the mouse outside while holding down the mouse button)
+// FIXME: another cancel button highlight glitch (top and bottom edges gets cut off when highlighted in FilteringMenu’s smaller filter field)
+// TODO: consider changing cancel button / progress indicator size to match filter icon (12 pt → 13 pt)
 
 /// An AppKit filter field.
 @objcMembers open class FilterSearchField: NSSearchField, CALayerDelegate {

@@ -1,6 +1,6 @@
-# Filter UI (🚧 Work in Progress 🚧)
+# Filter UI (<abbr title="Work in Progress">🚧</abbr>)
 
-Filter field <!--and menu filtering--> for AppKit and SwiftUI.
+Filter field and menu filtering for AppKit and SwiftUI.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="Screenshots/Logo~dark@2x.png?raw=true 2x, Screenshots/Logo~dark@1x.png?raw=true 1x">
@@ -24,6 +24,8 @@ Filter field <!--and menu filtering--> for AppKit and SwiftUI.
 ## Overview
 
 ### Filter Field
+
+A filter field is like a regular search field but it has a different appearance. 
 
 ```swift
 FilterField(text: $filterText)
@@ -61,38 +63,44 @@ FilterField(text: $filterText, isFiltering: locationRequired) {
 </picture>
 
 
-### AppKit-Compatible Filter Field
+### AppKit-Compatible Filter Fields
 
-`FilterField`’s underlying `NSSearchField` and `NSSearchFieldCell` subclasses can be used directly by importing `FilterUICore`.
+`FilterField`’s underlying `NSSearchField` and `NSTokenField` subclasses can be used directly by importing `FilterUICore`.
 
 ```swift
 import FilterUICore
 
 FilterSearchField(frame: …)
-FilterSearchFieldCell()
+FilterTokenField(frame: …)
 ```
 
 
 ### Menu Filtering
 
-FilterUI provides a subclass of `NSMenu` called `FilteringMenu` which add a filter field to the menu and its submenus, similar to how some menus in Xcode are filterable.
+Filter UI provides a subclass of `NSMenu` called `FilteringMenu` which adds a filter field to the menu and its submenus, similar to how the jump bar menus in Xcode are filterable.
 
 Menu filtering works by replacing the standard keystroke-based selection (type select). When a user presses a key, the filter field appears at the top of the menu and is focused.
 
 While typing, menu items are filtered based on fuzzy search matching of the items’ titles. Matching parts of the titles will be displayed in bold and non-matching parts are grayed out.
+
+<img alt="" src="Screenshots/FilteringMenu~dark@2x.png?raw=true" width="228">
 
 
 ## Roadmap
 
 ### 1.0
 
-* Menu filtering
+* ~~Menu filtering~~
 * Token field
+  - 1px top clipping issue
+  - Users should be able to leave text without it turning into a token
 * AppKit-based accessory views
 * ~~Find solution to border issue~~
-* Resolve text wrapping issue
+* ~~Resolve text wrapping issue~~
 * ~~Menu w/ pill-shaped icon?~~
 * ~~Pixel-perfect 13 px filter icon?~~
+* Resolve issues with cancel buttons
+* Redo README
 
 
 ### Later
@@ -106,5 +114,5 @@ While typing, menu items are filtered based on fuzzy search matching of the item
 Fuzzy search implementation is based on [FuzzySearch](https://github.com/viktorasl/FuzzySearch) by Viktoras Laukevičius.
 
 Big thanks goes out to [OEXTokenField](https://github.com/octiplex/OEXTokenField) by 
-Octiplex.
+Octiplex for ideas on how to customize token fields.
 
