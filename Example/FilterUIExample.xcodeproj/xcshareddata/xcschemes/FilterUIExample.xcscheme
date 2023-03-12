@@ -37,8 +37,6 @@
       enableASanStackUseAfterReturn = "YES"
       disableMainThreadChecker = "YES"
       disablePerformanceAntipatternChecker = "YES"
-      language = "da"
-      region = "DK"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"

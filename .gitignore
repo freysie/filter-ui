@@ -1,7 +1,7 @@
 .DS_Store
 /.build
 /Packages
-/Screenshots/Logo-*.png
+/Screenshots/FilterUI-*.png
 /*.xcodeproj
 xcuserdata/
 DerivedData/

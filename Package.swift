@@ -14,13 +14,11 @@ let package = Package(
   ],
   dependencies: [
     .package(url: "https://github.com/database-utility/fuzzy-search.git", branch: "main"),
-    .package(url: "https://github.com/freyaalminde/previews-capture.git", branch: "refactor"),
   ],
   targets: [
     .target(name: "FilterUI", dependencies: [
       "FilterUICore",
       "FilterUICoreObjC",
-      .product(name: "PreviewsCapture", package: "previews-capture"),
     ]),
     .target(name: "FilterUICore", dependencies: [
       "FilterUICoreObjC",

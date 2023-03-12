@@ -22,7 +22,6 @@ class FilteringMenuFilterView: NSView {
     autoresizingMask = .width
 
     filterField = FilterSearchField(frame: frameRect.insetBy(dx: Self.horizontalPadding, dy: 4))
-    filterField.hasSourceListAppearance = true
     filterField.controlSize = .small
     filterField.autoresizingMask = .width
     addSubview(filterField)

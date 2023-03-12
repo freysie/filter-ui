@@ -12,6 +12,9 @@
 		3B65DD7D299C855500F08583 /* FilterUIScreenshots.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B65DD7C299C855500F08583 /* FilterUIScreenshots.swift */; };
 		3BDD452728213E38003D77E3 /* FilterUIExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDD452628213E38003D77E3 /* FilterUIExampleApp.swift */; };
 		3BDD453A28213EC9003D77E3 /* FilterUI in Frameworks */ = {isa = PBXBuildFile; productRef = 3BDD453928213EC9003D77E3 /* FilterUI */; };
+		3BF1416D29BDD64A00E7651C /* Screenshotting in Frameworks */ = {isa = PBXBuildFile; productRef = 3BF1416C29BDD64A00E7651C /* Screenshotting */; };
+		3BF1416F29BDD64A00E7651C /* ScreenshottingRNG in Frameworks */ = {isa = PBXBuildFile; productRef = 3BF1416E29BDD64A00E7651C /* ScreenshottingRNG */; };
+		3BF1417029BDD6EC00E7651C /* FilterUIScreenshots.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B65DD7C299C855500F08583 /* FilterUIScreenshots.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +39,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3BF1416D29BDD64A00E7651C /* Screenshotting in Frameworks */,
+				3BF1416F29BDD64A00E7651C /* ScreenshottingRNG in Frameworks */,
 				3BDD453A28213EC9003D77E3 /* FilterUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -119,6 +124,8 @@
 			name = FilterUIExample;
 			packageProductDependencies = (
 				3BDD453928213EC9003D77E3 /* FilterUI */,
+				3BF1416C29BDD64A00E7651C /* Screenshotting */,
+				3BF1416E29BDD64A00E7651C /* ScreenshottingRNG */,
 			);
 			productName = FilterUIExample;
 			productReference = 3BDD452328213E38003D77E3 /* FilterUIExample.app */;
@@ -149,6 +156,9 @@
 				da,
 			);
 			mainGroup = 3BDD451A28213E38003D77E3;
+			packageReferences = (
+				3BF1416B29BDD64A00E7651C /* XCRemoteSwiftPackageReference "screenshotting" */,
+			);
 			productRefGroup = 3BDD452428213E38003D77E3 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -191,6 +201,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3BDD452728213E38003D77E3 /* FilterUIExampleApp.swift in Sources */,
+				3BF1417029BDD6EC00E7651C /* FilterUIScreenshots.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -476,6 +487,17 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		3BF1416B29BDD64A00E7651C /* XCRemoteSwiftPackageReference "screenshotting" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/freyaalminde/screenshotting.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		3B65DD71299C84DE00F08583 /* FilterUI */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -488,6 +510,16 @@
 		3BDD453928213EC9003D77E3 /* FilterUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = FilterUI;
+		};
+		3BF1416C29BDD64A00E7651C /* Screenshotting */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3BF1416B29BDD64A00E7651C /* XCRemoteSwiftPackageReference "screenshotting" */;
+			productName = Screenshotting;
+		};
+		3BF1416E29BDD64A00E7651C /* ScreenshottingRNG */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3BF1416B29BDD64A00E7651C /* XCRemoteSwiftPackageReference "screenshotting" */;
+			productName = ScreenshottingRNG;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

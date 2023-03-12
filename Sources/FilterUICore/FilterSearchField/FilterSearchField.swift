@@ -5,30 +5,45 @@ import Combine
 // FIXME: another cancel button highlight glitch (top and bottom edges gets cut off when highlighted in FilteringMenu’s smaller filter field)
 // TODO: consider changing cancel button / progress indicator size to match filter icon (12 pt → 13 pt)
 
+open class ProgressIndicator: NSProgressIndicator {
+  open override var allowsVibrancy: Bool { true }
+}
+
 /// An AppKit filter field.
 @objcMembers open class FilterSearchField: NSSearchField, CALayerDelegate {
   open override class var cellClass: AnyClass? { get { FilterSearchFieldCell.self } set {} }
   public static let indeterminateProgress: Double = -1
 
+  private var hasText = false
   private var subscriptions = Set<AnyCancellable>()
+  private var filterButtonSubscriptions = Set<AnyCancellable>()
 
   open var isHovered = false
-  open var progressIndicator = NSProgressIndicator()
+  open var progressIndicator = ProgressIndicator()
   open var progress: Double? { didSet { updateProgressIndicator() } }
+  open var accessoryView = NSStackView()
+  open var accessoryViewCenterYConstraint: NSLayoutConstraint!
 
   open var trackingTag: TrackingRectTag?
 
   // open override var allowsVibrancy: Bool { !hasFilteringAppearance }
 
-  open override var allowsVibrancy: Bool {
-    let isFirstResponder = window?.firstResponder == currentEditor()
-    let isFiltering = !stringValue.isEmpty
-    return !(isFirstResponder || isFiltering)
+  open var hasActiveFilter: Bool {
+    hasText || filterButtons.contains { $0.state == .on }
   }
 
-  open override var controlSize: NSControl.ControlSize {
-    didSet { invalidateIntrinsicContentSize() }
+  open override var allowsVibrancy: Bool {
+    let isFirstResponder = window?.firstResponder == currentEditor()
+    return !(isFirstResponder || hasActiveFilter)
   }
+
+  open override var stringValue: String {
+    didSet { hasText = !stringValue.isEmpty }
+  }
+
+  // open override var controlSize: NSControl.ControlSize {
+  //   didSet { invalidateIntrinsicContentSize() }
+  // }
 
   open override var intrinsicContentSize: NSSize {
     switch controlSize {
@@ -57,16 +72,37 @@ import Combine
     progressIndicator.layer?.sublayerTransform = CATransform3DTranslate(CATransform3DMakeScale(12/16, 12/16, 1), 16/12 * 2, 16/12 * 2, 0)
     addSubview(progressIndicator)
 
+    accessoryView = NSStackView()
+    accessoryView.edgeInsets = NSEdgeInsets(top: 0, left: 0, bottom: 10, right: 0)
+    accessoryView.spacing = 0
+    accessoryView.translatesAutoresizingMaskIntoConstraints = false
+    addSubview(accessoryView)
+    accessoryViewCenterYConstraint = accessoryView.centerYAnchor.constraint(
+      equalTo: centerYAnchor,
+      constant: (NSScreen.main?.backingScaleFactor ?? 1) < 2 ? -1 : 0
+    )
+
     NSLayoutConstraint.activate([
       progressIndicator.widthAnchor.constraint(equalToConstant: 16),
       progressIndicator.heightAnchor.constraint(equalToConstant: 16),
       progressIndicator.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4),
-      progressIndicator.centerYAnchor.constraint(equalTo: centerYAnchor)
+      progressIndicator.centerYAnchor.constraint(equalTo: centerYAnchor),
+
+      accessoryView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4),
+      accessoryViewCenterYConstraint,
+      //accessoryView.topAnchor.constraint(equalTo: topAnchor, constant: 3),
+      //_accessoryView.centerYAnchor.constraint(equalTo: centerYAnchor, constant: -1),
     ])
 
     Publishers.MergeMany(
       NotificationCenter.default.publisher(for: NSWindow.didBecomeKeyNotification, object: nil),
       NotificationCenter.default.publisher(for: NSWindow.didResignKeyNotification, object: nil)
+    )
+    .sink { _ in self.needsDisplay = true }
+    .store(in: &subscriptions)
+
+    Publishers.MergeMany(
+      NotificationCenter.default.publisher(for: NSWindow.didChangeScreenProfileNotification, object: nil)
     )
     .sink { _ in self.needsDisplay = true }
     .store(in: &subscriptions)
@@ -78,8 +114,8 @@ import Combine
 
   open override func viewWillDraw() {
     guard let cell = cell as? FilterSearchFieldCell else { return }
-    cell.hasSourceListAppearance = hasSourceListAppearance
-    cell.hasFilteringAppearance = hasFilteringAppearance
+    cell.hasFilteringAppearance = hasFilteringAppearance || hasActiveFilter
+    accessoryViewCenterYConstraint.constant = (window?.screen?.backingScaleFactor ?? 1) < 2 ? -1 : 0
   }
 
   /// Whether accessory views are filtering.
@@ -89,30 +125,6 @@ import Combine
       layer?.setNeedsDisplay()
     }
   }
-
-  /// The field’s accessory view.
-  open var accessoryView: NSView? {
-    didSet {
-      if let accessoryView = accessoryView {
-        addSubview(accessoryView)
-
-        accessoryView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-          accessoryView.topAnchor.constraint(equalTo: topAnchor, constant: 4),
-          accessoryView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4)
-        ])
-
-        // (cell as? FilterSearchFieldCell)?.accessoryWidth = accessoryView.bounds.width
-      }
-    }
-    willSet {
-      if newValue == nil {
-        accessoryView?.removeFromSuperview()
-      }
-    }
-  }
-
-  open var hasSourceListAppearance = false
 
   open var hasFilteringAppearance: Bool {
     isFiltering || !stringValue.isEmpty || window?.firstResponder == currentEditor()
@@ -156,63 +168,145 @@ import Combine
       trackingTag = addTrackingRect(bounds, owner: self, userData: nil, assumeInside: false)
     }
   }
+
+  // MARK: - Filter Buttons
+
+  open var filterButtons = [NSButton]()
+
+  @discardableResult
+  open func addFilterButton(image: NSImage, alternateImage: NSImage, toolTip: String, accessibilityDescription: String? = nil) -> NSButton {
+    //print(image.size)
+    //let imageSize = 17
+    //image.size = NSSize(width: imageSize, height: imageSize)
+    //alternateImage.size = NSSize(width: imageSize, height: imageSize)
+
+    let button = FilterButton()
+    button.setButtonType(.pushOnPushOff)
+    button.bezelStyle = .texturedRounded
+    button.isBordered = false
+    //(button.cell as? NSButtonCell)?.showsStateBy = [.contentsCellMask, .changeGrayCellMask, .changeBackgroundCellMask]
+    (button.cell as? NSButtonCell)?.showsStateBy = [.contentsCellMask]
+    //button.imageScaling = .scaleProportionallyDown
+    button.imageScaling = .scaleNone
+    button.imagePosition = .imageOnly
+    button.image = image
+    button.alternateImage = alternateImage
+    button.toolTip = toolTip
+    button.setAccessibilityTitle(accessibilityDescription)
+
+    button.cell?.publisher(for: \.state)
+      .sink {
+        button.contentTintColor = $0 == .on ? .controlAccentColor : nil
+        self.needsLayout = true
+      }
+      .store(in: &filterButtonSubscriptions)
+
+    NSLayoutConstraint.activate([
+      button.widthAnchor.constraint(equalToConstant: 17),
+      button.heightAnchor.constraint(equalToConstant: 15),
+    ])
+
+    //button.wantsLayer = true
+    //button.layer?.borderColor = NSColor.systemPink.cgColor
+    //button.layer?.borderWidth = 1
+
+    accessoryView.addArrangedSubview(button)
+    filterButtons.append(button)
+    updateAccessoryControlsFrames()
+
+    return button
+  }
+
+  @discardableResult
+  open func addFilterButton(systemSymbolName: String, toolTip: String, accessibilityDescription: String? = nil) -> NSButton {
+    // FIXME: make the point size behave like in SwiftUI somehow
+
+    let image = (NSImage(systemSymbolName: systemSymbolName, accessibilityDescription: nil) ?? NSImage())
+      .withSymbolConfiguration(.init(pointSize: 16, weight: .regular, scale: .small))!
+
+    let alternateImage = (NSImage(systemSymbolName: systemSymbolName + ".fill", accessibilityDescription: nil) ?? image)
+      .withSymbolConfiguration(.init(pointSize: 16, weight: .regular, scale: .small))!
+
+    return addFilterButton(image: image, alternateImage: alternateImage, toolTip: toolTip, accessibilityDescription: accessibilityDescription)
+  }
+
+  open func removeAllFilterButtons() {
+    filterButtons.forEach { $0.removeFromSuperview() }
+    filterButtons = []
+    filterButtonSubscriptions = []
+    updateAccessoryControlsFrames()
+  }
+
+  open func updateAccessoryControlsFrames() {
+    guard let cell = cell as? FilterSearchFieldCell else { return }
+    cell.rightMargin = filterButtons.map { $0.intrinsicContentSize.width }.reduce(0, +)
+    if !filterButtons.isEmpty { cell.rightMargin += 3 }
+    //updateCell(cell)
+  }
 }
 
-// TODO: fix this:
+open class FilterButton: NSButton {
+  open override var alignmentRectInsets: NSEdgeInsets { NSEdgeInsets() }
+}
 
-//open class FlatProgressIndicator: NSProgressIndicator, CALayerDelegate {
-//  open override var isFlipped: Bool { true }
+// MARK: -
 
-//  public override init(frame frameRect: NSRect) {
-//    super.init(frame: frameRect)
-//    wantsLayer = true
-//    layer?.delegate = self
-//  }
-//
-//  required init?(coder: NSCoder) {
-//    fatalError("init(coder:) has not been implemented")
-//  }
-//
-//  public func draw(_ layer: CALayer, in ctx: CGContext) {
-//    NSColor.secondaryLabelColor.setStroke()
-//    NSColor.secondaryLabelColor.setFill()
-//
-//    do {
-//      let path = NSBezierPath(ovalIn: bounds.insetBy(dx: 0.5, dy: 0.5))
-//      path.stroke()
-//    }
-//
-//    do {
-//      let center = NSPoint(x: bounds.midX, y: bounds.midY)
-//      let radius = (min(frame.size.width, frame.size.height) - 4) * 0.5
-//
-//      let path = NSBezierPath()
-//      path.move(to: center)
-//      path.appendArc(withCenter: center, radius: radius, startAngle: -.pi * 0.5, endAngle: (-.pi * 0.5) + (.pi * 2 * doubleValue), clockwise: false)
-//      path.fill()
-//    }
-//  }
+extension FilterSearchField {
+  @discardableResult
+  open func addFilterButton(symbolName: String, toolTip: String, accessibilityDescription: String? = nil) -> NSButton {
+    let image = Bundle.module.image(forResource: symbolName) ?? NSImage()
+    let alternateName = symbolName.replacingOccurrences(of: ".raster", with: ".fill.raster")
+    let alternateImage = Bundle.module.image(forResource: alternateName) ?? image
+    return addFilterButton(image: image, alternateImage: alternateImage, toolTip: toolTip, accessibilityDescription: accessibilityDescription)
+  }
+}
 
-  //  open override func draw(_ dirtyRect: NSRect) {
-//    super.draw(dirtyRect)
-//    guard !isIndeterminate else { return super.draw(dirtyRect) }
+import SwiftUI
+struct FilterSearchField_Previews: PreviewProvider {
+  static var previews: some View {
+    VStack {
+      NSViewPreview { FilterSearchField() }
 
-//    NSColor.secondaryLabelColor.setStroke()
-//    NSColor.secondaryLabelColor.setFill()
-//
-//    do {
-//      let path = NSBezierPath(ovalIn: bounds.insetBy(dx: 0.5, dy: 0.5))
-//      path.stroke()
-//    }
-//
-//    do {
-//      let center = NSPoint(x: bounds.midX, y: bounds.midY)
-//      let radius = (min(frame.size.width, frame.size.height) - 4) * 0.5
-//
-//      let path = NSBezierPath()
-//      path.move(to: center)
-//      path.appendArc(withCenter: center, radius: radius, startAngle: -.pi * 0.5, endAngle: (-.pi * 0.5) + (.pi * 2 * doubleValue), clockwise: false)
-//      path.fill()
-//    }
-//  }
-//}
+      NSViewPreview<FilterSearchField> { f in
+        f.placeholderString = "Custom Placeholder"
+      }
+
+      NSViewPreview<FilterSearchField> { f in
+        f.stringValue = "Lorem Ipsum"
+      }
+
+      NSViewPreview<FilterSearchField> { f in
+        f.addFilterButton(systemSymbolName: "clock", toolTip: "Show only recent items")
+        f.addFilterButton(systemSymbolName: "doc", toolTip: "Show only project-defined items")
+        //f.addFilterButton(systemSymbolName: "tag.square", toolTip: "Show only tagged items")
+        //f.addFilterButton(systemSymbolName: "square", toolTip: "")
+        //f.addFilterButton(systemSymbolName: "c.square", toolTip: "")
+      }
+
+      NSViewPreview<FilterSearchField> { f in
+        f.addFilterButton(symbolName: "clock.raster", toolTip: "Show only recent items")
+        f.addFilterButton(symbolName: "doc.raster", toolTip: "Show only project-defined items")
+        //f.addFilterButton(symbolName: "tag.raster", toolTip: "Show only tagged items")
+      }
+
+      NSViewPreview<FilterSearchField> { f in
+        f.stringValue = "Lorem Ipsum"
+        f.addFilterButton(symbolName: "clock.raster", toolTip: "").state = .on
+        f.addFilterButton(symbolName: "doc.raster", toolTip: "")
+      }
+
+      NSViewPreview<FilterSearchField> { f in
+        f.progress = FilterSearchField.indeterminateProgress
+      }
+
+      NSViewPreview<FilterSearchField> { f in
+        f.progress = 0
+        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+          if let p = f.progress { f.progress = p >= 1 ? 0 : p + 0.05 }
+        }
+      }
+    }
+    .frame(maxWidth: 300)
+    .padding()
+  }
+}

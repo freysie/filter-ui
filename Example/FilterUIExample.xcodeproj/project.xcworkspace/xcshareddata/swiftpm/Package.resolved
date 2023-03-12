@@ -11,11 +11,11 @@
         }
       },
       {
-        "package": "previews-capture",
-        "repositoryURL": "https://github.com/freyaalminde/previews-capture.git",
+        "package": "screenshotting",
+        "repositoryURL": "https://github.com/freyaalminde/screenshotting.git",
         "state": {
-          "branch": "refactor",
-          "revision": "8a9b4ab5c30fa87a04b0aff0af829286e5bc3807",
+          "branch": "main",
+          "revision": "5ecc9e072d98f19a8eb1da98fdf5b5800bea722e",
           "version": null
         }
       }

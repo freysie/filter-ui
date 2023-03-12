@@ -4,6 +4,9 @@ import FuzzySearch
 import FilterUICoreObjC
 import ObjectiveC
 
+// TODO: support filtering with custom fonts (e.g. monospaced)
+// TODO: add customizable inset for filter field
+
 extension NSMenuItem: FuzzySearchable {
   public var fuzzyStringToMatch: String { title }
 }

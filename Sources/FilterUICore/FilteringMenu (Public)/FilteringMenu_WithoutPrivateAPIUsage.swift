@@ -220,7 +220,7 @@ public class FilteringMenu_WithoutPrivateAPIUsage: NSMenu, NSMenuDelegate, NSSea
 }
 
 fileprivate extension CGKeyCode {
-  static let `return`: Self = 36
+  //static let `return`: Self = 36
   static let downArrow: Self = 125
   static let upArrow: Self = 126
 }

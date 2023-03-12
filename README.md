@@ -1,11 +1,11 @@
-# Filter UI (<abbr title="Work in Progress">🚧</abbr>)
+# Filter UI
 
 Filter field and menu filtering for AppKit and SwiftUI.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="Screenshots/Logo~dark@2x.png?raw=true 2x, Screenshots/Logo~dark@1x.png?raw=true 1x">
-  <source media="(prefers-color-scheme: light)" srcset="Screenshots/Logo~light@2x.png?raw=true 2x, Screenshots/Logo~light@1x.png?raw=true 1x">
-  <img alt="" src="Screenshots/Logo~dark@2x.png?raw=true" width="640">
+  <source media="(prefers-color-scheme: dark)" srcset="Screenshots/FilterUI~dark@2x.png?raw=true 2x, Screenshots/FilterUI~dark@1x.png?raw=true 1x">
+  <source media="(prefers-color-scheme: light)" srcset="Screenshots/FilterUI~light@2x.png?raw=true 2x, Screenshots/FilterUI~light@1x.png?raw=true 1x">
+  <img alt="" src="Screenshots/FilterUI~dark@2x.png?raw=true" width="640">
 </picture>
 
 
@@ -23,65 +23,60 @@ Filter field and menu filtering for AppKit and SwiftUI.
 
 ## Overview
 
-### Filter Field
+### Filter Search Field
 
-A filter field is like a regular search field but it has a different appearance. 
+A filter search field is a search field with special appearance and added functionality.
 
-```swift
-FilterField(text: $filterText)
-```
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="Screenshots/BasicUsage~dark@2x.png?raw=true 2x, Screenshots/BasicUsage~dark@1x.png?raw=true 1x">
-  <source media="(prefers-color-scheme: light)" srcset="Screenshots/BasicUsage~light@2x.png?raw=true 2x, Screenshots/BasicUsage~light@1x.png?raw=true 1x">
-  <img alt="" src="Screenshots/BasicUsage~dark@2x.png?raw=true" width="200">
-</picture>
-
-
-<!--### Filter Field with Custom Prompt-->
-<!---->
-<!--```swift-->
-<!--FilterField(text: $filterText, prompt: "Hello")-->
-<!--```-->
-
-
-### Filter Field with Accessory Toggles
-
-Toggles can be added to the trailing edge of the filter field by using `FilterToggle`.
+**Note:** Vibrancy affects the appearance.
 
 ```swift
-FilterField(text: $filterText, isFiltering: locationRequired) {
-  FilterToggle(systemImage: "location.square", isOn: $locationRequired)
-    .help("Show only items with location data")
-}
+let field = FilterSearchField()
 ```
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="Screenshots/AccessoryToggles~dark@2x.png?raw=true 2x, Screenshots/AccessoryToggles~dark@1x.png?raw=true 1x">
-  <source media="(prefers-color-scheme: light)" srcset="Screenshots/AccessoryToggles~light@2x.png?raw=true 2x, Screenshots/AccessoryToggles~light@1x.png?raw=true 1x">
-  <img alt="" src="Screenshots/AccessoryToggles~dark@2x.png?raw=true" width="200">
-</picture>
+<img alt="" src="Screenshots/FilterSearchField~dark@2x.png?raw=true" width="232">
 
 
-### AppKit-Compatible Filter Fields
-
-`FilterField`’s underlying `NSSearchField` and `NSTokenField` subclasses can be used directly by importing `FilterUICore`.
+Filter buttons can be added to the trailing edge of the filter field.
 
 ```swift
-import FilterUICore
-
-FilterSearchField(frame: …)
-FilterTokenField(frame: …)
+let field = FilterSearchField()
+field.addFilterButton(systemSymbolName: "doc", toolTip: …)
+field.addFilterButton(image: …, alternateImage: …, toolTip: …)
 ```
 
+<img alt="" src="Screenshots/FilterSearchField_filterButton~dark@2x.png?raw=true" width="232">
 
-### Menu Filtering
+Progress can be displayed, either indeterminate or determinate.
 
-Filter UI provides a subclass of `NSMenu` called `FilteringMenu` which adds a filter field to the menu and its submenus, similar to how the jump bar menus in Xcode are filterable.
+```swift
+let field = FilterSearchField()
+field.progress = FilterSearchField.indeterminateProgress
+field.progress = 0.25 
+```
 
-Menu filtering works by replacing the standard keystroke-based selection (type select). When a user presses a key, the filter field appears at the top of the menu and is focused.
+<img alt="" src="Screenshots/FilterSearchField_progress~dark@2x.png?raw=true" width="232">
 
-While typing, menu items are filtered based on fuzzy search matching of the items’ titles. Matching parts of the titles will be displayed in bold and non-matching parts are grayed out.
+
+### Filter Token Field
+
+Different operators can be used with the filter token field.
+
+```swift
+let field = FilterTokenField()
+field.objectValue = [
+    FilterTokenValue(objectValue: "Hello", comparisonType: .contains),
+    FilterTokenValue(objectValue: "Filter UI", comparisonType: .doesNotContain),
+]
+```
+
+<img alt="" src="Screenshots/FilterTokenField~dark@2x.png?raw=true" width="232">
+
+
+### Filtering Menu
+
+Filter UI provides a subclass of `NSMenu` called `FilteringMenu` which adds a filter field to the menu, similar to how the jump bar menus in Xcode are filterable.
+
+Menu filtering works by replacing the standard keystroke-based selection (type select). When a user presses a key, the filter field appears at the top of the menu and is focused. While typing, menu items are filtered based on fuzzy matching of the items’ titles. Matching parts are displayed in bold while non-matching parts are grayed out.
 
 <img alt="" src="Screenshots/FilteringMenu~dark@2x.png?raw=true" width="228">
 
@@ -94,7 +89,7 @@ While typing, menu items are filtered based on fuzzy search matching of the item
 * Token field
   - 1px top clipping issue
   - Users should be able to leave text without it turning into a token
-* AppKit-based accessory views
+* ~~AppKit-based accessory views~~
 * ~~Find solution to border issue~~
 * ~~Resolve text wrapping issue~~
 * ~~Menu w/ pill-shaped icon?~~

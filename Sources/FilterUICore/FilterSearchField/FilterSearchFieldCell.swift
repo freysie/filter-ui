@@ -3,8 +3,8 @@ import AppKit
 /// The cell interface for AppKit filter fields.
 @objcMembers open class FilterSearchFieldCell: NSSearchFieldCell {
   private static let padding = CGSize(width: -5, height: 3)
-  var accessoryWidth: CGFloat { (controlView as? FilterSearchField)?.accessoryView?.bounds.width ?? 0 }
-  var hasSourceListAppearance = false
+  //var accessoryWidth: CGFloat { rightMargin + ((controlView as? FilterSearchField)?.accessoryView?.bounds.width ?? 0) }
+  var rightMargin = 0.0
   var hasFilteringAppearance = false
   var showsProgressIndicator = false
 
@@ -43,7 +43,7 @@ import AppKit
 
   open override func searchTextRect(forBounds rect: NSRect) -> NSRect {
     var rect = super.searchTextRect(forBounds: rect)
-    rect.size.width -= accessoryWidth + (accessoryWidth > 0 ? 1 : 0)
+    rect.size.width -= rightMargin + (rightMargin > 0 ? 1 : 0)
     return rect
   }
 
@@ -55,7 +55,7 @@ import AppKit
     guard !showsProgressIndicator else { return .zero }
 
     var rect = super.cancelButtonRect(forBounds: rect).offsetBy(dx: -4, dy: controlSize == .small ? 0 : -0.5)
-    rect.origin.x -= accessoryWidth + (accessoryWidth > 0 ? 1 : 0)
+    rect.origin.x -= rightMargin + (rightMargin > 0 ? 1 : 0)
     return rect
   }
 
@@ -168,10 +168,6 @@ import AppKit
 //    }
   }
 
-  open func drawProgressIndicator() {
-
-  }
-
   // MARK: - Editing
 
   open override func setUpFieldEditorAttributes(_ textObj: NSText) -> NSText {
@@ -189,7 +185,7 @@ import AppKit
 
   open override func edit(withFrame rect: NSRect, in controlView: NSView, editor textObj: NSText, delegate: Any?, event: NSEvent?) {
     let insetRect = rect.insetBy(dx: Self.padding.width, dy: Self.padding.height - (controlSize == .small ? 1 : 0))
-    // rect.size.width -= accessoryWidth + (accessoryWidth > 0 ? 1 : 0)
+    // rect.size.width -= rightMargin + (rightMargin > 0 ? 1 : 0)
     super.edit(withFrame: insetRect, in: controlView, editor: textObj, delegate: delegate, event: event)
   }
   

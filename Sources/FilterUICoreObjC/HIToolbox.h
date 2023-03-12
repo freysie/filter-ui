@@ -1,4 +1,4 @@
-#include <Carbon/Carbon.h>
+@import Carbon;
 
 NS_ASSUME_NONNULL_BEGIN
 

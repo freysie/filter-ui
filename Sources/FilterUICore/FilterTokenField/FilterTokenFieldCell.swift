@@ -86,6 +86,7 @@ import ObjectiveC
       return FilterTokenValue(objectValue: String(editingString.dropLast()), comparisonType: .beginsWith)
     } else {
       return FilterTokenValue(objectValue: editingString, comparisonType: .contains)
+      //return editingString
     }
   }
 
@@ -150,6 +151,7 @@ import ObjectiveC
       return attrString
     }
     set {
+      //print(NSApp.currentEvent?.type == .keyDown && NSApp.currentEvent?.keyCode == .return)
       let attrString = newValue
       attrString.enumerateAttribute(.attachment, in: NSMakeRange(0, attrString.length)) { [self] attachment, range, _ in
         if let attachment = attachment as? NSTextAttachment {

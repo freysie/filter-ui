@@ -29,6 +29,7 @@ import Combine
 
   open var recentFilterValues = [Any]()
 
+  private var hasText = false //{ didSet { print("has text = \(hasText)") } }
   private var subscriptions = Set<AnyCancellable>()
 
   open override var intrinsicContentSize: NSSize {
@@ -43,8 +44,7 @@ import Combine
 
   open override var allowsVibrancy: Bool {
     let isFirstResponder = window?.firstResponder == currentEditor()
-    let isFiltering = !stringValue.isEmpty
-    return !(isFirstResponder || isFiltering)
+    return !(isFirstResponder || hasText)
   }
 
   // MARK: - Initialization
@@ -55,6 +55,7 @@ import Combine
     font = .systemFont(ofSize: NSFont.smallSystemFontSize)
     tokenStyle = .rounded
     usesSingleLineMode = true
+    tokenizingCharacterSet = CharacterSet()
 
     searchButton = FilterTokenFieldButton(frame: NSMakeRect(2, 0, 32, frameRect.height))
     searchButton.autoresizingMask = [.maxXMargin, .height]
@@ -65,7 +66,7 @@ import Combine
     searchButton.action = #selector(popUpMenu)
     addSubview(searchButton)
 
-    cancelButton = FilterTokenFieldButton(frame: NSMakeRect(frameRect.width - 24, 0, 24, frameRect.height))
+    cancelButton = FilterTokenFieldButton(frame: NSMakeRect(frameRect.width - 25, 0, 25, frameRect.height))
     cancelButton.autoresizingMask = [.minXMargin, .height]
     cancelButton.setButtonType(.momentaryChange)
     cancelButton.image = NSImage(systemSymbolName: "xmark.circle.fill", accessibilityDescription: nil)!
@@ -81,7 +82,8 @@ import Combine
     cancelButton.target = self
     cancelButton.action = #selector(clearTokens)
     cancelButton.wantsLayer = true
-    cancelButton.layer?.sublayerTransform = CATransform3DMakeTranslation(0, -1, 0)
+    //cancelButton.layer?.sublayerTransform = CATransform3DMakeTranslation(0, -1, 0)
+    //cancelButton.layer?.sublayerTransform = CATransform3DMakeTranslation(-0.5, 0, 0)
     addSubview(cancelButton)
 
     Publishers.MergeMany(
@@ -110,6 +112,8 @@ import Combine
     let isEmpty = stringValue.isEmpty
     cancelButton?.isHidden = isEmpty
     searchButton?.image = isEmpty ? filterImage : activeFilterImage
+    hasText = !isEmpty
+    needsDisplay = true
   }
 
   // MARK: - Actions
@@ -144,6 +148,11 @@ import Combine
   open override func cancelOperation(_ sender: Any?) {
     clearTokens()
   }
+
+  // open override func resignFirstResponder() -> Bool {
+  //   defer { needsDisplay = true }
+  //   return super.resignFirstResponder()
+  // }
 
   // MARK: - Recents
 
@@ -205,9 +214,10 @@ import Combine
   }
 
   // open override func textDidEndEditing(_ notification: Notification) {
-  //   if NSApp.currentEvent?.keyCode == .return {
+  //   if let event = NSApp.currentEvent, event.type == .keyDown, event.keyCode == .return {
   //     super.textDidEndEditing(notification)
   //   }
+  //   needsDisplay = true
   // }
 
   // MARK: - Text View Delegate
@@ -221,16 +231,39 @@ import Combine
   }
 }
 
+extension CGKeyCode {
+  static let `return`: Self = 36
+}
+
 // MARK: -
 
 import SwiftUI
 struct FilterTokenField_Previews: PreviewProvider {
   static var previews: some View {
-    NSViewPreview {
-      let field = FilterTokenField()
-      // field.controlSize = .large
-      return field
+    VStack {
+      NSViewPreview { FilterTokenField() }
+
+      NSViewPreview<FilterTokenField> { f in
+        f.placeholderString = "Custom Placeholder"
+      }
+
+      NSViewPreview<FilterTokenField> { f in
+        // f.stringValue = "Lorem Ipsum"
+        f.objectValue = "Lorem Ipsum"
+      }
+
+      NSViewPreview<FilterTokenField> { f in
+        f.objectValue = [
+          FilterTokenValue(objectValue: "hi", comparisonType: .contains),
+          FilterTokenValue(objectValue: "there", comparisonType: .doesNotContain),
+          FilterTokenValue(objectValue: "token", comparisonType: .beginsWith),
+          FilterTokenValue(objectValue: "field", comparisonType: .endsWith)
+        ]
+      }
+
+      // TODO: filter buttons & progress
     }
+    .frame(maxWidth: 300)
     .padding()
   }
 }

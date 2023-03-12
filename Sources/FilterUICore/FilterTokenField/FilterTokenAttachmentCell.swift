@@ -13,7 +13,7 @@ import AppKit
   }
 
   open override func cellSize() -> NSSize {
-    let textSize = adorned(attributedStringValue).size()
+    let textSize = attributedTitle(for: attributedStringValue).size()
     return NSMakeSize(textSize.width.rounded() + (hasMenu ? 12 + 1 : 0) + 3 * 2 + 2 * 2, 15)
   }
 
@@ -100,10 +100,10 @@ import AppKit
     if !isKeyOrMainWindow { secondaryColor = secondaryColor.withAlphaComponent(0.5) }
 
     let string = NSAttributedString(string: stringValue, attributes: [.font: font!, .foregroundColor: primaryColor])
-    adorned(string, foregroundColor: secondaryColor).draw(in: titleRect(forBounds: cellFrame))
+    attributedTitle(for: string, foregroundColor: secondaryColor).draw(in: titleRect(forBounds: cellFrame))
   }
 
-  func adorned(_ string: NSAttributedString, foregroundColor color: NSColor = .clear) -> NSAttributedString {
+  func attributedTitle(for string: NSAttributedString, foregroundColor color: NSColor = .clear) -> NSAttributedString {
     let string = NSMutableAttributedString(attributedString: string)
     switch filterToken?.comparisonType {
     case .doesNotContain: string.insert(NSAttributedString(string: "≠ ", attributes: [.foregroundColor: color]), at: 0)
