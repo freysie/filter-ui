@@ -5,6 +5,7 @@ import AppKit
   private static let padding = CGSize(width: -5, height: 3)
   //var accessoryWidth: CGFloat { rightMargin + ((controlView as? FilterSearchField)?.accessoryView?.bounds.width ?? 0) }
   var rightMargin = 0.0
+  var hasSourceListAppearance = false
   var hasFilteringAppearance = false
   var showsProgressIndicator = false
 
@@ -82,9 +83,9 @@ import AppKit
     )
   }
 
-  open class func drawBackground(withFrame cellFrame: NSRect, in controlView: NSView, hasActiveFilter: Bool) {
+  open class func drawBackground(withFrame cellFrame: NSRect, in controlView: NSView, hasActiveFilter: Bool, hasSourceListAppearance: Bool? = false) {
     let shouldIncreaseContrast = NSWorkspace.shared.accessibilityDisplayShouldIncreaseContrast
-    let allowsVibrancy = controlView.effectiveAppearance.allowsVibrancy
+    let allowsVibrancy = controlView.effectiveAppearance.allowsVibrancy || hasSourceListAppearance == true
     let isKeyOrMainWindow = controlView.window?.isKeyWindow == true || controlView.window?.isMainWindow == true
     let hasKeyboardFocus = controlView.window?.firstResponder == (controlView as? NSControl)?.currentEditor()
 
@@ -145,7 +146,8 @@ import AppKit
     FilterSearchFieldCell.drawBackground(
       withFrame: cellFrame,
       in: controlView,
-      hasActiveFilter: !stringValue.isEmpty || hasFilteringAppearance
+      hasActiveFilter: !stringValue.isEmpty || hasFilteringAppearance,
+      hasSourceListAppearance: hasSourceListAppearance
     )
 
     drawInterior(withFrame: cellFrame, in: controlView)

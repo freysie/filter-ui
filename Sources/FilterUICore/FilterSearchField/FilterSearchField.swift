@@ -29,7 +29,8 @@ open class ProgressIndicator: NSProgressIndicator {
   // open override var allowsVibrancy: Bool { !hasFilteringAppearance }
 
   open var hasActiveFilter: Bool {
-    hasText || filterButtons.contains { $0.state == .on }
+    // hasText || filterButtons.contains { $0.state == .on }
+    stringValue != "" || filterButtons.contains { $0.state == .on }
   }
 
   open override var allowsVibrancy: Bool {
@@ -37,9 +38,9 @@ open class ProgressIndicator: NSProgressIndicator {
     return !(isFirstResponder || hasActiveFilter)
   }
 
-  open override var stringValue: String {
-    didSet { hasText = !stringValue.isEmpty }
-  }
+//  open override var stringValue: String {
+//    didSet { hasText = !stringValue.isEmpty }
+//  }
 
   // open override var controlSize: NSControl.ControlSize {
   //   didSet { invalidateIntrinsicContentSize() }
@@ -114,6 +115,7 @@ open class ProgressIndicator: NSProgressIndicator {
 
   open override func viewWillDraw() {
     guard let cell = cell as? FilterSearchFieldCell else { return }
+    cell.hasSourceListAppearance = hasSourceListAppearance
     cell.hasFilteringAppearance = hasFilteringAppearance || hasActiveFilter
     accessoryViewCenterYConstraint.constant = (window?.screen?.backingScaleFactor ?? 1) < 2 ? -1 : 0
   }
@@ -125,6 +127,8 @@ open class ProgressIndicator: NSProgressIndicator {
       layer?.setNeedsDisplay()
     }
   }
+
+  open var hasSourceListAppearance = false
 
   open var hasFilteringAppearance: Bool {
     isFiltering || !stringValue.isEmpty || window?.firstResponder == currentEditor()

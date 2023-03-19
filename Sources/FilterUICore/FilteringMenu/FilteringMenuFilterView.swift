@@ -12,6 +12,8 @@ class FilteringMenuFilterView: NSView {
   var menuItem: NSMenuItem!
   weak var delegate: FilteringMenuFilterViewDelegate?
 
+  //override var allowsVibrancy: Bool { true }
+
   convenience init() {
     self.init(frame: NSMakeRect(0, 0, 120, 27))
   }
@@ -22,6 +24,7 @@ class FilteringMenuFilterView: NSView {
     autoresizingMask = .width
 
     filterField = FilterSearchField(frame: frameRect.insetBy(dx: Self.horizontalPadding, dy: 4))
+    //filterField.hasSourceListAppearance = true
     filterField.controlSize = .small
     filterField.autoresizingMask = .width
     addSubview(filterField)

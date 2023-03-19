@@ -9,18 +9,19 @@
 /* Begin PBXBuildFile section */
 		3B31C76E299DDAAE00CF4DCF /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3B31C76C299DDAAE00CF4DCF /* Localizable.strings */; };
 		3B65DD75299C84DE00F08583 /* FilterUI in Frameworks */ = {isa = PBXBuildFile; productRef = 3B65DD71299C84DE00F08583 /* FilterUI */; };
-		3B65DD7D299C855500F08583 /* FilterUIScreenshots.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B65DD7C299C855500F08583 /* FilterUIScreenshots.swift */; };
+		3B65DD7D299C855500F08583 /* FilterUIScreenshotsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B65DD7C299C855500F08583 /* FilterUIScreenshotsApp.swift */; };
+		3BC7B9AE29BE394600EC3092 /* Screenshotting in Frameworks */ = {isa = PBXBuildFile; productRef = 3BC7B9AD29BE394600EC3092 /* Screenshotting */; };
+		3BC7B9B029BE394600EC3092 /* ScreenshottingRNG in Frameworks */ = {isa = PBXBuildFile; productRef = 3BC7B9AF29BE394600EC3092 /* ScreenshottingRNG */; };
 		3BDD452728213E38003D77E3 /* FilterUIExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDD452628213E38003D77E3 /* FilterUIExampleApp.swift */; };
 		3BDD453A28213EC9003D77E3 /* FilterUI in Frameworks */ = {isa = PBXBuildFile; productRef = 3BDD453928213EC9003D77E3 /* FilterUI */; };
 		3BF1416D29BDD64A00E7651C /* Screenshotting in Frameworks */ = {isa = PBXBuildFile; productRef = 3BF1416C29BDD64A00E7651C /* Screenshotting */; };
 		3BF1416F29BDD64A00E7651C /* ScreenshottingRNG in Frameworks */ = {isa = PBXBuildFile; productRef = 3BF1416E29BDD64A00E7651C /* ScreenshottingRNG */; };
-		3BF1417029BDD6EC00E7651C /* FilterUIScreenshots.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B65DD7C299C855500F08583 /* FilterUIScreenshots.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		3B31C76D299DDAAE00CF4DCF /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = Localizable.strings; sourceTree = "<group>"; };
 		3B65DD7B299C84DE00F08583 /* FilterUIScreenshots.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FilterUIScreenshots.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		3B65DD7C299C855500F08583 /* FilterUIScreenshots.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterUIScreenshots.swift; sourceTree = "<group>"; };
+		3B65DD7C299C855500F08583 /* FilterUIScreenshotsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterUIScreenshotsApp.swift; sourceTree = "<group>"; };
 		3BDD452328213E38003D77E3 /* FilterUIExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FilterUIExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3BDD452628213E38003D77E3 /* FilterUIExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterUIExampleApp.swift; sourceTree = "<group>"; };
 		3BDD453628213E90003D77E3 /* filter-ui */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "filter-ui"; path = ..; sourceTree = "<group>"; };
@@ -31,6 +32,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3BC7B9AE29BE394600EC3092 /* Screenshotting in Frameworks */,
+				3BC7B9B029BE394600EC3092 /* ScreenshottingRNG in Frameworks */,
 				3B65DD75299C84DE00F08583 /* FilterUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -56,14 +59,22 @@
 			path = da.lproj;
 			sourceTree = "<group>";
 		};
+		3BC7B9AC29BE394600EC3092 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		3BDD451A28213E38003D77E3 = {
 			isa = PBXGroup;
 			children = (
 				3BDD452628213E38003D77E3 /* FilterUIExampleApp.swift */,
-				3B65DD7C299C855500F08583 /* FilterUIScreenshots.swift */,
+				3B65DD7C299C855500F08583 /* FilterUIScreenshotsApp.swift */,
 				3B31C76B299DDAAE00CF4DCF /* da.lproj */,
 				3BDD453528213E90003D77E3 /* Packages */,
 				3BDD452428213E38003D77E3 /* Products */,
+				3BC7B9AC29BE394600EC3092 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -103,6 +114,8 @@
 			name = FilterUIScreenshots;
 			packageProductDependencies = (
 				3B65DD71299C84DE00F08583 /* FilterUI */,
+				3BC7B9AD29BE394600EC3092 /* Screenshotting */,
+				3BC7B9AF29BE394600EC3092 /* ScreenshottingRNG */,
 			);
 			productName = FilterUIExample;
 			productReference = 3B65DD7B299C84DE00F08583 /* FilterUIScreenshots.app */;
@@ -192,7 +205,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3B65DD7D299C855500F08583 /* FilterUIScreenshots.swift in Sources */,
+				3B65DD7D299C855500F08583 /* FilterUIScreenshotsApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -201,7 +214,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				3BDD452728213E38003D77E3 /* FilterUIExampleApp.swift in Sources */,
-				3BF1417029BDD6EC00E7651C /* FilterUIScreenshots.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -506,6 +518,16 @@
 		3BB9AF502836FCD800470721 /* FilterUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = FilterUI;
+		};
+		3BC7B9AD29BE394600EC3092 /* Screenshotting */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3BF1416B29BDD64A00E7651C /* XCRemoteSwiftPackageReference "screenshotting" */;
+			productName = Screenshotting;
+		};
+		3BC7B9AF29BE394600EC3092 /* ScreenshottingRNG */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3BF1416B29BDD64A00E7651C /* XCRemoteSwiftPackageReference "screenshotting" */;
+			productName = ScreenshottingRNG;
 		};
 		3BDD453928213EC9003D77E3 /* FilterUI */ = {
 			isa = XCSwiftPackageProductDependency;

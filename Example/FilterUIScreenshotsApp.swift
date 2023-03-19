@@ -4,6 +4,13 @@ import SwiftUI
 import Screenshotting
 import ScreenshottingRNG
 
+@main
+struct ScreenshottingApp: App {
+  var body: some Scene {
+    ScreenshottingScene()
+  }
+}
+
 class FilterUI_Screenshots: PreviewProvider {
   static var previews: some View {
     FilterFieldStacks()
@@ -16,93 +23,94 @@ class FilterUI_Screenshots: PreviewProvider {
       .previewDisplayName("README Banner w/ caret")
       .screenshot("FilterUI-2", scale: 2)
 
-    Group {
-      VStack {
-        NSViewPreview<FilterSearchField>()
-          .background(.bar)
-        NSViewPreview<FilterSearchField>()
-        NSViewPreview<FilterSearchField> { f in
-          f.stringValue = "Hello Filter UI"
-        }
+    VStack {
+      NSViewPreview<FilterSearchField>()
+        .background(.bar)
+      NSViewPreview<FilterSearchField>()
+      NSViewPreview<FilterSearchField> { f in
+        f.stringValue = "Hello Filter UI"
       }
-        .padding()
-        //.background(Color(red: 41/255, green: 42/255, blue: 48/255))
-        .background()
-        .previewDisplayName("Search Field")
-        .screenshot("FilterSearchField", colorScheme: .dark, scale: 2)
-
-      VStack {
-        NSViewPreview<FilterSearchField> { f in
-          f.addFilterButton(symbolName: "doc.raster", toolTip: "")
-        }
-        .background(.bar)
-        NSViewPreview<FilterSearchField> { f in
-          f.addFilterButton(symbolName: "doc.raster", toolTip: "").state = .on
-        }
-        .background(.bar)
-        NSViewPreview<FilterSearchField> { f in
-          f.stringValue = "Hello Filter UI"
-          f.addFilterButton(symbolName: "doc.raster", toolTip: "").state = .on
-        }
-        .background(.bar)
-      }
-      .padding()
-      .background()
-      .previewDisplayName("Search Field w/ Filter Button")
-      .screenshot("FilterSearchField_filterButton", colorScheme: .dark, scale: 2)
-
-      VStack {
-        NSViewPreview<FilterSearchField> { f in f.progress = FilterSearchField.indeterminateProgress }
-          .background(.bar)
-        NSViewPreview<FilterSearchField> { f in f.progress = 0.25 }
-          .background(.bar)
-
-        NSViewPreview<FilterSearchField> { f in f.progress = FilterSearchField.indeterminateProgress }
-        NSViewPreview<FilterSearchField> { f in f.progress = 0.25 }
-      }
-      .padding()
-      .background()
-      .previewDisplayName("Search Field w/ Progress")
-      .screenshot("FilterSearchField_progress", colorScheme: .dark, scale: 2)
-
-      VStack {
-        NSViewPreview<FilterTokenField>()
-          .background(.bar)
-
-        NSViewPreview<FilterTokenField>()
-
-        NSViewPreview<FilterTokenField> { f in
-          f.objectValue = [
-            FilterTokenValue(objectValue: "Hello", comparisonType: .contains),
-            FilterTokenValue(objectValue: "Filter UI", comparisonType: .contains),
-          ]
-        }
-        .background(.bar)
-
-        // Divider()
-        //   .opacity(0)
-
-        NSViewPreview<FilterTokenField> { f in
-          f.objectValue = [FilterTokenValue(objectValue: "Does Not Contain", comparisonType: .doesNotContain)]
-        }
-        .background(.bar)
-        
-        NSViewPreview<FilterTokenField> { f in
-          f.objectValue = [FilterTokenValue(objectValue: "Begins With", comparisonType: .beginsWith)]
-        }
-        .background(.bar)
-
-        NSViewPreview<FilterTokenField> { f in
-          f.objectValue = [FilterTokenValue(objectValue: "Ends With", comparisonType: .endsWith)]
-        }
-        .background(.bar)
-      }
-        .padding()
-        .background()
-        .previewDisplayName("Token Field")
-        .screenshot("FilterTokenField", colorScheme: .dark, scale: 2)
     }
-    .frame(maxWidth: 232)
+    .padding()
+    //.background(Color(red: 41/255, green: 42/255, blue: 48/255))
+    .background()
+    .frame(width: 232)
+    .previewDisplayName("Search Field")
+    .screenshot("FilterSearchField", colorScheme: .dark, scale: 2)
+
+    VStack {
+      NSViewPreview<FilterSearchField> { f in
+        f.addFilterButton(symbolName: "doc.raster", toolTip: "")
+      }
+      .background(.bar)
+      NSViewPreview<FilterSearchField> { f in
+        f.addFilterButton(symbolName: "doc.raster", toolTip: "").state = .on
+      }
+      .background(.bar)
+      NSViewPreview<FilterSearchField> { f in
+        f.stringValue = "Hello Filter UI"
+        f.addFilterButton(symbolName: "doc.raster", toolTip: "").state = .on
+      }
+      .background(.bar)
+    }
+    .padding()
+    .background()
+    .frame(width: 232)
+    .previewDisplayName("Search Field w/ Filter Button")
+    .screenshot("FilterSearchField_filterButton", colorScheme: .dark, scale: 2)
+
+    VStack {
+      NSViewPreview<FilterSearchField> { f in f.progress = FilterSearchField.indeterminateProgress }
+        .background(.bar)
+      NSViewPreview<FilterSearchField> { f in f.progress = 0.25 }
+        .background(.bar)
+
+      NSViewPreview<FilterSearchField> { f in f.progress = FilterSearchField.indeterminateProgress }
+      NSViewPreview<FilterSearchField> { f in f.progress = 0.25 }
+    }
+    .padding()
+    .background()
+    .frame(width: 232)
+    .previewDisplayName("Search Field w/ Progress")
+    .screenshot("FilterSearchField_progress", colorScheme: .dark, scale: 2)
+
+    VStack {
+      NSViewPreview<FilterTokenField>()
+        .background(.bar)
+
+      NSViewPreview<FilterTokenField>()
+
+      NSViewPreview<FilterTokenField> { f in
+        f.objectValue = [
+          FilterTokenValue(objectValue: "Hello", comparisonType: .contains),
+          FilterTokenValue(objectValue: "Filter UI", comparisonType: .contains),
+        ]
+      }
+      .background(.bar)
+
+      // Divider()
+      //   .opacity(0)
+
+      NSViewPreview<FilterTokenField> { f in
+        f.objectValue = [FilterTokenValue(objectValue: "Does Not Contain", comparisonType: .doesNotContain)]
+      }
+      .background(.bar)
+
+      NSViewPreview<FilterTokenField> { f in
+        f.objectValue = [FilterTokenValue(objectValue: "Begins With", comparisonType: .beginsWith)]
+      }
+      .background(.bar)
+
+      NSViewPreview<FilterTokenField> { f in
+        f.objectValue = [FilterTokenValue(objectValue: "Ends With", comparisonType: .endsWith)]
+      }
+      .background(.bar)
+    }
+    .padding()
+    .background()
+    .frame(width: 232)
+    .previewDisplayName("Token Field")
+    .screenshot("FilterTokenField", colorScheme: .dark, scale: 2)
   }
 
   // TODO: don’t offset but have varying widths instead?
