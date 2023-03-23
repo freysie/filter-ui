@@ -65,7 +65,7 @@ Different operators can be used with the filter token field.
 let field = FilterTokenField()
 field.objectValue = [
     FilterTokenValue(objectValue: "Hello", comparisonType: .contains),
-    FilterTokenValue(objectValue: "Filter UI", comparisonType: .doesNotContain),
+    FilterTokenValue(objectValue: "Filter UI", comparisonType: .contains),
 ]
 ```
 
@@ -106,7 +106,7 @@ Menu filtering works by replacing the standard keystroke-based selection (type s
 
 ## Acknowledgements
 
-Fuzzy search implementation is based on [FuzzySearch](https://github.com/viktorasl/FuzzySearch) by Viktoras Laukevičius.
+Thanks to [FuzzySearch](https://github.com/viktorasl/FuzzySearch) by Viktoras Laukevičius for fuzzy matching of strings.
 
 Big thanks goes out to [OEXTokenField](https://github.com/octiplex/OEXTokenField) by 
 Octiplex for ideas on how to customize token fields.
