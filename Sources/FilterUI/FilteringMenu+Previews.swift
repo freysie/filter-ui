@@ -1,5 +1,5 @@
 import SwiftUI
-@testable import FilterUICore
+import FilterUICore
 
 struct FilteringMenu_Previews: PreviewProvider {
   static var previews: some View {
