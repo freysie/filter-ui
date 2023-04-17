@@ -115,35 +115,35 @@ extension NSMenuItem: FuzzySearchable {
   }
   
   open func setUpFilterField(in menu: NSMenu, with string: String) {
-    var menu = menu
+    var targetMenu = menu
     repeat {
-      if let submenu = menu.highlightedItem?.submenu {
+      if let submenu = targetMenu.highlightedItem?.submenu {
         if let carbonMenu = (submenu as? Self)?.carbonMenu?.takeUnretainedValue() {
           var data = MenuTrackingData()
           if GetMenuTrackingData(carbonMenu, &data) == noErr {
-            menu = submenu
+            targetMenu = submenu
           }
         }
       }
       // FIXME: fix infinite loop bug
-    } while menu.highlightedItem?.hasSubmenu == true
+    } while targetMenu.highlightedItem?.hasSubmenu == true && targetMenu != menu
 
-    var filterFieldItem = menu.item(withTag: Self.filterFieldItemTag)
+    var filterFieldItem = targetMenu.item(withTag: Self.filterFieldItemTag)
     if filterFieldItem == nil {
-      filterFieldItem = (menu as! Self).makeFilterFieldItem()
+      filterFieldItem = (targetMenu as! Self).makeFilterFieldItem()
       if let view = filterFieldItem!.view as? FilteringMenuFilterView {
         view.setFrameSize(NSMakeSize(max(size.width, 182), view.frame.height))
         view.initialStringValue = string
         filterFieldItem!.title = string
-        menu.insertItem(filterFieldItem!, at: 0)
-        highlightFilterFieldItem(in: menu)
-        performFiltering(with: string, in: menu)
+        targetMenu.insertItem(filterFieldItem!, at: 0)
+        highlightFilterFieldItem(in: targetMenu)
+        performFiltering(with: string, in: targetMenu)
       }
     }
 
-    if isFilterFieldScrolledOutOfView(in: menu) {
-      highlightFilterFieldItem(in: menu)
-      performFiltering(with: string, in: menu)
+    if isFilterFieldScrolledOutOfView(in: targetMenu) {
+      highlightFilterFieldItem(in: targetMenu)
+      performFiltering(with: string, in: targetMenu)
     }
   }
 
