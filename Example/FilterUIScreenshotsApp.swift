@@ -164,6 +164,9 @@ class FilterUI_Screenshots: PreviewProvider {
       FilterField(text: .constant(""), onMake: { f in
         // for _ in 0..<Int.random(in: 0...3, using: &rng) { addToggle(f) }
       })
+//      NSViewPreview<FilterSearchField> { f in
+        //f.addFilterButton(symbolName: Self.logoToggleImages.randomElement(using: &rng)!, toolTip: "")
+//      }
       .background(.bar)
       .frame(width: 172)
     }
@@ -190,8 +193,12 @@ class FilterUI_Screenshots: PreviewProvider {
       //"dot.square",
       //"pin.square",
       //"mic.square",
-      "clock",
-      "doc",
+      "clock.raster",
+      "doc.raster",
+      //"errors.filter.raster",
+      //"scm.filter.raster",
+      "tag.raster",
+      "", "", "", "", "",
       //"c.square",
     ]
   }

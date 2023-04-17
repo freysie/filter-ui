@@ -1,5 +1,5 @@
 import SwiftUI
-@testable import FilterUI
+//@testable import FilterUI
 @testable import FilterUICore
 
 @main
@@ -7,7 +7,7 @@ struct FilterUIExampleApp: App {
   var body: some Scene {
     WindowGroup {
       NavigationView {
-        Form { Example() }.padding().frame(maxWidth: 240).filterFieldStyle(.sourceList)
+        Form { Example() }.padding().frame(maxWidth: 240)//.filterFieldStyle(.sourceList)
         Form { Example() }.padding().frame(maxWidth: 400)// .background(.regularMaterial)
       }
       .background {

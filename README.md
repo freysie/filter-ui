@@ -1,6 +1,6 @@
 # Filter UI
 
-Filter field and menu filtering for AppKit and SwiftUI.
+Filter field and menu filtering for AppKit<!-- and SwiftUI-->.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="Screenshots/FilterUI~dark@2x.png?raw=true 2x, Screenshots/FilterUI~dark@1x.png?raw=true 1x">
@@ -87,23 +87,17 @@ Menu filtering works by replacing the standard keystroke-based selection (type s
 
 ### 1.0
 
-* ~~Menu filtering~~
 * Token field
   - 1px top clipping issue
   - Users should be able to leave text without it turning into a token
-* ~~AppKit-based accessory views~~
-* ~~Find solution to border issue~~
-* ~~Resolve text wrapping issue~~
-* ~~Menu w/ pill-shaped icon?~~
-* ~~Pixel-perfect 13 px filter icon?~~
 * Resolve issues with cancel buttons
-* Redo README
 
 
 ### Later
 
 * Mini, small, and large sizes
 * Token fields should support keys
+* Filtering menu without using private APIs
 
 
 ## Acknowledgements

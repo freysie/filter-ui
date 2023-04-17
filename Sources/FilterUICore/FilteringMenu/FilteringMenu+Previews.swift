@@ -1,5 +1,4 @@
 import SwiftUI
-import FilterUICore
 
 struct FilteringMenu_Previews: PreviewProvider {
   static var previews: some View {

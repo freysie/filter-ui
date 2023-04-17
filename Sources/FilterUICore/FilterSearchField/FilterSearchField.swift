@@ -180,11 +180,11 @@ open class ProgressIndicator: NSProgressIndicator {
   @discardableResult
   open func addFilterButton(image: NSImage, alternateImage: NSImage, toolTip: String, accessibilityDescription: String? = nil) -> NSButton {
     //print(image.size)
-    //let imageSize = 17
+    //let imageSize = 16
     //image.size = NSSize(width: imageSize, height: imageSize)
     //alternateImage.size = NSSize(width: imageSize, height: imageSize)
 
-    let button = FilterButton()
+    let button = FilterFieldButton()
     button.setButtonType(.pushOnPushOff)
     button.bezelStyle = .texturedRounded
     button.isBordered = false
@@ -249,8 +249,8 @@ open class ProgressIndicator: NSProgressIndicator {
   }
 }
 
-open class FilterButton: NSButton {
-  open override var alignmentRectInsets: NSEdgeInsets { NSEdgeInsets() }
+class FilterFieldButton: NSButton {
+  override var alignmentRectInsets: NSEdgeInsets { NSEdgeInsets() }
 }
 
 // MARK: -
