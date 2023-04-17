@@ -25,7 +25,7 @@ Filter field and menu filtering for AppKit and SwiftUI.
 
 ### Filter Search Field
 
-A filter search field is a search field with special appearance and added functionality.
+A filter search field is a search field with a special appearance and added functionality.
 
 **Note:** Vibrancy affects the appearance.
 
@@ -59,7 +59,9 @@ field.progress = 0.25
 
 ### Filter Token Field
 
-Different operators can be used with the filter token field.
+The filter token field lets you use tokens for filtering.
+
+Different comparison types can be used with the filter token field.
 
 ```swift
 let field = FilterTokenField()
