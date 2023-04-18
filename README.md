@@ -3,9 +3,9 @@
 Filter field and menu filtering for AppKit<!-- and SwiftUI-->.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="Screenshots/FilterUI~dark@2x.png?raw=true 2x, Screenshots/FilterUI~dark@1x.png?raw=true 1x">
-  <source media="(prefers-color-scheme: light)" srcset="Screenshots/FilterUI~light@2x.png?raw=true 2x, Screenshots/FilterUI~light@1x.png?raw=true 1x">
-  <img alt="" src="Screenshots/FilterUI~dark@2x.png?raw=true" width="640">
+  <source media="(prefers-color-scheme: dark)" srcset="Screenshots/FilterUI~dark@2x.gif?raw=true 2x">
+  <source media="(prefers-color-scheme: light)" srcset="Screenshots/FilterUI~light@2x.gif?raw=true 2x">
+  <img alt="" src="Screenshots/FilterUI~dark@2x.gif?raw=true" width="640">
 </picture>
 
 
