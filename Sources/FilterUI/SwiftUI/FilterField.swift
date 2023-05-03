@@ -1,8 +1,8 @@
 import SwiftUI
-import FilterUICore
+import FilterUI
 
 // TODO: refactor API for filter buttons
-// TODO: remove filter field style
+// TODO: remove filter field style?
 // TODO: add API for filter token field
 
 /// Contains the possible style values for a filter field.
@@ -70,6 +70,7 @@ public struct FilterField<Accessory: View>: NSViewRepresentable {
     view.stringValue = text
     view.isFiltering = isFiltering
     view.controlSize = controlSize.nsControlSize
+    view.hasSourceListAppearance = style == .sourceList
 //    // TODO: profile performance of this
 //    if type(of: accessory) != EmptyView.self {
 //      view.accessoryView = NSHostingView(rootView: accessory)

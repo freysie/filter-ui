@@ -17,7 +17,6 @@ Filter field and menu filtering for AppKit<!-- and SwiftUI-->.
 
 ```swift
 .product(name: "FilterUI", package: "filter-ui"),
-.product(name: "FilterUICore", package: "filter-ui"),
 ```
 
 

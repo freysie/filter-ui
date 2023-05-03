@@ -1,6 +1,5 @@
 import SwiftUI
 @testable import FilterUI
-@testable import FilterUICore
 import Screenshotting
 import ScreenshottingRNG
 

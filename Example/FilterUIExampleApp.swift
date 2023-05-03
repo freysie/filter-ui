@@ -1,14 +1,13 @@
 import SwiftUI
-//@testable import FilterUI
-@testable import FilterUICore
+@testable import FilterUI
 
 @main
 struct FilterUIExampleApp: App {
   var body: some Scene {
     WindowGroup {
       NavigationView {
-        Form { Example() }.padding().frame(maxWidth: 240)//.filterFieldStyle(.sourceList)
-        Form { Example() }.padding().frame(maxWidth: 400)// .background(.regularMaterial)
+        Form { Example() }.padding(5).frame(minWidth: 240) // .filterFieldStyle(.sourceList)
+        Form { Example() }.padding().frame(minWidth: 380, maxWidth: 480) // .background(.regularMaterial)
       }
       .background {
         FilteringMenu_Previews.previews

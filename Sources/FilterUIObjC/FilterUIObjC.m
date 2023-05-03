@@ -1,3 +1,3 @@
 // This file intentionally left blank.
 
-static void *FilterUICoreObjC;
+static void *FilterUIObjC;

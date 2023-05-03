@@ -1,7 +1,7 @@
 import AppKit
 import Carbon
 import FuzzySearch
-import FilterUICoreObjC
+import FilterUIObjC
 import ObjectiveC
 
 // TODO: support filtering with custom fonts (e.g. monospaced)
@@ -125,7 +125,6 @@ extension NSMenuItem: FuzzySearchable {
           }
         }
       }
-      // FIXME: fix infinite loop bug
     } while targetMenu.highlightedItem?.hasSubmenu == true && targetMenu != menu
 
     var filterFieldItem = targetMenu.item(withTag: Self.filterFieldItemTag)

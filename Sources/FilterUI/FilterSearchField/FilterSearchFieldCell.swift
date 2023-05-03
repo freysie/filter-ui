@@ -4,7 +4,7 @@ import AppKit
 @objcMembers open class FilterSearchFieldCell: NSSearchFieldCell {
   private static let padding = CGSize(width: -5, height: 3)
   //var accessoryWidth: CGFloat { rightMargin + ((controlView as? FilterSearchField)?.accessoryView?.bounds.width ?? 0) }
-  var rightMargin = 0.0
+  open var rightMargin = 0.0
   var hasSourceListAppearance = false
   var hasFilteringAppearance = false
   var showsProgressIndicator = false
@@ -133,8 +133,11 @@ import AppKit
 
   // MARK: - Drawing
 
-  open var filterImage = Bundle.module.image(forResource: "filter.circle")!.tinted(with: .secondaryLabelColor)
-  open var activeFilterImage = Bundle.module.image(forResource: "filter.circle.fill")!.tinted(with: .controlAccentColor)
+  open var filterImage: NSImage? = Bundle.module.image(forResource: "filter.circle")!
+    .tinted(with: .secondaryLabelColor)
+
+  open var activeFilterImage: NSImage? = Bundle.module.image(forResource: "filter.circle.fill")!
+    .tinted(with: .controlAccentColor)
 
   open override var placeholderString: String? {
     didSet { placeholderAttributedString = FilterSearchFieldCell.placeholderAttributedString(for: self) }
@@ -157,8 +160,7 @@ import AppKit
     // guard let filterButtonCell = searchButtonCell, let cancelButtonCell = cancelButtonCell else { return }
     guard let filterButtonCell = searchButtonCell else { return }
 
-    filterButtonCell.image = stringValue.isEmpty ? filterImage : activeFilterImage
-    // filterButtonCell.image = filterImage
+    filterButtonCell.image = stringValue.isEmpty ? filterImage : activeFilterImage ?? filterImage
     filterButtonCell.alternateImage = searchButtonCell!.image
 //    filterButtonCell.draw(withFrame: searchButtonRect(forBounds: cellFrame), in: controlView)
 
