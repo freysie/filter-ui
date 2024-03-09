@@ -502,7 +502,7 @@
 /* Begin XCRemoteSwiftPackageReference section */
 		3BF1416B29BDD64A00E7651C /* XCRemoteSwiftPackageReference "screenshotting" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/freyaalminde/screenshotting.git";
+			repositoryURL = "https://github.com/freysie/screenshotting.git";
 			requirement = {
 				branch = main;
 				kind = branch;

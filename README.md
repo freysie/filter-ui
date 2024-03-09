@@ -12,7 +12,7 @@ Filter field and menu filtering for AppKit<!-- and SwiftUI-->.
 ## Installation
 
 ```swift
-.package(url: "https://github.com/freyaalminde/filter-ui.git", branch: "main"),
+.package(url: "https://github.com/freysie/filter-ui.git", branch: "main"),
 ```
 
 ```swift
