@@ -11,7 +11,7 @@ let package = Package(
     .library(name: "FilterUI", targets: ["FilterUI"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/database-utility/fuzzy-search.git", branch: "main"),
+    .package(url: "https://github.com/MxIris-Library-Forks/fuzzy-search", from: "0.1.0"),
   ],
   targets: [
     .target(name: "FilterUI", dependencies: [

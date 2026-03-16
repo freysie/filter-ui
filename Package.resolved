@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "fuzzy-search",
+        "repositoryURL": "https://github.com/database-utility/fuzzy-search.git",
+        "state": {
+          "branch": "main",
+          "revision": "1a88d6807a174ebb90e2a04e2071944e006847ef",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}
